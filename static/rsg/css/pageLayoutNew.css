@@ -1,0 +1,53 @@
+/* #region button */
+#a_d_main_menu button,
+#a_d_settings button,
+#a_d_buttons >button {
+	display: inline-block;
+	color: var(--fgButton);
+	margin: 2px;
+	padding: 0px;
+	font-size: 12pt;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+	outline: none;
+	border: none;
+	border-radius: 12px;
+	width: 160px;
+	padding: 6px 6px 6px 8px;
+	margin-top: 6px;
+	background-color: var(--bgButton);
+}
+#a_d_buttons >button:hover {
+	background-color: var(--bgButtonHover);
+}
+#a_d_buttons >button:active {
+	background-color: var(--bgButtonActive);
+}
+/* #endregion button */
+
+/* #region layout */
+.layout1 {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	display: grid;
+	grid-template-columns: var(--wActions) var(--wGame) minmax(var(--wPlayers),auto) minmax(var(--wActions),auto);
+	grid-template-rows:calc(2*var(--h_1)) var(--h_1)  var(--hGame) minmax(800px, auto);
+	grid-template-areas:
+		'h h h h'
+		'ah s hp hh'
+		'a g p l'
+		'bl t t t';
+	grid-gap: 4px;
+	background-color: null;
+	min-height: 100%;
+	width: 100%;
+	color: white;
+	padding: 4px;
+	box-sizing: border-box;
+	z-index: -3;
+}
+
+
+
