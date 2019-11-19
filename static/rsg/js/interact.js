@@ -187,7 +187,7 @@ function onClickRunToAction(bId, keyword) {
 }
 function onClickStop() {
 	//console.log('*** clicked STOP!!! ***');
-	setAutoplayFunctionForMode(S_playMode);
+	setAutoplayFunctionForMode(PLAYMODE);
 	unfreezeUI();
 	//startInteraction();
 	// setTimeout(()=>setAutoplayFunctionForMode(S_playMode),1000);

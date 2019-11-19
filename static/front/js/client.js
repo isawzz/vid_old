@@ -56,7 +56,10 @@ function onClickJoinGame() { prelude(getFunctionCallerName(), 'no param'); joinG
 function emitChat(msg = '') { let text = msg + getInputValue('chat'); if (!empty(text)) { console.log('emit', text); sock.emit('chat', { client: clientData, data: text }); } }
 function joinGame() { disableJoinButton(); sock.emit('join', { client: clientData, data: clientData.name }); }
 function login(d) {	prelude(getFunctionCallerName(), d);	clientData.name = d;	sock.emit('login', d);}
-function logout(username) { sock.emit('logout', username); addMessage(username + ' has left'); clearChat(); clearMessages(); loginView(); }
+function logout(username) { 
+	sock.emit('logout', username); 
+	addMessage(username + ' has left'); 
+	clearChat(); clearMessages(); loginView(); }
 
 
 

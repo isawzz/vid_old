@@ -5,16 +5,17 @@
 	<title>RSG</title>
 	<link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/emojidex/112/heavy-black-heart_2764.png" />
 	<!-- <link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/facebook/65/game-die_1f3b2.png"> -->
-	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="/static/front/css/main.css">
 	<!-- <script type="text/javascript" src="http://livejs.com/live.js"></script> -->
 	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" type="text/css" crossorigin="anonymous" /> -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.12.2/js-yaml.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
 	<script>
-		window.onload = () => addEventHandlers();// noAction | initLoginScreen | _SYS_START 
+		window.onload = () => _start();// addEventHandlers | noAction | initLoginScreen | _SYS_START 
 
 		var JS_FILES = [
 
@@ -53,6 +54,12 @@
 			// 'tooltips',//TODO
 			'userspec',
 
+		];
+		var JS_LOBBY = [
+			'_start',
+			'chat',
+			'login',
+			'uiHelpers',
 		];
 
 		var CSS_FILES = [
@@ -97,8 +104,9 @@
 			}
 			document.getElementsByTagName('head')[0].appendChild(style);
 		}
-		for (const fname of CSS_FILES) styleLoader(fname, 'css', false, OFFLINE);
-		for (const fname of JS_FILES) scriptLoader(fname, 'js/game', false, OFFLINE);
+		for (const fname of CSS_FILES) styleLoader(fname, 'static/rsg/css', false, OFFLINE);
+		for (const fname of JS_FILES) scriptLoader(fname, 'static/rsg/js', false, OFFLINE);
+		for (const fname of JS_LOBBY) scriptLoader(fname, 'static/front/js', false, OFFLINE);
 
 	</script>
 	<!-- #endregion loading -->
@@ -305,7 +313,7 @@
 					<svg class='hidden' width='98%' height='92%' style='margin:0;padding:0;position:absolute;top:6%;left:1%;'>
 						<defs>
 							<pattern id="img1" patternUnits="userSpaceOnUse" width="100" height="100">
-								<image xlink:href="/assets/wood1.jpg" x="0" y="0" width="300" height="200" />
+								<image xlink:href="/static/front/assets/wood1.jpg" x="0" y="0" width="300" height="200" />
 							</pattern>
 						</defs>
 						<g id='a_g_testing'>
@@ -330,11 +338,8 @@
 	</div>
 	<!-- #endregion HTML -->
 
-	<script src="/socket.io/socket.io.js"></script>
+	<!-- <script src="/socket.io/socket.io.js"></script> -->
 
-	<script src="js/lobby/uiHelpers.js"></script>
-
-	<script src="js/client.js"></script>
 
 	<!-- <script>colorAreasRandomBlend('area', 'R_d_root');</script> -->
 

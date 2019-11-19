@@ -1,4 +1,4 @@
-function onClickCreateGame_dep() {
+function onClickCreateGame() {
 	console.log('playMode:',S.settings.playMode,'PLAYMODE',PLAYMODE, 'S.playModeChanged',S.playModeChanged)
 	S.settings.username = USERNAME;
 	S.settings.playMode = PLAYMODE;
@@ -15,7 +15,7 @@ function onClickCreateGame_dep() {
 
 	}
 }
-function onClickJoinGame_dep() {
+function onClickJoinGame() {
 	if (S.gameInProgress) {
 		alert('CANNOT JOIN! game has already started!!! click create game to start a new game or restart to restart current game');
 		return;

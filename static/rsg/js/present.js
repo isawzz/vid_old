@@ -294,12 +294,13 @@ function presentMain(oid, ms, pool) {
 	//first check if color or player is in keys
 	let color = o.color ? o.color : o.player ? getPlayerColor(o.player._player) : ms.fg;
 	let akku = [];//isField(o)?[''+oid]:[];
+
 	let bg, fg;
 	for (const k of optin) {
 		let val = o[k];
 		if (isSimple(val)) akku.push(val.toString());
 	}
-	if (!empty(akku)) { ms.multitext({ txt: akku, fill: color }); }
+	if (!empty(akku)) { ms.multitext({ txt: akku, fill: color }); } else ms.clearText();
 }
 function presentDefault(oid, o, isTableObject = true) {
 	let ms = getDefVisual(oid);

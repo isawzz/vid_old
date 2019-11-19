@@ -289,6 +289,7 @@ class RSG {
 		//this.elem.removeChild(el);
 		el.setAttribute('font-size', '' + fz + 'px');
 	}
+	clearText(){this.removeTexts();}
 	removeTexts() {
 		for (const t of this.texts) {
 			this.elem.removeChild(t.el);

@@ -1,6 +1,7 @@
 function _startShort() {
 	timit.start_of_cycle(getFunctionCallerName());
 	if (isdef(UIS)) {
+		stopBlinking('a_d_status');
 		stopInteraction();
 		clearLog();
 	}
