@@ -1,15 +1,19 @@
-function _init_socketio(){
-
-var socket = io.connect(SERVER_URL);
-socket.on('connect',()=>{socket.send('User has connected!');});
-
+function openSocket() {
+	if (socket != null) { socket.open(); return; }
+	socket = io.connect(SERVER_URL);
+	//socket.on('disconnect', () => { socket.emit('message', 'User ' + clientData.name + ' has left!'); });
+	socket.on('connect', () => { socket.emit('message', 'User ' + clientData.name + ' has connected!'); });
+	socket.on('message', onMessageReceived);
+	socket.on('chat', onChatReceived);
+}
+function closeSocket() {
+	if (clientData.name !== null && socket !== null) {
+		socket.emit('message',clientData.name+' has left');
+		socket.close();
+	}
 }
 
-function onMessageReceived(d) { 
-	prelude(getFunctionCallerName(), d); 
-	addMessage(d.data); 
-}
-function onChatSubmitted(e) { prelude(getFunctionCallerName(), e); e.preventDefault(); emitChat(); }
-function onChatReceived(d) { prelude(getFunctionCallerName(), d); addChat(d.data); }
+function onMessageReceived(d) { addMessage(d); }
+function onChatSubmitted(e) { e.preventDefault(); emitChat(); }
+function onChatReceived(d) { addChat(d); }
 
-function emitChat(msg = '') { let text = msg + getInputValue('chat'); if (!empty(text)) { console.log('emit', text); sock.emit('chat', { client: clientData, data: text }); } }

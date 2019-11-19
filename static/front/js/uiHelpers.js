@@ -9,6 +9,7 @@ function addChat(msg) { addListItem('chatEvent', msg); }
 function addMessage(msg) { const parent = document.getElementById('status_message'); parent.innerHTML = msg; addListItem('events', msg); }
 function clearChat() { clearElement(document.getElementById('chatEvent')); }
 function clearMessages() { clearElement(document.getElementById('events')); }
+function emitChat(msg = '') { let text = msg + getInputValue('chat'); if (!empty(text)) { socket.emit('chat', text); } }
 function enableJoinButton() { enableButton('bJoinGame'); }
 function enableCreateButton() { enableButton('bCreateGame'); }
 function enableButton(id) { enable(id) }
@@ -16,9 +17,9 @@ function disableJoinButton() { disableButton('bJoinGame'); }
 function disableCreateButton() { disableButton('bCreateGame'); }
 function disableButton(id) { disable(id); }
 function getInputValue(id) { const input = document.getElementById(id); const text = input.value; input.value = ''; return text; }
-function gameView() { view='game'; hideLobby(); hideLogin(); showGame(); removeAllGlobalHandlers(); addGameViewHandlers(); }
-function loginView() { view='login'; hideLobby(); showLogin(); hideGame(); clearChat(); clearMessages(); removeAllGlobalHandlers(); addLoginViewHandlers(); }
-function lobbyView() { view='lobby'; hideLogin(); showLobby(); hideGame(); enableJoinButton(); updateLoginHeader(); removeAllGlobalHandlers(); addLobbyViewHandlers(); }
+function gameView() { view = 'game'; hideLobby(); hideLogin(); showGame(); removeAllGlobalHandlers(); addGameViewHandlers(); }
+function loginView() { view = 'login'; hideLobby(); showLogin(); hideGame(); clearChat(); clearMessages(); removeAllGlobalHandlers(); addLoginViewHandlers(); }
+function lobbyView() { view = 'lobby'; hideLogin(); showLobby(); hideGame(); enableJoinButton(); updateLoginHeader(); removeAllGlobalHandlers(); addLobbyViewHandlers(); }
 function hideGame() { document.getElementById('R_d_root').style.display = 'none'; }
 function hideLogin() { document.getElementById('a_d_login').style.display = 'none'; }
 function hideLobby() { document.getElementById('a_d_lobby').style.display = 'none'; }

@@ -253,15 +253,22 @@ def lobby():
 
 #endregion
 
-#region socketio and chat
-from flask_socketio import SocketIO, send
+#region socketio: chat and messaging
+from flask_socketio import SocketIO, emit
+import eventlet
+eventlet.monkey_patch()
 
 socketio = SocketIO(app)
+
 @socketio.on('message')
 def handleMessage(msg):
 	print('Message: '+msg)
-	send(msg,broadcast=True)
+	emit('message',msg,broadcast=True)
 
+@socketio.on('chat')
+def handleChatMessage(msg):
+	print('Chat message: '+msg)
+	emit('chat',msg,broadcast=True)
 
 
 #region static front
