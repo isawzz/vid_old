@@ -15,7 +15,7 @@
 
 <body>
 	<script>
-		window.onload = () => _start();// addEventHandlers | noAction | initLoginScreen | _SYS_START 
+		window.onload = () => _start();
 
 		var JS_FILES = [
 
@@ -58,6 +58,8 @@
 		var JS_LOBBY = [
 			'_start',
 			'chat',
+			'gameConfig',
+			'initServer',
 			'login',
 			'uiHelpers',
 		];
@@ -137,11 +139,62 @@
 		<div id="a_d_status_lobby">
 			<div class="chat_container">
 				<ul id="events" class='eventList'></ul>
+				<div id="gameConfig" style='display:none'>
+					<div class='eventList' id='a_d_main_menu' style='height:290px'>
+						<div class='vCenterChildren'>
+							<fieldset id='fChooseGame'>
+								<!-- TODO: dynamically from server: available_games!!! -->
+								<legend>choose game</legend>
+								<input class='radio' id='c_b_mm_ttt' type="radio" name="game" value="ttt" onclick='setConfigGame(this)'>tic tac toe<br>
+								<input class='radio' id='c_b_mm_catan' type="radio" name="game" value="catan" onclick='setConfigGame(this)'>catan<br>
+								<br />
+								<br />
+							</fieldset>
+							<fieldset id='fChooseMode'>
+								<legend>play mode</legend>
+								<input class='radio' id='c_b_mm_solo' type="radio" name="playMode" value="solo" onclick='setConfigPlayMode("solo")'>solo<br>
+								<input class='radio' id='c_b_mm_hotseat' type="radio" name="playMode" value="hotseat" onclick='setConfigPlayMode("hotseat")'>hotseat<br>
+								<input class='radio' id='c_b_mm_multiplayer' type="radio" name="playMode" value="multiplayer" onclick='setConfigPlayMode("multiplayer")'>multiplayer<br>
+							</fieldset>
+							<fieldset id='fChoosePlayers' style='height:220px'>
+								<legend>players</legend>
+								<input class='pl1 radio' id='c_b_mm_pln1' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(1)'><span class='pl1'>player 1</span><br>
+								<input class='pl2 radio' id='c_b_mm_pln2' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(2)'><span class='pl2'>player 2</span><br>
+								<input class='pl3 radio' id='c_b_mm_pln3' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(3)'><span class='pl3'>player 3</span><br>
+								<input class='pl4 radio' id='c_b_mm_pln4' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(4)'><span class='pl4'>player 3</span><br>
+								<input class='pl5 radio' id='c_b_mm_pln5' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(5)'><span class='pl5'>player 3</span><br>
+								<input class='pl6 radio' id='c_b_mm_pln6' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(6)'><span class='pl6'>player 3</span><br>
+								<input class='pl7 radio' id='c_b_mm_pln7' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(7)'><span class='pl7'>player 3</span><br>
+								<input class='pl8 radio' id='c_b_mm_pln8' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(8)'><span class='pl8'>player 3</span><br>
+							</fieldset>
+							<fieldset id='fChoosePlayerTypes' style='height:220px'>
+								<legend>type</legend>
+								<input class='pl1 inputPlayerType' id='c_b_mm_plt1' type="text" value='me' name="playerType" />
+								<input class='pl2 inputPlayerType' id='c_b_mm_plt2' type="text" value='human' name="playerType" />
+								<input class='pl3 inputPlayerType' id='c_b_mm_plt3' type="text" value='human' name="playerType" />
+								<input class='pl4 inputPlayerType' id='c_b_mm_plt4' type="text" value='human' name="playerType" />
+								<input class='pl5 inputPlayerType' id='c_b_mm_plt5' type="text" value='human' name="playerType" />
+								<input class='pl6 inputPlayerType' id='c_b_mm_plt6' type="text" value='human' name="playerType" />
+								<input class='pl7 inputPlayerType' id='c_b_mm_plt7' type="text" value='human' name="playerType" />
+								<input class='pl8 inputPlayerType' id='c_b_mm_plt8' type="text" value='human' name="playerType" />
+								<!-- <input  id='c_b_mm_plt2' type="text" name="playerType" >human</input>>
+										<input  id='c_b_mm_plt3' type="text" name="playerType" >human</input>>
+										<input  id='c_b_mm_plt4' type="text" name="playerType" >human</input>>
+										<input  id='c_b_mm_plt5' type="text" name="playerType" >human</input>>
+										<input  id='c_b_mm_plt6' type="text" name="playerType" >human</input>> -->
+							</fieldset>
+
+						</div>
+					</div>
+
+				</div>
 				<div id='status_message'></div>
 				<div class="controls">
 					<div class="button_wrapper">
 						<button id='bJoinGame' class='button'>join game</button>
 						<button id='bCreateGame' class='button'>create game</button>
+						<button id='bLobbyOk' class='button' onclick='onClickCreateGameOk()' style='display:none'>Ok</button>
+						<button id='bLobbyCancel' class='button' onclick='onClickCreateGameCancel()' style='display:none'>Cancel</button>
 					</div>
 				</div>
 			</div>
@@ -149,7 +202,9 @@
 
 		<div id='a_d_chat'>
 			<div class="chat_container">
-				<ul id="chatEvent" class='eventList'><li>hallo</li></ul>
+				<ul id="chatEvent" class='eventList'>
+					<li>hallo</li>
+				</ul>
 				<div class="controls">
 					<div class="chat_wrapper">
 						<form id="chat_form">
@@ -247,41 +302,6 @@
 			<!-- <div id="a_d_Vienna" class="tabcontent">				<div id='a_d_players' class='divInTab'>				</div>			</div> -->
 
 			<div id="a_d_Redmond" class="tabcontent">
-				<div class='divInTab' id='a_d_main_menu'>
-					<fieldset id='fUsername'>
-						<legend>username</legend>
-						<input class='radio' id='c_b_mm_felix' type="radio" name="username" value="felix" onclick='setUsername(this)'>felix<br>
-						<input class='radio' id='c_b_mm_amanda' type="radio" name="username" value="amanda" onclick='setUsername(this)'>amanda<br>
-						<input class='radio' id='c_b_mm_lauren' type="radio" name="username" value="lauren" onclick='setUsername(this)'>lauren<br>
-						<input class='radio' id='c_b_mm_anuj' type="radio" name="username" value="anuj" onclick='setUsername(this)'>anuj<br>
-						<input class='radio' id='c_b_mm_taka' type="radio" name="username" value="taka" onclick='setUsername(this)'>taka<br>
-						<input class='radio' id='c_b_mm_dwight' type="radio" name="username" value="dwight" onclick='setUsername(this)'>dwight<br>
-					</fieldset>
-					<fieldset id='fChooseGame'>
-						<!-- TODO: dynamically from server: available_games!!! -->
-						<legend>choose game</legend>
-						<input class='radio' id='c_b_mm_ttt' type="radio" name="game" value="ttt" onclick='setGame(this)'>tic tac toe<br>
-						<input class='radio' id='c_b_mm_catan' type="radio" name="game" value="catan" onclick='setGame(this)'>catan<br>
-						<br />
-						<br />
-					</fieldset>
-					<fieldset id='fChooseMode'>
-						<legend>play mode</legend>
-						<input class='radio' id='c_b_mm_solo' type="radio" name="playMode" value="solo" onclick='setPlayMode("solo")'>solo<br>
-						<input class='radio' id='c_b_mm_hotseat' type="radio" name="playMode" value="hotseat" onclick='setPlayMode("hotseat")'>hotseat<br>
-						<input class='radio' id='c_b_mm_multiplayer' type="radio" name="playMode" value="multiplayer" onclick='setPlayMode("multiplayer")'>multiplayer<br>
-					</fieldset>
-					<fieldset id='fCommand'>
-						<br />
-						<br />
-						<button id='c_b_join' style='padding:12px;font-size:24px;' onclick="onClickJoinGame()">join game</button>
-						<button id='c_b_reset' style='padding:12px;font-size:24px;' onclick="onClickCreateGame()">create game</button>
-						<!-- <button onclick="onClickCreateGame()">create game</button> -->
-						<br />
-						<br />
-						<!-- <button onclick="onClickJoinGame()">join game</button> -->
-					</fieldset>
-				</div>
 			</div>
 			<div id="a_d_Paris" class="tabcontent">
 				<div class='divInTab' id='a_d_editor'></div>
@@ -339,7 +359,6 @@
 	<!-- #endregion HTML -->
 
 	<!-- <script src="/socket.io/socket.io.js"></script> -->
-
 
 	<!-- <script>colorAreasRandomBlend('area', 'R_d_root');</script> -->
 

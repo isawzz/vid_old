@@ -15,14 +15,13 @@ table td:first-child{
 .svg-container{
 	line-height:0;
 		display: table;
-border-collapse: collapse;
-
+	border-collapse: collapse;
 }
 .ao_svg{
-display: table-cell;
-border: 1px solid orange;
-margin: 0;
-padding: 0;
+	display: table-cell;
+	border: 1px solid orange;
+	margin: 0;
+	padding: 0;
 }
 .ao_rect {
 	shape-rendering:crispEdges;

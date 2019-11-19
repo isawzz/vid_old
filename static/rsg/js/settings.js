@@ -24,10 +24,10 @@ function setDefaultSettings() {
 	//#region settings fuer entry points: called in _mStart after G,S,M initialized
 	document.getElementById('c_b_TTip').textContent = 'tooltips: ' + S_tooltips;
 
-	//init username in main menu: 
-	let checkedNameInput = document.getElementById('c_b_mm_'+USERNAME.toLowerCase());
-	// console.log(checkedNameInput);
-	checkedNameInput.checked = true;
+	// //init username in main menu: 
+	// let checkedNameInput = document.getElementById('c_b_mm_'+USERNAME.toLowerCase());
+	// // console.log(checkedNameInput);
+	// checkedNameInput.checked = true;
 	
 	//init username in main menu: 
 	let checkedModeInput = document.getElementById('c_b_mm_'+PLAYMODE.toLowerCase());
@@ -81,15 +81,15 @@ function setPlayMode(mode, isStartup = false) {
 	console.log('playMode:',S.settings.playMode,'PLAYMODE',PLAYMODE)
 	setAutoplayFunctionForMode(mode, isStartup);
 	if (mode == 'solo') {
-		hide(document.getElementById('c_b_join'));
+		//hide(document.getElementById('c_b_join'));
 		hide(document.getElementById('c_b_NextPlayer'));
 		hide(document.getElementById('c_b_RunToEnd'));
 	} else if (mode == 'hotseat') {
-		hide(document.getElementById('c_b_join'));
+		//hide(document.getElementById('c_b_join'));
 		show(document.getElementById('c_b_NextPlayer'));
 		show(document.getElementById('c_b_RunToEnd'));
 	} else  if (mode == 'multiplayer') {
-		show(document.getElementById('c_b_join'));
+		//show(document.getElementById('c_b_join'));
 		hide(document.getElementById('c_b_NextPlayer'));
 		hide(document.getElementById('c_b_RunToEnd'));
 	}

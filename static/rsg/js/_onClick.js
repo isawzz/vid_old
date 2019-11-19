@@ -1,3 +1,5 @@
+//completely deprecated!!!!!
+
 function onClickCreateGame() {
 	console.log('playMode:',S.settings.playMode,'PLAYMODE',PLAYMODE, 'S.playModeChanged',S.playModeChanged)
 	S.settings.username = USERNAME;
@@ -5,8 +7,6 @@ function onClickCreateGame() {
 	S.settings.game = GAME;
 	console.log('playMode:',S.settings.playMode,'PLAYMODE',PLAYMODE, 'S.playModeChanged',S.playModeChanged)
 
-	//nein das geht garnicht!!! der geht ja zurueck ins main menu!!!!
-	//if (S.gameInProgress || S.playModeChanged) {S.playModeChanged = false; _SYS_START(); }
 	switch (S.settings.playMode) {
 		case 'multiplayer': restartHost(onHostStarted); break; //_startMultiplayer(); break;
 		case 'hotseat': _startHotseat(); break;

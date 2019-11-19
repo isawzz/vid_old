@@ -1,5 +1,5 @@
 //start from here ONLY at very first time!!!
-function _SYS_START() {
+function _SYS_START_DO_NOT_CALL() {
 	if (nundef(S) || nundef(S.vars)) {
 		addEventListener('keyup', keyUpHandler);
 		addEventListener('keydown', keyDownHandler);
@@ -51,6 +51,7 @@ function _initGameGlobals() {
 	id2oids = {}; // { uid : list of server object ids (called oids) }
 	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
 	id2uids = {}; // { uid : list of ms ids related to same oid }
+	DELETED_IDS = [];
 
 }
 

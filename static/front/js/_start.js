@@ -3,7 +3,15 @@ var socket=null;
 
 function _start(){ //works!!!
 	//view sollte locally gesaved werden genauso wie anderer state
-	_startLogin();
+	_initServer();
+
+
+	_startGame();
+
+	// _startLogin();
+
+	// login('felix');
+	// openGameConfig();
 }
 function _startLogin(){
 	
@@ -17,5 +25,6 @@ function _startLobby(){
 }
 function _startGame(){
 	gameView();
-	_SYS_START();
+	initDom();
+	_startHotseat();
 }

@@ -247,8 +247,8 @@ legend {
 	border:1px solid green;
 	color:green;
 	font-size:90%;
-
-	text-align:center;
+	margin-left:16px;
+	text-align:left;
 }
 fieldset{
 	border: none;
@@ -303,6 +303,42 @@ fieldset{
   padding: 6px 6px 6px 8px;
   /* margin-top: 16px; */
 }
+.inputPlayerType {
+	display: inline-block;
+  margin: 7px 5px 1px 5px;
+  margin-left:-20px;
+  padding: 3px 4px 3px 4px;
+  font-size: 12pt;
+  font-family: Verdana;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+	cursor: pointer;
+	background-color: white;
+	color: var(--bgButton);
+  border: none;
+  border-radius: 12px;
+	width: 120px;
+	height:22px;
+	box-sizing:border-box
+}
+/* .inputPlayerType {
+	display: inline-block;
+  margin: 2px;
+  padding: 0px;
+  font-size: 12pt;
+  font-family: Verdana;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+	cursor: pointer;
+	background-color: white;
+	color: var(--bgButton);
+  border: none;
+  border-radius: 12px;
+	width: 140px;
+  padding: 6px 6px 6px 8px;
+} */
 label{
 	color: var(--fgButton);
 }

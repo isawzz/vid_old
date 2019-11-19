@@ -126,10 +126,17 @@ input {
 	justify-content: space-evenly;
 	align-items: center;
 }
+.vCenterChildren{
+	flex-grow:0;
+	display:flex;
+	justify-content: space-around;
+	align-content: space-around;
+}
 #events {
+	flex-grow: 1;
 	background-color: rgb(0, 0, 0, .5);
 	color:silver;
-	height: 320px;
+	height: 290px;
 }
 #events li {
   padding: 10px 10px 10px 10px;
