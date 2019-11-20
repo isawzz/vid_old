@@ -20,7 +20,13 @@ function disableButton(id) { disable(id); }
 function getInputValue(id) { const input = document.getElementById(id); const text = input.value; input.value = ''; return text; }
 function gameView() { view = 'game'; hideLobby(); hideLogin(); showGame(); removeAllGlobalHandlers(); addGameViewHandlers(); }
 function loginView() { view = 'login'; hideLobby(); showLogin(); hideGame(); clearChat(); clearMessages(); removeAllGlobalHandlers(); addLoginViewHandlers(); }
-function lobbyView() { view = 'lobby'; hideLogin(); showLobby(); hideGame(); enableJoinButton(); updateLoginHeader(); removeAllGlobalHandlers(); addLobbyViewHandlers(); }
+function lobbyView() { 
+	view = 'lobby'; hideLogin(); 
+	showLobby(); hideGame(); enableJoinButton(); updateLoginHeader(); 
+	removeAllGlobalHandlers(); 
+	addLobbyViewHandlers(); 
+	if (!USE_SOCKETIO) openGameConfig();
+}
 
 function hideGameConfig() { document.getElementById('gameConfig').style.display = 'none'; }
 function hideEventList() { document.getElementById('events').style.display = 'none'; }
@@ -35,13 +41,16 @@ function hideLogin() { document.getElementById('a_d_login').style.display = 'non
 function hideLobby() { document.getElementById('a_d_lobby').style.display = 'none'; }
 function showGame() { document.getElementById('R_d_root').style.display = null; }
 function showLogin() { document.getElementById('a_d_login').style.display = null; }
-function showLobby() { document.getElementById('a_d_lobby').style.display = null; }
+function showLobby() { 
+	document.getElementById('a_d_lobby').style.display = null; 
+	if (!USE_SOCKETIO){		document.getElementById('a_d_chat').style.display='none';	}
+}
 function updateLoginHeader() { document.getElementById('hUsername').innerHTML = 'logged in as <b>' + clientData.name + '</b>'; }
 function addGameViewHandlers() { addEventListener('keyup', keyUpHandler); addEventListener('keydown', keyDownHandler); }
 function addLoginViewHandlers() { document.getElementById('login_form').addEventListener('submit', onLoginSubmitted); }
 function addLobbyViewHandlers() {
 	document.getElementById('bLogout').addEventListener('click', onClickLogout);
-	document.getElementById('chat_form').addEventListener('submit', onChatSubmitted);
+	if (USE_SOCKETIO)	document.getElementById('chat_form').addEventListener('submit', onChatSubmitted);
 	document.getElementById('bJoinGame').addEventListener('click', onClickJoinGameLobby);
 	document.getElementById('bCreateGame').addEventListener('click', onClickCreateGameLobby);
 }
@@ -50,7 +59,7 @@ function removeAllGlobalHandlers() {
 	removeEventListener('keydown', keyDownHandler);
 	document.getElementById('login_form').removeEventListener('submit', onLoginSubmitted);
 	document.getElementById('bLogout').removeEventListener('click', onClickLogout);
-	document.getElementById('chat_form').removeEventListener('submit', onChatSubmitted);
+	if (USE_SOCKETIO)	document.getElementById('chat_form').removeEventListener('submit', onChatSubmitted);
 	document.getElementById('bJoinGame').removeEventListener('click', onClickJoinGameLobby);
 	document.getElementById('bCreateGame').removeEventListener('click', onClickCreateGameLobby);
 

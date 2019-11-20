@@ -46,7 +46,7 @@ function processTable(data) {
 }
 function processPlayers(data) {
 	//should also process player change!!!
-	if (!S.players) initPlayers();  //adding additional player info for RSG! such as index,id,altName,color
+	if (!S.players) _initPlayers();  //adding additional player info for RSG! such as index,id,altName,color
 	G.playersCreated = [];
 	G.playersRemoved = [];
 	G.playersUpdated = {}; //updated also has prop change info

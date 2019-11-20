@@ -1,4 +1,8 @@
+var socket=null;
+
+
 function openSocket() {
+	if (!USE_SOCKETIO) return;
 	if (socket != null) { socket.open(); return; }
 	socket = io.connect(SERVER_URL);
 	//socket.on('disconnect', () => { socket.emit('message', 'User ' + clientData.name + ' has left!'); });
@@ -7,13 +11,14 @@ function openSocket() {
 	socket.on('chat', onChatReceived);
 }
 function closeSocket() {
+	if (!USE_SOCKETIO) return;
 	if (clientData.name !== null && socket !== null) {
 		socket.emit('message',clientData.name+' has left');
 		socket.close();
 	}
 }
 
-function onMessageReceived(d) { addMessage(d); }
-function onChatSubmitted(e) { e.preventDefault(); emitChat(); }
-function onChatReceived(d) { addChat(d); }
+function onMessageReceived(d) { if (!USE_SOCKETIO) return;addMessage(d); }
+function onChatSubmitted(e) { if (!USE_SOCKETIO) return;e.preventDefault(); emitChat(); }
+function onChatReceived(d) { if (!USE_SOCKETIO) return;addChat(d); }
 

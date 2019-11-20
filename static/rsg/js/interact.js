@@ -148,13 +148,6 @@ function onClickLobby() {
 function onClickRestart() {
 	unfreezeUI();
 	_startShort();
-	// if (S.settings.playMode == 'hotseat') _startShort();
-	// else if (S.settings.playMode == 'multiplayer'){
-	// 	checkCleanup();
-	// 	_initGameGlobals();
-	// 	presentMainMenu();
-
-	// }
 }
 function onClickRunToNextPlayer() {
 	let pl = G.player;

@@ -1,4 +1,4 @@
-var playerList=[];
+var playerList = [];
 var allGames = {
 	ttt: {
 		name: 'TicTacToe',
@@ -29,8 +29,10 @@ function onClickJoinGameLobby() {
 
 }
 function closeGameConfig() {
-	showEventList();
-	hideGameConfig();
+	if (USE_SOCKETIO) {
+		showEventList();
+		hideGameConfig();
+	}
 	setMessage('hi again!');
 
 	showElem('bJoinGame');
@@ -61,14 +63,17 @@ function updateGamePlayerConfig(gameName) {
 	console.log('game is', gameName, 'with', numPlayersMin);
 	let prefixPl = 'c_b_mm_pl';
 	for (let i = 1; i <= 8; i += 1) {
-		// let plnId = prefixPl + 'n' + i;
-		// let pltId = prefixPl + 't' + i;
-		// console.log(plnId,pltId,numPlayersMin,numPlayersMax)
 		if (i <= numPlayersMin) { checkPlayer(i); makePlayerReadOnly(i); }//showElem(plnId); showElem(pltId); checkPlayer(i); }
 		else if (i <= numPlayersMax) { uncheckPlayer(i); } //showElem(plnId); showElem(pltId); uncheckPlayer(i); }
 		else { hidePlayer(i); }//hideElem(plnId); hideElem(pltId); }
 	}
-
+	setConfigPlayMode(PLAYMODE);
+	makePlayerTypesReadOnly();
+}
+function makePlayerTypesReadOnly() {
+	for (let i = 1; i <= 8; i += 1) {
+		makePlayerTypeReadOnly(i);
+	}
 }
 function setConfigGame(inputElem) {
 	currentGameName = inputElem.value.toString();
@@ -92,6 +97,7 @@ function setConfigPlayMode(mode) {
 			$('#' + prefixPl + i).val(val); val = 'human';
 		}
 	}
+
 }
 function checkPlayer(i) {
 	let prefixPl = 'c_b_mm_pl';
@@ -107,6 +113,10 @@ function isPlayerChecked(i) {
 	let plnId = prefixPl + 'n' + i;
 	let pltId = prefixPl + 't' + i;
 	return document.getElementById(plnId).checked == true;
+}
+function makePlayerTypeReadOnly(i) {
+	let pltId = prefixPl + 't' + i;
+	document.getElementById(pltId).readOnly = true;
 }
 function makePlayerReadOnly(i) {
 	let el = getPlayerRadio(i);
@@ -148,7 +158,7 @@ function onClickCreateGameOk() {
 	let nPlayers = 0;
 	let mePresent = false;
 	for (let i = 1; i <= 8; i++) {
-		if (isPlayerChecked(i) && i<=numPlayersMax) {
+		if (isPlayerChecked(i) && i <= numPlayersMax) {
 			nPlayers += 1;
 			let plType = $(getPlayerTypeInput(i)).val();
 			if (plType.includes('AI')) plType = plType.substring(3);
@@ -179,7 +189,7 @@ function onClickCreateGameOk() {
 	} else if (PLAYMODE == 'hotseat') {
 		//in hotseat game, each players gets user name from user+index
 		console.log('should start hotseat game w/', nPlayers, 'players');
-		_startGame();
+		_startHotseatGame();
 	} else {
 		//need to collect players to join.
 		//possible add player to game (since he created it!)

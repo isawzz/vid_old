@@ -1,4 +1,3 @@
-const names = ['felix', 'amanda', 'sabine', 'tom', 'taka', 'microbe', 'dwight', 'jim', 'michael', 'pam', 'kevin', 'darryl', 'lauren', 'anuj', 'david', 'holly'];
 const clientData = {}; //{ id: sock.id, name, gameName, playerId, state }
 
 function onLoginSubmitted(e) {
@@ -11,17 +10,22 @@ function onClickLogout() { logout(); }
 
 function login(username) {
 	_sendRoute('/login/' + username, d => {
-		clientData.name = d;
-		openSocket();
-		lobbyView();
+		console.log('login response',d)
+		if (d != username) {
+			alert('ERROR: ' + d);
+		} else {
+			USERNAME = clientData.name = d;
+			openSocket();
+			lobbyView();
+		}
 	});
 
 }
-function logout() { 
+function logout() {
 	closeSocket();
-	_sendRoute('/logout', d => { 
+	_sendRoute('/logout/'+clientData.name, d => {
 		clientData.name = null;
-		loginView(); 
+		loginView();
 	});
 }
 

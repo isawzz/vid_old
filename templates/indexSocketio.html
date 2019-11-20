@@ -3,9 +3,11 @@
 
 <head>
 	<title>RSG</title>
-	<link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/facebook/65/game-die_1f3b2.png">
+	<link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/emojidex/112/heavy-black-heart_2764.png" />
+	<!-- <link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/facebook/65/game-die_1f3b2.png"> -->
 	<link rel="stylesheet" href="/static/front/css/main.css">
 	<!-- <script type="text/javascript" src="http://livejs.com/live.js"></script> -->
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" type="text/css" crossorigin="anonymous" /> -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js" crossorigin="anonymous"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.12.2/js-yaml.js" crossorigin="anonymous"></script>
@@ -13,48 +15,53 @@
 
 <body>
 	<script>
-		window.onload = () => _start(); // _start |
-
-		var JS_LOBBY = [
-			'_config',
-			'_start',
-			'_startHotseat', //TODO
-			'_startMultiplayer', //TODO
-			'_startSolo', //TODO
-			'_work', //TODO
-
-			//ok
-			'chat',
-			'clear',
-			'gameConfig',
-			'gameStep',
-			'helpers', //TODO: gehoert mal ausgemistet!!!
-			'login',
-			'server',
-			'settings',
-			'testing',
-			'uiHelpers',
-		];
+		window.onload = () => _start();
 
 		var JS_FILES = [
+
+			// 'old__s',//TODO
+			'old_work',//TODO
+			'_config',
+			'_onClick',
+			'_start',
+			'_startHotseat',
+			'_startMultiplayer',
+			'_startSolo',
+			'_tRestart',
+			'_work',
+			'all',
 			'areas',
 			'behavior',//TODO
+			'clear',
 			'color',//TODO
 			'create',
 			'go',//TODO
+			'helpers', //TODO: gehoert mal ausgemistet!!!
 			'hPresenters',//TODO
 			'infobox',
 			'interact',
 			'interaction_util',
-			'MS',
 			'MS_tests',//TODO
-			'MS_dep', //TESTS
+			'MS',
+			'MS_dep',
 			'present',
 			'presentation_util',
 			'process',
+			'server',
+			'settings',
 			'structures',
+			'testing',
+			// 'tooltips',//TODO
 			'userspec',
 
+		];
+		var JS_LOBBY = [
+			'_start',
+			'chat',
+			'gameConfig',
+			'initServer',
+			'login',
+			'uiHelpers',
 		];
 
 		var CSS_FILES = [
@@ -69,8 +76,11 @@
 			'MS',
 		];
 		var OFFLINE = false; //DO NOT CHANGE! TODO: support offline
+	</script>
 
-		//#region loading
+	<!-- #region loading -->
+	<script>
+		function noAction() { console.log('no action!') }
 		function scriptLoader(src, dir, isLibrary = false, isOFFLINE = false) {
 			let script = document.createElement('script');
 			if (isLibrary && isOFFLINE) {
@@ -97,11 +107,11 @@
 			document.getElementsByTagName('head')[0].appendChild(style);
 		}
 		for (const fname of CSS_FILES) styleLoader(fname, 'static/rsg/css', false, OFFLINE);
-		for (const fname of JS_LOBBY) scriptLoader(fname, 'static/front/js', false, OFFLINE);
 		for (const fname of JS_FILES) scriptLoader(fname, 'static/rsg/js', false, OFFLINE);
-		//#endregion
+		for (const fname of JS_LOBBY) scriptLoader(fname, 'static/front/js', false, OFFLINE);
 
 	</script>
+	<!-- #endregion loading -->
 
 	<!-- #region HTML -->
 	<!-- login -->
@@ -151,11 +161,11 @@
 								<input class='pl1 radio' id='c_b_mm_pln1' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(1)'><span class='pl1'>player 1</span><br>
 								<input class='pl2 radio' id='c_b_mm_pln2' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(2)'><span class='pl2'>player 2</span><br>
 								<input class='pl3 radio' id='c_b_mm_pln3' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(3)'><span class='pl3'>player 3</span><br>
-								<input class='pl4 radio' id='c_b_mm_pln4' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(4)'><span class='pl4'>player 4</span><br>
-								<input class='pl5 radio' id='c_b_mm_pln5' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(5)'><span class='pl5'>player 5</span><br>
-								<input class='pl6 radio' id='c_b_mm_pln6' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(6)'><span class='pl6'>player 6</span><br>
-								<input class='pl7 radio' id='c_b_mm_pln7' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(7)'><span class='pl7'>player 7</span><br>
-								<input class='pl8 radio' id='c_b_mm_pln8' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(8)'><span class='pl8'>player 8</span><br>
+								<input class='pl4 radio' id='c_b_mm_pln4' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(4)'><span class='pl4'>player 3</span><br>
+								<input class='pl5 radio' id='c_b_mm_pln5' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(5)'><span class='pl5'>player 3</span><br>
+								<input class='pl6 radio' id='c_b_mm_pln6' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(6)'><span class='pl6'>player 3</span><br>
+								<input class='pl7 radio' id='c_b_mm_pln7' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(7)'><span class='pl7'>player 3</span><br>
+								<input class='pl8 radio' id='c_b_mm_pln8' type="checkbox" name="playerNum" onclick='onClickPlayerConfig(8)'><span class='pl8'>player 3</span><br>
 							</fieldset>
 							<fieldset id='fChoosePlayerTypes' style='height:220px'>
 								<legend>type</legend>
@@ -286,10 +296,10 @@
 				</div>
 			</div>
 
-			<!-- <div id="a_d_Vienna" class="tabcontent"><div id='a_d_players' class='divInTab'>				</div>			</div> -->
+			<!-- <div id="a_d_Vienna" class="tabcontent">				<div id='a_d_players' class='divInTab'>				</div>			</div> -->
 
-			<!-- <div id="a_d_Redmond" class="tabcontent"></div> -->
-
+			<!-- <div id="a_d_Redmond" class="tabcontent">
+			</div> -->
 			<div id="a_d_Paris" class="tabcontent">
 				<div class='divInTab' id='a_d_editor'></div>
 			</div>
@@ -305,13 +315,17 @@
 					<fieldset>
 						<legend>miscellaneous</legend>
 						<button id="c_b_TTip" onclick="toggleTooltips(this)">tooltips: OFF</button>
+						<br />
+						<br />
 						<button onclick="colorSystem()">new colors</button>
 					</fieldset>
 				</div>
 			</div>
 
-			<!-- <div id="a_d_Tokyo" class="tabcontent"><div id='a_d_div_testing' class='divInTab'></div></div>-->
-			<!--<div id="a_d_Bangor" class="tabcontent">
+			<!-- <div id="a_d_Tokyo" class="tabcontent">
+				<div id='a_d_div_testing' class='divInTab'></div>
+			</div>
+			<div id="a_d_Bangor" class="tabcontent">
 				<div id='a_d_G_tester' class='divInTab'>
 					<svg class='hidden' width='98%' height='92%' style='margin:0;padding:0;position:absolute;top:6%;left:1%;'>
 						<defs>
@@ -329,7 +343,8 @@
 				</div>
 			</div> -->
 		</div>
-		<!-- <div id="a_d_options" class="area">/div> -->
+		<!-- <div id="a_d_options" class="area">
+			</div> -->
 	</div>
 
 	<div id="tooltip" class="tooltip" style='position:fixed;'>
@@ -339,6 +354,10 @@
 
 	</div>
 	<!-- #endregion HTML -->
+
+	<!-- <script src="/socket.io/socket.io.js"></script> -->
+
+	<!-- <script>colorAreasRandomBlend('area', 'R_d_root');</script> -->
 
 </body>
 

@@ -1,5 +1,3 @@
-#!/var/www/html/flask/scriptapp/scriptapp-venv/bin/python3
-
 #region imports
 import json
 import http
@@ -106,6 +104,9 @@ def _add_passive_client(users, interface=None):
 	settings = {} if interface is None else request.get_json(force=True)
 
 	return _ex_wrap(H.add_passive_client, *users, address=address, interface=interface, settings=settings)
+
+
+
 
 @app.route('/ping/clients')
 def _ping_clients():
@@ -217,8 +218,6 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-usersLoggedIn = []
-
 class User(UserMixin, db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(30), unique=True)
@@ -236,24 +235,17 @@ def defaultLogin():
 @app.route('/login/<username>')
 def login(username):
 	user = User.query.filter_by(username=username).first()
-	if username in usersLoggedIn:
-		return username+' already logged in in another window!'
 	if not user:
-		#TODO: add this user to db
-		print('found user!!!')
-		return 'not authorized: '+username
-	usersLoggedIn.append(username)
+		#add this user to db
+		return None
 	login_user(user)
-	print('logged in',username,usersLoggedIn,'................')
 	return username
 
-@app.route('/logout/<username>')
+@app.route('/logout')
 @login_required
-def logout(username):
-	usersLoggedIn.remove(username)
+def logout():
 	logout_user()
-	print('logged out',username,usersLoggedIn,'................')
-	return username+', you are logged out!'
+	return 'You are logged out!'
 
 @app.route('/lobby')
 @login_required
@@ -263,23 +255,23 @@ def lobby():
 #endregion
 
 #region socketio: chat and messaging
-from flask_socketio import SocketIO, emit
+#from flask_socketio import SocketIO, emit
 #try decativate eventlet and see if AIs work!
-import eventlet
-eventlet.monkey_patch()
+#import eventlet
+#eventlet.monkey_patch()
 
-socketio = SocketIO(app)
+#socketio = SocketIO(app)
 
-@socketio.on('message')
-def handleMessage(msg):
-	print('Message: ' + msg)
-	emit('message', msg, broadcast=True)
+# @socketio.on('message')
+# def handleMessage(msg):
+# 	print('Message: '+msg)
+# 	emit('message',msg,broadcast=True)
 
-@socketio.on('chat')
-def handleChatMessage(msg):
-	print('Chat message: ' + msg)
-	emit('chat', msg, broadcast=True)
-#endregion
+# @socketio.on('chat')
+# def handleChatMessage(msg):
+# 	print('Chat message: '+msg)
+# 	emit('chat',msg,broadcast=True)
+
 
 #region static front
 statfold_sim = 'templates'
@@ -319,7 +311,8 @@ def main(argv=None):
 	_hard_restart(address, **settings)
 
 	# app.run(host=args.host, port=args.port, debug=True)
-	socketio.run(app, host=args.host, port=args.port, debug=True)
+	app.run(host=args.host, port=args.port, debug=False)
+	#socketio.run(app, host=args.host,port=args.port, debug=True)
 
 if __name__ == "__main__":
 	main()
