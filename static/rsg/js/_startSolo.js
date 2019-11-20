@@ -14,8 +14,106 @@ function _startSolo() {
 	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
 	id2uids = {}; // { uid : list of ms ids related to same oid }
 
-	if (S.settings.useSpec) loadUserSpec([loadUserCode, sendInitNewSoloGame]); else sendInitNewSoloGame();
+	//if (S.settings.useSpec) loadUserSpec([loadUserCode, sendInitNewSoloGame_test2]); else sendInitNewSoloGame_test2();
+	if (GAME == 'ttt') sendInitNewSoloGame_test2();
+	else sendInitNewSoloGame_test3();
 }
+
+function sendInitNewSoloGame_test2() {
+	S.gameInfo.nPlayers = 2;
+	S.gameInfo.userList = ['hallo', 'randy']; //playerList.map(x=>x.username);
+	timit.showTime('sending restart');
+	_sendRoute('/restart', d0 => {
+		timit.showTime('sending select game');
+		_sendRoute('/game/select/' + S.settings.game, d2 => {
+			_sendRoute('/add/player/hallo/Player1', d4 => {
+				console.log(d4);
+				_postRoute1('add/client/agent/randy', d5 => {
+					console.log(d5);
+					_sendRoute('add/player/randy/Player2', d5b => {
+						console.log(d5b);
+						_sendRoute('/begin/1', d6 => {
+							console.log(d6);
+							let user = 'hallo';//S.gameInfo.userList[0];
+							timit.showTime('sending status');
+							_sendRoute('/status/' + user, d7 => {
+								let data = JSON.parse(d7);
+								console.log('initial data', data)
+								processData(data);
+								specAndDOM([gameStep]);
+							});
+						});
+					});
+				});
+			});
+		});
+	});
+}
+function sendInitNewSoloGame_test3() {
+	S.gameInfo.nPlayers = 3;
+	S.gameInfo.userList = ['hallo', 'randy', 'bob']; //playerList.map(x=>x.username);
+	timit.showTime('sending restart');
+	_sendRoute('/restart', d0 => {
+		timit.showTime('sending select game');
+		_sendRoute('/game/select/' + S.settings.game, d2 => {
+			_sendRoute('/add/player/hallo/White', d4 => {
+				console.log(d4);
+				_postRoute1('add/client/agent/randy+bob', d5 => {
+					console.log(d5);
+					_sendRoute('add/player/randy/Red', d5b => {
+						console.log(d5b);
+						_sendRoute('add/player/bob/Blue', d5c => {
+							console.log(d5c);
+							_sendRoute('/begin/1', d6 => {
+								console.log(d6);
+								let user = 'hallo';//S.gameInfo.userList[0];
+								timit.showTime('sending status');
+								_sendRoute('/status/' + user, d7 => {
+									let data = JSON.parse(d7);
+									console.log('initial data', data)
+									processData(data);
+									specAndDOM([gameStep]);
+								});
+							});
+						});
+					});
+				});
+			});
+		});
+	});
+}
+function sendInitNewSoloGame_test4() {
+	S.gameInfo.nPlayers = 2;
+	S.gameInfo.userList = ['hallo', 'randy']; //playerList.map(x=>x.username);
+	timit.showTime('sending restart');
+	_sendRoute('/restart', d0 => {
+		timit.showTime('sending select game');
+		_sendRoute('/game/select/' + S.settings.game, d2 => {
+			_sendRoute('/add/player/hallo/Player1', d4 => {
+				console.log(d4);
+				_postRoute1('add/client/agent/randy', d5 => {
+					console.log(d5);
+					_sendRoute('add/player/randy/Player2', d5b => {
+						console.log(d5b);
+						_sendRoute('/begin/1', d6 => {
+							console.log(d6);
+							let user = 'hallo';//S.gameInfo.userList[0];
+							timit.showTime('sending status');
+							_sendRoute('/status/' + user, d7 => {
+								let data = JSON.parse(d7);
+								console.log('initial data', data)
+								processData(data);
+								specAndDOM([gameStep]);
+							});
+						});
+					});
+				});
+			});
+		});
+	});
+}
+
+
 
 function sendInitNewSoloGame() {
 	timit.showTime('sending restart');
@@ -40,16 +138,16 @@ function sendInitNewSoloGame() {
 					else pl.username = pl.type.substring(0, 3) + 'bot' + i;
 					i += 1;
 				}
-				console.log('solo players:',playerList);
-				i=0;
+				console.log('solo players:', playerList);
+				i = 0;
 				let cmd;
 				for (const pl of playerList) {
 					if (pl.type == 'me') {
 						cmd = '/add/player/' + pl.username + '/' + pl.id;
 						chain.push(cmd);
-						
-					}else{
-						cmd = 'add/client/agent/'+ pl.username+'/'+pl.type; //('randy', 'polly', interface='agent', agent_type='pass', timeout=None, seed=I.seed, prob=.5)
+
+					} else {
+						cmd = 'add/client/agent/' + pl.username;//+'/'+pl.type; //('randy', 'polly', interface='agent', agent_type='pass', timeout=None, seed=I.seed, prob=.5)
 						chain.push(cmd);
 						cmd = '/add/player/' + pl.username + '/' + pl.id;
 						chain.push(cmd);

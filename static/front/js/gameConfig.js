@@ -142,7 +142,7 @@ function onClickCreateGameOk() {
 	playerList = [];
 	//habe gameInfo in allGames
 	let gi = allGames[GAME];
-
+	S.gameInfo = gi;
 	//set player numbers to number of activated players in player radios
 	//TODO 8 replace by MAX_NUM_PLAYERS
 	let nPlayers = 0;
