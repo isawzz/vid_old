@@ -17,6 +17,7 @@
 	padding: 6px 6px 6px 8px;
 	margin-top: 6px;
 	background-color: var(--bgButton);
+  transition: all 150ms ease-in;
 }
 #a_d_buttons >button:hover {
 	background-color: var(--bgButtonHover);

@@ -1,3 +1,4 @@
+var playerList=[];
 var allGames = {
 	ttt: {
 		name: 'TicTacToe',
@@ -15,10 +16,11 @@ var allGames = {
 		player_names: ['White', 'Red', 'Blue', 'Orange'],
 	}
 };
-var numPlayersMin=0;
-var numPlayersMax=8;
+var numPlayersMin = 0;
+var numPlayersMax = 8;
+var currentGameName;
+var currentPlaymode;
 //wenn initServer mache, hole mir game info fuer alle games!
-
 
 function onClickCreateGameLobby() {
 	openGameConfig();
@@ -47,10 +49,12 @@ function openGameConfig() {
 	showElem('bLobbyCancel');
 
 	//initialize acc to default game
-	let gameName = S.settings.game;
-	updateGamePlayerConfig(gameName);
+	currentGameName = S.settings.game;
+	currentPlaymode = S.settings.playMode;
+	updateGamePlayerConfig(currentGameName);
+	console.log(S.settings, GAME, PLAYMODE, USERNAME)
 }
-function updateGamePlayerConfig(gameName){
+function updateGamePlayerConfig(gameName) {
 	let gi = allGames[gameName];
 	numPlayersMin = arrMin(gi.num_players);
 	numPlayersMax = arrMax(gi.num_players);
@@ -60,30 +64,32 @@ function updateGamePlayerConfig(gameName){
 		// let plnId = prefixPl + 'n' + i;
 		// let pltId = prefixPl + 't' + i;
 		// console.log(plnId,pltId,numPlayersMin,numPlayersMax)
-		if (i <= numPlayersMin) { checkPlayer(i);}//showElem(plnId); showElem(pltId); checkPlayer(i); }
-		else if (i <= numPlayersMax) { uncheckPlayer(i);} //showElem(plnId); showElem(pltId); uncheckPlayer(i); }
-		else { hidePlayer(i);}//hideElem(plnId); hideElem(pltId); }
+		if (i <= numPlayersMin) { checkPlayer(i); makePlayerReadOnly(i); }//showElem(plnId); showElem(pltId); checkPlayer(i); }
+		else if (i <= numPlayersMax) { uncheckPlayer(i); } //showElem(plnId); showElem(pltId); uncheckPlayer(i); }
+		else { hidePlayer(i); }//hideElem(plnId); hideElem(pltId); }
 	}
 
 }
-function setConfigGame(inputElem){
-	let gameName = inputElem.value.toString();
-	updateGamePlayerConfig(gameName);
+function setConfigGame(inputElem) {
+	currentGameName = inputElem.value.toString();
+	updateGamePlayerConfig(currentGameName);
 }
-function setConfigPlayMode(mode){
+function setConfigPlayMode(mode) {
+	currentPlaymode = mode;
+	console.log(currentPlaymode)
 	let prefixPl = 'c_b_mm_plt';
-	let val='me';
-	if (mode == 'solo'){
+	let val = 'me';
+	if (mode == 'solo') {
 		for (let i = 1; i <= 8; i += 1) {
-			$('#'+prefixPl+i).val(val);val='AI';
+			$('#' + prefixPl + i).val(val); val = 'AI regular';
 		}
-	}else if(mode == 'hotseat'){
+	} else if (mode == 'hotseat') {
 		for (let i = 1; i <= 8; i += 1) {
-			$('#'+prefixPl+i).val(val);
+			$('#' + prefixPl + i).val(val);
 		}
-	}else{
+	} else {
 		for (let i = 1; i <= 8; i += 1) {
-			$('#'+prefixPl+i).val(val);val = 'human';
+			$('#' + prefixPl + i).val(val); val = 'human';
 		}
 	}
 }
@@ -91,21 +97,39 @@ function checkPlayer(i) {
 	let prefixPl = 'c_b_mm_pl';
 	let plnId = prefixPl + 'n' + i;
 	let pltId = prefixPl + 't' + i;
-	$('.pl'+i).show();
+	$('.pl' + i).show();
 
 	document.getElementById(plnId).checked = true;
 	document.getElementById(pltId).readOnly = false;
+}
+function isPlayerChecked(i) {
+	let prefixPl = 'c_b_mm_pl';
+	let plnId = prefixPl + 'n' + i;
+	let pltId = prefixPl + 't' + i;
+	return document.getElementById(plnId).checked == true;
+}
+function makePlayerReadOnly(i) {
+	let el = getPlayerRadio(i);
+	//el.readOnly = true;
+	$(el).attr({ 'disabled': true, });
+}
+function getPlayerRadio(n) {
+	return document.getElementById('c_b_mm_pln' + n);
+}
+function getPlayerTypeInput(n) {
+	return document.getElementById('c_b_mm_plt' + n);
+
 }
 function uncheckPlayer(i) {
 	let prefixPl = 'c_b_mm_pl';
 	let plnId = prefixPl + 'n' + i;
 	let pltId = prefixPl + 't' + i;
-	$('.pl'+i).show();
+	$('.pl' + i).show();
 	document.getElementById(plnId).checked = false;
 	document.getElementById(pltId).readOnly = true;
 }
-function hidePlayer(i){
-	$('.pl'+i).hide();
+function hidePlayer(i) {
+	$('.pl' + i).hide();
 }
 function onClickCreateGameCancel() {
 	closeGameConfig();
@@ -113,7 +137,75 @@ function onClickCreateGameCancel() {
 function onClickCreateGameOk() {
 	//set all game params as in gameConfig
 	closeGameConfig();
+	GAME = S.settings.game = currentGameName;
+	PLAYMODE = S.settings.playMode = setPlayMode(currentPlaymode);
+	playerList = [];
+	//habe gameInfo in allGames
+	let gi = allGames[GAME];
+
+	//set player numbers to number of activated players in player radios
+	//TODO 8 replace by MAX_NUM_PLAYERS
+	let nPlayers = 0;
+	let mePresent = false;
+	for (let i = 1; i <= 8; i++) {
+		if (isPlayerChecked(i) && i<=numPlayersMax) {
+			nPlayers += 1;
+			let plType = $(getPlayerTypeInput(i)).val();
+			if (plType.includes('AI')) plType = plType.substring(3);
+			if (PLAYMODE != 'multiplayer' && plType == 'human') plType = 'regular';
+			//if solo|multiplayer can only play 1 player, others MUST BE AIs
+			if (plType == 'me' && PLAYMODE != 'hotseat') {
+				if (mePresent) plType = 'regular'; else mePresent = true;
+			}
+			playerList.push({ type: plType });
+		}
+	}
+	//console.log(playerList);
+	//next add playernames to types in order of playerList
+	let i = 0;
+	for (const pl of playerList) {
+		pl.id = gi.player_names[i]; i += 1;
+	}
+
+	console.log(playerList);
+
+	//AI player usernames are picked from bot name list
+
+	if (PLAYMODE == 'solo') {
+		console.log('should start solo game w/', nPlayers, 'players');
+		_startSoloGame();
+		//in solo
+
+	} else if (PLAYMODE == 'hotseat') {
+		//in hotseat game, each players gets user name from user+index
+		console.log('should start hotseat game w/', nPlayers, 'players');
+		_startGame();
+	} else {
+		//need to collect players to join.
+		//possible add player to game (since he created it!)
+		console.log('should join this user and start waiting for', nPlayers - 1, 'players')
+	}
 }
 function onClickPlayerConfig(n) {
-	console.log('config player', n);
+	//console.log('config player', n);
+	//is player optional?
+	isOptional = (n > numPlayersMin) && (n <= numPlayersMax);
+
+
+	let el = getPlayerRadio(n);
+
+
+	//console.log('readOnly', el.readOnly, 'isOptional', isOptional, 'n', n, 'min', numPlayersMin, 'max', numPlayersMax)
+	if (!isOptional) return;
+	//set the element to checked
+	// console.log('player',n,'is NOT active');
+	// if (!isPlayerChecked(n)) checkPlayer(n);
+	//this player is optional!
+	//toggle value of player
+	let isActive = isPlayerChecked(n);
+	if (!isActive) uncheckPlayer(n); else checkPlayer(n);
+
+
+
+	//look if 
 }

@@ -2,6 +2,7 @@ var choiceCompleted = false;
 var frozen = false;
 var boatFilters = [];
 var boatHighlighted = null;
+//var isControlKeyDown = false;
 
 function startInteraction() {
 	//window.scrollTo(0,0); //better: remove scrollIntoView bei log window
@@ -48,17 +49,22 @@ function stopInteraction() {
 
 function keyUpHandler(ev) {
 	checkControlKey(ev); //infobox.js
+
 }
 function keyDownHandler(ev) {
 	checkArrowKeys(ev);
 }
 function checkArrowKeys(ev) {
 	if (!ev.ctrlKey) return;
-	if (ev.keyCode == '13' && boatHighlighted) onClickSelectTuple(null,boatHighlighted);
+	//if (!isControlKeyDown && boatHighlighted) unhighlightBoat();
+
+	//isControlKeyDown = true;
+	
+	if (ev.keyCode == '13' && boatHighlighted) onClickSelectTuple(null, boatHighlighted);
 	else if (ev.keyCode == '38') highlightPrevBoat();
 	else if (ev.keyCode == '40') highlightNextBoat();
-	else if (ev.keyCode == '37') {}	// left arrow
-	else if (ev.keyCode == '39') {}	// right arrow
+	else if (ev.keyCode == '37') { }	// left arrow
+	else if (ev.keyCode == '39') { }	// right arrow
 }
 
 function onClickSelectTuple(ev, ms, part) {
@@ -67,7 +73,7 @@ function onClickSelectTuple(ev, ms, part) {
 	choiceCompleted = true;
 	//let id = ms.id;
 	iTuple = ms.o.iTuple;
-	console.log(counters.msg + ': '+G.player+' :', iTuple, ms.o.desc, ms.o.text, ms.id);
+	console.log(counters.msg + ': ' + G.player + ' :', iTuple, ms.o.desc, ms.o.text, ms.id);
 	freezeUI();
 	stopInteractionH();
 	sendAction(ms.o, [gameStep]);
@@ -114,9 +120,9 @@ function onClickFilterTuples(ev, ms, part) {
 }
 function onClickStep() {
 	if (!this.choiceCompleted) {
-		//let ms=getRandomBoat(); 
-		let ms = getBoatWith(['demand', 'offer'], false);
-		// let ms = getBoatWith(['demand', 'offer'], false);
+		let ms = getRandomBoat();
+		//let ms = getBoatWith(['demand', 'offer'], false);
+		//let ms = getBoatWith(['buy'], false);
 		onClickSelectTuple(null, ms);
 	}
 }
@@ -136,6 +142,9 @@ function onClickToggleButton(button, handlerList) {
 		handlerList[idxNew][1]();
 	}
 }
+function onClickLobby() {
+	lobbyView();
+}
 function onClickRestart() {
 	unfreezeUI();
 	_startShort();
@@ -144,7 +153,7 @@ function onClickRestart() {
 	// 	checkCleanup();
 	// 	_initGameGlobals();
 	// 	presentMainMenu();
-	
+
 	// }
 }
 function onClickRunToNextPlayer() {
@@ -244,10 +253,10 @@ function removeInteraction(id) { let ms = UIS[id]; ms.removeHandlers(); ms.unhig
 function hideBoat(id) { let ms = UIS[id]; ms.hide(); ms.o.weg = true; }
 function showBoat(id) { let ms = UIS[id]; ms.show(); ms.o.weg = false; }
 function highlightNextBoat() {
-	if (!boatHighlighted) highlightBoat(getFirstBoatId()); 
+	if (!boatHighlighted) highlightBoat(getFirstBoatId());
 	else {
 		//console.log('boatHighlighted',boatHighlighted);
-		let idx = boatHighlighted.o.iTuple+1;
+		let idx = boatHighlighted.o.iTuple + 1;
 		//console.log('idx',idx);
 		//console.log(getBoatIdByIdx(idx));
 		highlightBoat(getBoatIdByIdx(boatHighlighted.o.iTuple + 1));
@@ -265,27 +274,27 @@ function highlightBoat(id) {
 	}
 	boatHighlighted = UIS[id];
 	boatHighlighted.elem.scrollIntoView(false);
-	highlightMsAndRelatives(null,boatHighlighted);
+	highlightMsAndRelatives(null, boatHighlighted);
 	openInfoboxesForBoatOids(boatHighlighted);
 
 }
-function openInfoboxesForBoatOids(boat){
+function openInfoboxesForBoatOids(boat) {
 	let oids = boat.o.oids;
-	let mainIds = oids.map(x=>getMainId(x));
-	for(const id of mainIds){
+	let mainIds = oids.map(x => getMainId(x));
+	for (const id of mainIds) {
 		let ms = UIS[id];
-		openInfobox(null,ms);
+		openInfobox(null, ms);
 	}
 }
-function closeInfoboxesForBoatOids(boat){
+function closeInfoboxesForBoatOids(boat) {
 	let oids = boat.o.oids;
 	for (const oid of oids) hideInfobox(oid);
 }
 function unhighlightBoat() {
-	if (boatHighlighted) { 
+	if (boatHighlighted) {
 		unhighlightMsAndRelatives(null, boatHighlighted);
-		closeInfoboxesForBoatOids(boatHighlighted); 
-		boatHighlighted = null; 
+		closeInfoboxesForBoatOids(boatHighlighted);
+		boatHighlighted = null;
 	}
 }
 function highlightMsAndRelatives(ev, ms, partName) {

@@ -78,7 +78,7 @@ function setUsername(inputElem) {
 function setPlayMode(mode, isStartup = false) {
 	if (mode != S.settings.playMode) S.playModeChanged = true;
 	PLAYMODE = mode;
-	console.log('playMode:',S.settings.playMode,'PLAYMODE',PLAYMODE)
+	//console.log('playMode:',S.settings.playMode,'PLAYMODE',PLAYMODE)
 	setAutoplayFunctionForMode(mode, isStartup);
 	if (mode == 'solo') {
 		//hide(document.getElementById('c_b_join'));
@@ -93,6 +93,7 @@ function setPlayMode(mode, isStartup = false) {
 		hide(document.getElementById('c_b_NextPlayer'));
 		hide(document.getElementById('c_b_RunToEnd'));
 	}
+	return mode;
 }
 function initSETTINGS() {
 	setPlayMode(S.settings.playMode, true);

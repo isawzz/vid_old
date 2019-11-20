@@ -1,4 +1,4 @@
-function _initServer(){
+function _initServer() {
 	//init host and get gameInfo for all games
 	//for now just cheat since I have that info anyway!
 	timit = new TimeIt(getFunctionCallerName());
@@ -12,6 +12,8 @@ function _initServer(){
 	S.vars.firstTime = false;
 
 	_initGameGlobals();
-	presentMainMenu();
+	S.gameInProgress = false;
+	initDom();
+	//presentMainMenu();
 
 }

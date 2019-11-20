@@ -1,6 +1,11 @@
 /* #region root */
 :root{
+	--fzLobby:20px;
+	--hLobbyStatus:300px;
+	--hLobbyChat:200px;
+
 	--gap:0px;
+	--bgLobby: #2196F3;
 	--bgBody: #2196F3;
 	--bgAreas: rgba(255, 255, 255, 0.8);
 
@@ -39,7 +44,9 @@
 /* #endregion root */
 
 /* #region hidden, */
-.hidden{ display:none;}
+.hidden{ 
+	display:none;
+}
 .buttonLikeLink {
   background: none!important;
   border: none;
@@ -54,27 +61,33 @@
 
 /* #region tags */
 body {
-  font-family: "Helvetica Neue", sans-serif;
+	font-family: "Helvetica Neue", sans-serif;
+	font-size: var(--fzLobby);
   margin: 0;
   padding: 0;
 }
 input {
   outline: none;
-  font-size: 1.0rem;
+  /* font-size: 1.0rem; */
+  font-size: var(--fzLobby);
   padding: 0 5px;
 }
 .button {
   text-transform: uppercase;
-	font-size: 0.8rem;
+	/* font-size: 0.8rem; */
+  font-size: var(--fzLobby);
 	margin: 10px;
-  padding: 3px 15px;
+	min-width: 120px;
+	padding: 8px 10px;
+	/* padding: 6px 6px 6px 8px; */
+  /* padding: 3px 15px; */
   color: white;
   line-height: 25px;
-  background-color: var(--bgBody);
+  background-color: var(--bgLobby);
   border: none;
-  border-radius: 2px;
+  border-radius: 10px;
   cursor: pointer;
-  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 6px, rgba(0, 0, 0, 0.12) 0 1px 4px;
+  /* box-shadow: rgba(0, 0, 0, 0.12) 0 1px 6px, rgba(0, 0, 0, 0.12) 0 1px 4px; */
   transition: all 150ms ease-in;
   outline: none;
 }
@@ -103,7 +116,7 @@ input {
 	/* grid-template-rows:  50px 1fr 1fr; */
 	padding:10px;
   grid-gap: var(--gap);
-	background-color:var(--bgBody);
+	background-color:var(--bgLobby);
 	color:grey;
 	width: 100%;
 	min-height: 100vh;
@@ -145,7 +158,8 @@ input {
 #status_message{
 	flex-grow: 0;
 	color:dimgray;
-	font-size:20px;
+  font-size: var(--fzLobby);
+	/* font-size:20px; */
 }
 .button_wrapper {
   padding: 10px;
@@ -170,7 +184,8 @@ input {
 	height: 200px;
 }
 .eventList {
-	font-size: 16px;
+	/* font-size: 16px; */
+  font-size: var(--fzLobby);
 	text-align: left;
   list-style: none;
   margin: 0px;
@@ -193,7 +208,8 @@ input {
 	justify-content: space-between;
 }
 .chat_wrapper form input {
-  font-size: 20px;
+  /* font-size: 20px; */
+  font-size: var(--fzLobby);
   margin: 0;
   padding: 2px 10px 3px 10px;
   flex-grow: 1;
@@ -207,7 +223,8 @@ input {
 #a_d_header_lobby{
 	display:block;
 	text-align:center;
-	font-size:14px;
+  font-size: var(--fzLobby);
+	/* font-size:14px; */
 }
 @font-face {
 	font-family: 'AlgerianRegular';
@@ -228,7 +245,7 @@ input {
 }
 .logo{
 	float:left;
-	color:var(--bgBody);
+	color:var(--bgLobby);
 	font-size:40px;
 	margin:0px 0px 0px 10px;
 }

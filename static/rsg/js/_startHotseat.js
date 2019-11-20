@@ -47,6 +47,7 @@ function loadUserCode(callbacks = []) {
 		});
 	});
 }
+
 function sendInitNewGame() {
 	timit.showTime('sending restart');
 	_sendRoute('/restart', d0 => {
@@ -69,12 +70,16 @@ function sendInitNewGame() {
 					chain.push(cmd);
 				}
 				timit.showTime('sending player logins');
+				console.log('hotseat player adding',chain);
 				chainSend(chain, d5 => {
+					console.log(d5);
 					_sendRoute('/begin/1', d6 => {
+						console.log(d6);
 						let user = S.gameInfo.userList[0];
 						timit.showTime('sending status');
 						_sendRoute('/status/' + user, d7 => {
 							let data = JSON.parse(d7);
+							console.log('initial data',data)
 							processData(data);
 							specAndDOM([gameStep]);
 						});

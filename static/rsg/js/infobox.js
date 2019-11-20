@@ -6,6 +6,7 @@ function bringInfoboxToFront(ms){
 function checkControlKey(ev) {
 	//console.log('key released!', ev);
 	if (ev.key == 'Control') {
+		isControlKeyDown = false;
 		clearInfoboxes();
 	}
 }

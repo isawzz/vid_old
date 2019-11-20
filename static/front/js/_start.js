@@ -6,12 +6,12 @@ function _start(){ //works!!!
 	_initServer();
 
 
-	_startGame();
+	//_startGame();
 
-	// _startLogin();
+	_startLogin();
 
-	// login('felix');
-	// openGameConfig();
+	login('felix');
+	openGameConfig();
 }
 function _startLogin(){
 	
@@ -27,4 +27,9 @@ function _startGame(){
 	gameView();
 	initDom();
 	_startHotseat();
+}
+function _startSoloGame(){
+	gameView();
+	initDom();
+	_startSolo();
 }

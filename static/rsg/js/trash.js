@@ -28,7 +28,7 @@ function _SYS_RESTART(game = 'ttt', reboot = true) { // ttt | catan
 				_newGame(game);
 			}
 
-		} else if (S.settings.playmode == 'hotseat') {
+		} else if (S.settings.playMode == 'hotseat') {
 
 		} else { //solo
 
