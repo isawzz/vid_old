@@ -1,12 +1,13 @@
 var USERNAME='dwight';
-var GAME='ttt'; // catan | ttt
+var GAME='catan'; // catan | ttt
 var PLAYMODE = 'solo'; // multiplayer | hotseat | solo
 
-const USE_SOCKETIO = true;
+const USE_SOCKETIO = false;
 const IS_MIRROR = false;
 const FLASK = true;
+const PORT = '5000';
 const NGROK = null;//'http://f3629de0.ngrok.io/'; //null; //'http://b29082d5.ngrok.io/' //null; //'http://2d97cdbd.ngrok.io/';// MUSS / am ende!!! 
-const SERVER_URL = IS_MIRROR ? 'http://localhost:5555/' : FLASK ? (NGROK ? NGROK : 'http://localhost:5000/') : 'http://localhost:5005/';
+const SERVER_URL = IS_MIRROR ? 'http://localhost:5555/' : FLASK ? (NGROK ? NGROK : 'http://localhost:'+PORT+'/') : 'http://localhost:5005/';
 
 //initial settings: 
 var S_tooltips = 'OFF';

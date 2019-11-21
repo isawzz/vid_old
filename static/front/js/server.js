@@ -14,7 +14,7 @@ function sendAction(boat, callbacks = []) {
 	});
 }
 function _createAgents(agentNames,agentType='regular', callback) {
-	data = { 'agent_type': agentType };//, 'timeout':timeout}
+	data = { agent_type: 'regular', timeout: null };//, 'timeout':timeout}
 	let route = '/add/client/agent/'+agentNames.join('+');
 	if (nundef(counters)) counters = { msg: 0 };
 	counters.msg += 1;

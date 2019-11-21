@@ -115,6 +115,7 @@ function isPlayerChecked(i) {
 	return document.getElementById(plnId).checked == true;
 }
 function makePlayerTypeReadOnly(i) {
+	let prefixPl = 'c_b_mm_pl';
 	let pltId = prefixPl + 't' + i;
 	document.getElementById(pltId).readOnly = true;
 }

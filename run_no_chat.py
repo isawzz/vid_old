@@ -36,12 +36,16 @@ def _ex_wrap(cmd, *args, **kwargs):
 	try:
 		return cmd(*args, **kwargs)
 	except Exception as e:
-		msg = {
-		    'error': {
-		        'type': e.__class__.__name__,
-		        'msg': ''.join(traceback.format_exception(*sys.exc_info())),
-		    },
-		}
+		if isinstance(e, gsm.signals.WrappedException):
+			msg = {'error': {'type': e.etype.__name__, 'msg': e.emsg}}
+		else:
+
+			msg = {
+			    'error': {
+			        'type': e.__class__.__name__,
+			        'msg': ''.join(traceback.format_exception(*sys.exc_info())),
+			    },
+			}
 		return _fmt_output(msg)
 
 # Meta Host
@@ -53,6 +57,7 @@ H = None
 def _hard_restart(address=None, debug=False, **settings):
 	global H
 
+	address = 'http://localhost:5000'  #fuer debug weil er da nicht main ausfuehrt
 	if address is None:
 		assert H is not None, 'must provide an address if no host is running'
 		address = H.address
@@ -104,9 +109,6 @@ def _add_passive_client(users, interface=None):
 	settings = {} if interface is None else request.get_json(force=True)
 
 	return _ex_wrap(H.add_passive_client, *users, address=address, interface=interface, settings=settings)
-
-
-
 
 @app.route('/ping/clients')
 def _ping_clients():
@@ -253,25 +255,6 @@ def lobby():
 	return current_user.username
 
 #endregion
-
-#region socketio: chat and messaging
-#from flask_socketio import SocketIO, emit
-#try decativate eventlet and see if AIs work!
-#import eventlet
-#eventlet.monkey_patch()
-
-#socketio = SocketIO(app)
-
-# @socketio.on('message')
-# def handleMessage(msg):
-# 	print('Message: '+msg)
-# 	emit('message',msg,broadcast=True)
-
-# @socketio.on('chat')
-# def handleChatMessage(msg):
-# 	print('Chat message: '+msg)
-# 	emit('chat',msg,broadcast=True)
-
 
 #region static front
 statfold_sim = 'templates'

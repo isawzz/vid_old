@@ -1,4 +1,15 @@
-examples/
 saves/
-gsm/
 humpack/
+gsm/
+examples/
+.idea/
+passive_frontend.py
+README.md
+*.ipynb
+test_saving.py
+.git
+__pycache__/
+*.pyc
+.vscode/
+DB
+
