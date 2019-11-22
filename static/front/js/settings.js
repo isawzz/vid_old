@@ -48,7 +48,7 @@ function getUsernameForPlayer(plid) {
 	console.log('getUsernameForPlayer', uname);
 	return uname;
 }
-function isMyTurn(id) { return S.players[id].playerType == 'me'; }
+function isMyTurn(id) { return startsWith(S.players[id].username,USERNAME); } //playerType == 'me'; }
 function isFrontAITurn(id){return S.players[id].playerType == 'AI' && !USE_BACKEND_AI; }
 
 

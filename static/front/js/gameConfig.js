@@ -211,7 +211,9 @@ function processMessage(msg) {
 		if (plChosen) {
 			if (isJoinMenuOpen()) closeJoinConfig();
 			plChosen.username = uname;
-			checkGameConfigComplete();
+			if (checkGameConfigComplete() && iAmStarter()){
+				_startNewGame();
+			}
 		}
 		//username has joined the game, need to add his name to player id
 	}
@@ -255,15 +257,17 @@ function onClickJoinGameOk() {
 		if (USE_SOCKETIO) socket.emit('message', uname + ' joined as ' + joinCandidate.id);
 	}
 
+	closeJoinConfig();
 	if (checkGameConfigComplete()) {
 		let msg = 'game ready!';
 		disableJoinButton();
-		if (S.gameConfig.players[0].username == USERNAME) {
+		if (iAmStarter()) {
 			console.log('STARTING GAME:', USERNAME, 'with config\n', S.gameConfig);
+			_startNewGame();
 		}
 	}
 }
-
+function iAmStarter(){ return S.gameConfig.players[0].username == USERNAME;}
 
 function onClickResumeGameLobby() {
 	closeGameConfig();
