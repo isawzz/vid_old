@@ -1,3 +1,5 @@
+#!/var/www/html/flask/scriptapp/scriptapp-venv/bin/python3
+
 #region fe code
 import json
 import http
@@ -222,26 +224,6 @@ def _get_roles():
 def _get_active_players():
 	return _ex_wrap(H.get_active_players)
 
-def main(argv=None):
-	parser = argparse.ArgumentParser(description='Start the host server.')
-	
-	parser.add_argument('--host', default='localhost', type=str,
-	                    help='host for the backend')
-	parser.add_argument('--port', default=5000, type=int,
-	                    help='port for the backend')
-	
-	parser.add_argument('--settings', type=str, default='{}',
-	                    help='optional args for interface, specified as a json str (of a dict with kwargs)')
-	
-	args = parser.parse_args(argv)
-	
-	address = 'http://{}:{}/'.format(args.host, args.port)
-	settings = json.loads(args.settings)
-	
-	_hard_restart(address, **settings)
-	
-	app.run(host=args.host, port=args.port)
-
 
 #endregion
 
@@ -251,9 +233,9 @@ USE_SOCKETIO=True
 from flask_socketio import SocketIO, emit
 import eventlet
 
-if USE_SOCKETIO:
-	eventlet.monkey_patch()
-	socketio = SocketIO(app)
+#if USE_SOCKETIO:
+eventlet.monkey_patch()
+socketio = SocketIO(app)
 
 @socketio.on('message')
 def handleMessage(msg):
@@ -314,7 +296,10 @@ def login(username):
 @app.route('/logout/<username>')
 @login_required
 def logout(username):
-	usersLoggedIn.remove(username)
+	if not username in usersLoggedIn:
+		print(username,'not in usersLoggedIn!!!!!')
+	else:
+		usersLoggedIn.remove(username)
 	logout_user()
 	print('logged out',username,usersLoggedIn,'................')
 	return username+', you are logged out!'
@@ -349,6 +334,26 @@ def _get_UI_spec(game):
 
 #endregion
 
+def main(argv=None):
+	parser = argparse.ArgumentParser(description='Start the host server.')
+	
+	parser.add_argument('--host', default='localhost', type=str,
+	                    help='host for the backend')
+	parser.add_argument('--port', default=5000, type=int,
+	                    help='port for the backend')
+	
+	parser.add_argument('--settings', type=str, default='{}',
+	                    help='optional args for interface, specified as a json str (of a dict with kwargs)')
+	
+	args = parser.parse_args(argv)
+	
+	address = 'http://{}:{}/'.format(args.host, args.port)
+	settings = json.loads(args.settings)
+	
+	_hard_restart(address, **settings)
+	
+	#app.run(host=args.host, port=args.port)
+	socketio.run(app, host=args.host,port=args.port) #, debug=True)
 
 if __name__ == "__main__":
 	main()

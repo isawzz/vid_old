@@ -5,9 +5,9 @@ var isPlaying = false; //initially
 function _start() {
 	_initServer();
 
-	clientData.name = USERNAME; _startLobby();
+	//clientData.name = USERNAME; _startLobby();
 
-	//_startLogin(); login(chooseRandom(names)); openGameConfig();
+	_startLogin(); login(chooseRandom(names)); openGameConfig();
 }
 
 function _startLogin() { loginView(); }
@@ -49,7 +49,7 @@ function _startRestartSame() {
 		_sendRoute('/status/' + user, d7 => {
 			let data = JSON.parse(d7);
 			timit.showTime('start processing');
-			if (processData(data))	gameStep();
+			if (processData(data)) gameStep();
 			else console.log('NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
 	});
@@ -90,9 +90,9 @@ function _initPlayers() {
 		colorName = colorName.toLowerCase();
 		let altName = capitalize(colorName);
 		let color = isdef(playerColors[colorName]) ? playerColors[colorName] : colorName;
-		let plInfo = firstCond(S.gameConfig.players,x=>x.id == id);
+		let plInfo = firstCond(S.gameConfig.players, x => x.id == id);
 		//console.log('_initPlayers found',id,plInfo);
-		S.players[id] = { username: plInfo.username, playerType:plInfo.playerType, agentType:plInfo.agentType, id: id, color: color, altName: altName, index: plInfo.index };
+		S.players[id] = { username: plInfo.username, playerType: plInfo.playerType, agentType: plInfo.agentType, id: id, color: color, altName: altName, index: plInfo.index };
 		i += 1;
 	}
 }

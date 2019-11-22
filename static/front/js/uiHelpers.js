@@ -36,7 +36,11 @@ function gameView() {
 	addGameViewHandlers();  //das sind nur die key handlers
 
 }
-function loginView() { view = 'login'; hideLobby(); showLogin(); hideGame(); clearChat(); clearMessages(); removeAllGlobalHandlers(); addLoginViewHandlers(); }
+function loginView() { 
+	view = 'login'; hideLobby(); showLogin(); hideGame(); clearChat(); clearMessages(); 
+	removeAllGlobalHandlers(); 
+	addLoginViewHandlers(); 
+}
 function lobbyView() { 
 	view = 'lobby'; 
 	hideLogin(); 
@@ -55,10 +59,14 @@ function lobbyView() {
 	if (!USE_SOCKETIO) hideEventList(); // openGameConfig();
 }
 
-function hideGameConfig() { document.getElementById('gameConfig').style.display = 'none'; }
-function hideEventList() { document.getElementById('events').style.display = 'none'; }
 function showGameConfig() { document.getElementById('gameConfig').style.display = null; }
+function hideGameConfig() { document.getElementById('gameConfig').style.display = 'none'; }
+
+function showJoinConfig() { showElem('joinConfig');}
+function hideJoinConfig() { hideElem('joinConfig');}
+
 function showEventList() { document.getElementById('events').style.display = null; }
+function hideEventList() { document.getElementById('events').style.display = 'none'; }
 
 function hideGame() { document.getElementById('R_d_root').style.display = 'none'; }
 function hideLogin() { document.getElementById('a_d_login').style.display = 'none'; }

@@ -114,7 +114,7 @@ function onClickCreateGameOk() {
 	let iBots = 0;
 	for (let i = 0; i < currentNumPlayers; i++) {
 		let pl = {};
-		pl.index = i;
+		pl.index = i + 1;
 		pl.id = gi.player_names[i];
 		let selType = valueOfElement(getidType(i + 1));
 		pl.playerType = startsWith(selType, 'AI') ? 'AI' : selType;
@@ -155,6 +155,9 @@ function closeJoinConfig() {
 	hideElem('bLobbyJoinOk');
 	hideElem('bLobbyJoinCancel');
 }
+function isJoinMenuOpen(){
+	return isVisibleElem('bLobbyJoinOk');
+}
 function openJoinConfig() {
 	hideEventList();
 	showJoinConfig();
@@ -171,12 +174,13 @@ function openJoinConfig() {
 }
 function populateJoinList() {
 	let players = S.gameConfig.players;
-	for (let i = 0; i < MAX_PLAYERS_AVAILABLE; i++) {
-		let pl = players[i];
+	console.log(S.gameConfig)
+	for (let i = 1; i <= S.gameConfig.numPlayers; i++) {
+		let pl = players[i-1];
 		let idRadio = getidAvailable(i);
-		if (isPlayerChecked[pl.index] && pl.playerType == 'human' && empty(pl.username)) {
-			let idRadio = getidAvailable(i);
-			let idSpan = getidSpanJoin(i);
+		let idSpan = getidSpanJoin(i);
+		console.log(idRadio, idSpan,pl)
+		if (isPlayerChecked(pl.index) && pl.playerType == 'human' && empty(pl.username)) {
 			//idRadio muss unchecked sein!
 			//beide muessen visible sein!
 			showElem(idRadio);
@@ -185,7 +189,14 @@ function populateJoinList() {
 			document.getElementById(idSpan).innerHTML = pl.id;
 		} else {
 			hideElem(idRadio);
+			hideElem(idSpan);
 		}
+	}
+	for (let i = S.gameConfig.numPlayers + 1; i <= MAX_PLAYERS_AVAILABLE; i++) {
+		let idRadio = getidAvailable(i);
+		let idSpan = getidSpanJoin(i);
+		hideElem(idRadio);
+		hideElem(idSpan);
 	}
 }
 function processMessage(msg) {
@@ -205,10 +216,10 @@ function processMessage(msg) {
 		//username has joined the game, need to add his name to player id
 	}
 }
-function checkGameConfigComplete(){
+function checkGameConfigComplete() {
 
 	//find out how many players do NOT have username
-	for(const pl of S.gameConfig.players){
+	for (const pl of S.gameConfig.players) {
 		if (empty(pl.username)) return false;
 	}
 	return true;
@@ -230,59 +241,26 @@ function onClickJoinGameOk() {
 	isPlaying = false;
 	disableResumeButton();
 
-	if (!joinCandidate){
+	if (!joinCandidate) {
 		setMessage('you did NOT join the game!')
-	}else{
+	} else {
 		//count mes
 		let countMes = 0;
-		for(pl of S.gameConfig.players){
-			if (!empty(pl.username) && startsWith(pl.username,USERNAME)) countMes +=1;
+		for (pl of S.gameConfig.players) {
+			if (!empty(pl.username) && startsWith(pl.username, USERNAME)) countMes += 1;
 		}
-		joinCandidate.username = USERNAME + (countMes>0?countMes:'');
+		let uname = USERNAME + (countMes > 0 ? countMes : '');
+		joinCandidate.username = uname;
+		console.log('joinCandidate', joinCandidate)
+		if (USE_SOCKETIO) socket.emit('message', uname + ' joined as ' + joinCandidate.id);
 	}
 
-	if (checkGameConfigComplete()){
+	if (checkGameConfigComplete()) {
 		let msg = 'game ready!';
 		disableJoinButton();
-		if (S.gameConfig.players[0].username)
-	}
-
-	//update real settings: getting ready for game unless multiplayer
-	GAME = S.settings.game = currentGamename;
-	PLAYMODE = S.settings.playmode = currentPlaymode; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
-
-	joinedPlayers = [];
-	let gi = allGames[GAME];
-	S.gameInfo = gi;
-	let gc = {};
-	gc.numPlayers = currentNumPlayers;
-	gc.players = [];
-	let countNeedToJoin = 0;
-	let countMes = 0;
-	let iBots = 0;
-	for (let i = 0; i < currentNumPlayers; i++) {
-		let pl = {};
-		pl.index = i;
-		pl.id = gi.player_names[i];
-		let selType = valueOfElement(getidType(i + 1));
-		pl.playerType = startsWith(selType, 'AI') ? 'AI' : selType;
-		pl.agentType = pl.playerType == 'AI' ? selType == 'AI' ? 'regular' : stringAfter(selType, ' ') : null;
-		pl.username = selType == 'me' ? USERNAME + (countMes > 0 ? countMes : '')
-			: selType == 'human' ? '' : 'bot' + iBots;
-		if (selType == 'me') countMes += 1;
-		else if (selType == 'human') countNeedToJoin += 1;
-		else iBots += 1;
-		gc.players.push(pl);
-	}
-	S.gameConfig = gc;
-
-	closeGameConfig();
-	if (countNeedToJoin > 0) {
-		setMessage('new game set up! waiting for ' + countNeedToJoin + ' players to join!');
-
-	} else {
-		//console.log('should start game w/ config:\n', S.gameConfig);
-		_startNewGame();
+		if (S.gameConfig.players[0].username == USERNAME) {
+			console.log('STARTING GAME:', USERNAME, 'with config\n', S.gameConfig);
+		}
 	}
 }
 

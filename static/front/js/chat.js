@@ -9,6 +9,8 @@ function openSocket() {
 	socket.on('connect', () => { socket.emit('message', 'User ' + clientData.name + ' has connected!'); });
 	socket.on('message', onMessageReceived);
 	socket.on('chat', onChatReceived);
+
+	
 }
 function closeSocket() {
 	if (!USE_SOCKETIO) return;
