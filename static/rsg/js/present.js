@@ -272,14 +272,19 @@ function presentActions() {
 }
 function presentWaitingFor() {
 	//console.log('changing player!')
+	//hier komm ich nur her wenn es mein turn war
+	//also kann switchen wenn entweder der pl me ist oder eine FrontAI
 	let pl = G.serverData.waiting_for[0];
-	let user = G.playersAugmented[pl].username;
-	_sendRoute('/status/' + user, d => {
-		//console.log('reply to status request for',user,d);
-		d = JSON.parse(d);
-		processData(d);
-		gameStep();
-	});
+	if (isMyTurn(id) || isMyTurn(G.previousPlayer) && isFrontAITurn(id)) {
+		let user = G.playersAugmented[pl].username;
+		_sendRoute('/status/' + user, d => {
+			//console.log('reply to status request for',user,d);
+			d = JSON.parse(d);
+			if (processData(d)) gameStep();
+			else console.log('NOT MY TURN!!!! WHAT NOW?!?!?');
+		});
+	} else console.log('NOT MY TURN!!!! WHAT NOW?!?!?');
+
 }
 
 //presentation of objects

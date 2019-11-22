@@ -112,8 +112,8 @@ function updateColors(o) {
 		}
 	}
 }
-function initTableOptions(playMode) {
-	if (playMode == 'play') {
+function initTableOptions(playmode) {
+	if (playmode == 'play') {
 		S.settings.table = {
 			// //affect: how to handle new objects coming up in object table
 			// createDummy: false, //unspecified objects are created as dummy objects in 'objects' tab (under game area)
@@ -184,7 +184,7 @@ function toggleSettings(b, keyList, prefix, toggleList) {
 	setKeys(options, keyList, newVal);
 	b.textContent = prefix + newVal;
 
-	if (keyList.includes('playMode')) initTableOptions(options.playMode);
+	if (keyList.includes('playmode')) initTableOptions(options.playmode);
 }
 function toggleTooltips(b) {
 	if (S.settings.tooltips) {

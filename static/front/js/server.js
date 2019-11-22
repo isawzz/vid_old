@@ -1,6 +1,54 @@
+function sendInitNewGame() {
+	//hab nur S.gameConfig
+	let gc = S.gameConfig;
+	let nPlayers = gc.numPlayers;
+
+	//TODO: mach chain commands: [[f,route,data],...]
+	let cmdChain = [];
+	let chain = [];
+	for (let i = 0; i < nPlayers; i++) {
+		let plInfo = gc.players[i];
+		let isAI = plInfo.agentType !== null;
+		let isBackendAI = USE_BACKEND_AI && isAI;
+		if (isBackendAI) {
+			//send a command with agent creating /add/client...
+			//not implemented exception
+		} else {
+			//old way to do it, do it that way first! just a normal route
+			let cmd = '/add/player/' + plInfo.username + '/' + plInfo.id;
+			chain.push(cmd);
+		}
+	}
+	timit.showTime('sending restart');
+	_sendRoute('/restart', d0 => {
+		timit.showTime('sending select game');
+		_sendRoute('/game/select/' + S.settings.game, d2 => {
+			_sendRoute('/game/info', d3 => {
+				//console.log('game info is:', d3);
+				chainSend(chain, d5 => {
+					//console.log(d5);
+					_sendRoute('/begin/1', d6 => {
+						//console.log(d6);
+						let unameStarts = gc.players[0].username;
+						timit.showTime('sending status');
+						_sendRoute('/status/' + unameStarts, d7 => {
+							let data = JSON.parse(d7);
+							//console.log('initial data', data)
+							if (processData(data)) specAndDOM([gameStep]);
+							else console.log('NOT MY TURN!!!! WHAT NOW?!?!?');
+
+						});
+					});
+				});
+			})
+		});
+	});
+}
+
 function sendAction(boat, callbacks = []) {
 	timit.timeStamp('send');
 	let pl = G.playersAugmented[G.player];
+
 
 	let route = '/action/' + pl.username + '/' + G.serverData.key + '/' + boat.desc + '/';
 	let t = boat.tuple;
@@ -9,13 +57,16 @@ function sendAction(boat, callbacks = []) {
 	_sendRoute(route + t.map(x => pickStringForAction(x)).join('+'), data => {
 		//console.log(data)
 		data = JSON.parse(data)
-		processData(data);
-		if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		if (processData(data)) {
+			if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		} else console.log('NOT MY TURN!!!! WHAT NOW?!?!?\n', data);
+
 	});
 }
-function _createAgents(agentNames,agentType='regular', callback) {
+
+function _createAgents(agentNames, agentType = 'regular', callback) {
 	data = { agent_type: 'regular', timeout: null };//, 'timeout':timeout}
-	let route = '/add/client/agent/'+agentNames.join('+');
+	let route = '/add/client/agent/' + agentNames.join('+');
 	if (nundef(counters)) counters = { msg: 0 };
 	counters.msg += 1;
 	let prefix = last(SERVER_URL) == '/' ? dropLast(SERVER_URL) : SERVER_URL;

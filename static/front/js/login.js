@@ -1,4 +1,4 @@
-const clientData = {}; //{ id: sock.id, name, gameName, playerId, state }
+const clientData = {}; //{ id: sock.id, name, gamename, playerId, state }
 
 function onLoginSubmitted(e) {
 	e.preventDefault();

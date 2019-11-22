@@ -25,7 +25,7 @@ function specAndDOM(callbacks = []) {
 	//for now just 1 board detected
 	if (S.settings.useSpec) initSTRUCTURES(); else detectBoard(G.table,'a_d_game'); //spaeter kommt das mit board detection!!!
 
-	//openTabTesting('Seattle')
+	openTabTesting('Seattle')
 	if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 }
 function initPageHeader() {
@@ -258,17 +258,17 @@ function simpleColors(c = 'powderblue') {
 function pageHeaderClearAll() {
 	pageHeaderClearPlayers();
 	pageHeaderClearGame();
-	console.log('cleared page header!')
+	//console.log('cleared page header!')
 }
 function pageHeaderClearGame() {
-	UIS['a_d_divGameName'].clear();
+	UIS['a_d_divGamename'].clear();
 }
 function pageHeaderClearPlayers() {
 	UIS['a_d_divPlayerNames'].clear({ innerHTML: '<div style="float:left">Players:&nbsp;</div>' });
 }
 function pageHeaderSetGame() {
-	let divGameName = document.getElementById('a_d_divGameName');
-	divGameName.innerHTML = `<div style='float:right;margin:14px'><b>${capitalize(GAME)}</b><br>(${PLAYMODE})</div>`;
+	let divGamename = document.getElementById('a_d_divGamename');
+	divGamename.innerHTML = `<div style='float:right;margin:14px'><b>${capitalize(GAME)}</b><br>(${PLAYMODE})</div>`;
 }
 function pageHeaderSetPlayers() {
 	let divPlayerNames = document.getElementById('a_d_divPlayerNames');

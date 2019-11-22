@@ -1,4 +1,5 @@
-var playerList = [];
+const MAX_PLAYERS_AVAILABLE = 8;
+//wenn initServer mache, hole mir game info fuer alle games! for now, cheating damit schneller
 var allGames = {
 	ttt: {
 		name: 'TicTacToe',
@@ -18,106 +19,377 @@ var allGames = {
 };
 var numPlayersMin = 0;
 var numPlayersMax = 8;
-var currentGameName;
+var currentGamename;
 var currentPlaymode;
-//wenn initServer mache, hole mir game info fuer alle games!
+var currentNumPlayers;
+//var joinedPlayers = null; //for humans to join
+var joinCandidate = null;
 
+
+//#region game configuration
 function onClickCreateGameLobby() {
 	openGameConfig();
 }
-function onClickJoinGameLobby() {
-
-}
 function closeGameConfig() {
+	hideGameConfig();
 	if (USE_SOCKETIO) {
 		showEventList();
-		hideGameConfig();
 	}
 	setMessage('hi again!');
 
 	showElem('bJoinGame');
 	showElem('bCreateGame');
+	showElem('bResumeGame');
 	hideElem('bLobbyOk');
 	hideElem('bLobbyCancel');
 }
 function openGameConfig() {
+
 	hideEventList();
 	showGameConfig();
-	setMessage('Setup you game!');
+	setMessage('Setup new game!');
 
 	hideElem('bJoinGame');
 	hideElem('bCreateGame');
 	showElem('bLobbyOk');
 	showElem('bLobbyCancel');
+	showElem('bResumeGame');
 
-	//initialize acc to default game
-	currentGameName = S.settings.game;
-	currentPlaymode = S.settings.playMode;
-	updateGamePlayerConfig(currentGameName);
-	console.log(S.settings, GAME, PLAYMODE, USERNAME)
+	//console.log('*game config:', S.settings.game, '=', GAME, S.settings.playmode, '=', PLAYMODE, USERNAME)
+	updateGamename(S.settings.game);
+	updatePlayersForGame();
+	updatePlaymode(S.settings.playmode);
+	updatePlayersForMode();
 }
-function updateGamePlayerConfig(gameName) {
-	let gi = allGames[gameName];
+function onClickGamename(inputElem) {
+	updateGamename(inputElem.value.toString());
+	updatePlayersForGame();
+}
+function onClickPlaymode(mode) {
+	updatePlaymode(mode);
+	updatePlayersForMode();
+}
+function onClickPlayerPresence(n) {
+	isOptional = (n > numPlayersMin) && (n <= numPlayersMax);
+	if (!isOptional) return;
+
+	let el = getPlayerRadio(n);
+	let isActive = isPlayerChecked(n);
+
+	if (isActive) checkPlayer(n); else uncheckPlayer(n);
+
+	//if activated an optional player, should also activate all inactive players with lower index
+	//if deactivated a player, should deactivate all optional players w/ higher index!
+	if (isActive) for (let i = numPlayersMin + 1; i < n; i++) { if (!isPlayerChecked(i)) checkPlayer(i); }
+	else for (let i = n + 1; i <= numPlayersMax; i++) { if (isPlayerChecked(i)) uncheckPlayer(i); }
+
+	//update currentNumPlayers
+	let cnt = 0;
+	for (let i = 1; i <= numPlayersMax; i++) { if (isPlayerChecked(i)) cnt += 1; }
+	currentNumPlayers = cnt;
+	console.log('*** currentNumPlayers', currentNumPlayers);
+}
+function onClickCreateGameCancel() {
+	//revert to values
+	currentPlaymode = PLAYMODE;
+	currentGamename = GAME;
+	closeGameConfig();
+}
+function onClickCreateGameOk() {
+	isPlaying = false;
+	disableResumeButton();
+
+	//update real settings: getting ready for game unless multiplayer
+	GAME = S.settings.game = currentGamename;
+	PLAYMODE = S.settings.playmode = currentPlaymode; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
+
+	joinedPlayers = [];
+	let gi = allGames[GAME];
+	S.gameInfo = gi;
+	let gc = {};
+	gc.numPlayers = currentNumPlayers;
+	gc.players = [];
+	let countNeedToJoin = 0;
+	let countMes = 0;
+	let iBots = 0;
+	for (let i = 0; i < currentNumPlayers; i++) {
+		let pl = {};
+		pl.index = i;
+		pl.id = gi.player_names[i];
+		let selType = valueOfElement(getidType(i + 1));
+		pl.playerType = startsWith(selType, 'AI') ? 'AI' : selType;
+		pl.agentType = pl.playerType == 'AI' ? selType == 'AI' ? 'regular' : stringAfter(selType, ' ') : null;
+		pl.username = selType == 'me' ? USERNAME + (countMes > 0 ? countMes : '')
+			: selType == 'human' ? '' : 'bot' + iBots;
+		if (selType == 'me') countMes += 1;
+		else if (selType == 'human') countNeedToJoin += 1;
+		else iBots += 1;
+		gc.players.push(pl);
+	}
+	S.gameConfig = gc;
+
+	closeGameConfig();
+	if (countNeedToJoin > 0) {
+		setMessage('new game set up! waiting for ' + countNeedToJoin + ' players to join!');
+
+	} else {
+		//console.log('should start game w/ config:\n', S.gameConfig);
+		_startNewGame();
+	}
+}
+
+//#region join config
+function onClickJoinGameLobby() {
+	openJoinConfig();
+}
+function closeJoinConfig() {
+	hideJoinConfig();
+	if (USE_SOCKETIO) {
+		showEventList();
+	}
+	setMessage('hi again!');
+
+	showElem('bJoinGame');
+	showElem('bCreateGame');
+	showElem('bResumeGame');
+	hideElem('bLobbyJoinOk');
+	hideElem('bLobbyJoinCancel');
+}
+function openJoinConfig() {
+	hideEventList();
+	showJoinConfig();
+	setMessage('Setup new game!');
+
+	hideElem('bJoinGame');
+	hideElem('bCreateGame');
+	showElem('bLobbyJoinOk');
+	showElem('bLobbyJoinCancel');
+	showElem('bResumeGame');
+
+	populateJoinList();
+	joinCandidate = null;
+}
+function populateJoinList() {
+	let players = S.gameConfig.players;
+	for (let i = 0; i < MAX_PLAYERS_AVAILABLE; i++) {
+		let pl = players[i];
+		let idRadio = getidAvailable(i);
+		if (isPlayerChecked[pl.index] && pl.playerType == 'human' && empty(pl.username)) {
+			let idRadio = getidAvailable(i);
+			let idSpan = getidSpanJoin(i);
+			//idRadio muss unchecked sein!
+			//beide muessen visible sein!
+			showElem(idRadio);
+			uncheckAvailable(i);
+			showElem(idSpan);
+			document.getElementById(idSpan).innerHTML = pl.id;
+		} else {
+			hideElem(idRadio);
+		}
+	}
+}
+function processMessage(msg) {
+	let parts = msg.split(' ');
+	// username joined as White
+	if (parts.length > 3 && startsWith(parts[1], 'join')) {
+		let uname = parts[0];
+		let plid = parts[3].trim();
+		let players = S.gameConfig.players;
+		//look for player with this player id:
+		let plChosen = firstCond(players, x => x.id == plid);
+		if (plChosen) {
+			if (isJoinMenuOpen()) closeJoinConfig();
+			plChosen.username = uname;
+			checkGameConfigComplete();
+		}
+		//username has joined the game, need to add his name to player id
+	}
+}
+function checkGameConfigComplete(){
+
+	//find out how many players do NOT have username
+	for(const pl of S.gameConfig.players){
+		if (empty(pl.username)) return false;
+	}
+	return true;
+}
+function onClickAvailablePlayer(i) {
+	//this is player that selected for joining!
+	//find player in gc.players
+	//check this radio (is eh automatic)
+	let players = S.gameConfig.players;
+	//look for player with this player id:
+	let plChosen = firstCond(players, x => x.index == i);
+	joinCandidate = plChosen;
+}
+function onClickJoinGameCancel() {
+	closeJoinConfig();
+}
+function onClickJoinGameOk() {
+	//TODO: think about that?!?!?
+	isPlaying = false;
+	disableResumeButton();
+
+	if (!joinCandidate){
+		setMessage('you did NOT join the game!')
+	}else{
+		//count mes
+		let countMes = 0;
+		for(pl of S.gameConfig.players){
+			if (!empty(pl.username) && startsWith(pl.username,USERNAME)) countMes +=1;
+		}
+		joinCandidate.username = USERNAME + (countMes>0?countMes:'');
+	}
+
+	if (checkGameConfigComplete()){
+		let msg = 'game ready!';
+		disableJoinButton();
+		if (S.gameConfig.players[0].username)
+	}
+
+	//update real settings: getting ready for game unless multiplayer
+	GAME = S.settings.game = currentGamename;
+	PLAYMODE = S.settings.playmode = currentPlaymode; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
+
+	joinedPlayers = [];
+	let gi = allGames[GAME];
+	S.gameInfo = gi;
+	let gc = {};
+	gc.numPlayers = currentNumPlayers;
+	gc.players = [];
+	let countNeedToJoin = 0;
+	let countMes = 0;
+	let iBots = 0;
+	for (let i = 0; i < currentNumPlayers; i++) {
+		let pl = {};
+		pl.index = i;
+		pl.id = gi.player_names[i];
+		let selType = valueOfElement(getidType(i + 1));
+		pl.playerType = startsWith(selType, 'AI') ? 'AI' : selType;
+		pl.agentType = pl.playerType == 'AI' ? selType == 'AI' ? 'regular' : stringAfter(selType, ' ') : null;
+		pl.username = selType == 'me' ? USERNAME + (countMes > 0 ? countMes : '')
+			: selType == 'human' ? '' : 'bot' + iBots;
+		if (selType == 'me') countMes += 1;
+		else if (selType == 'human') countNeedToJoin += 1;
+		else iBots += 1;
+		gc.players.push(pl);
+	}
+	S.gameConfig = gc;
+
+	closeGameConfig();
+	if (countNeedToJoin > 0) {
+		setMessage('new game set up! waiting for ' + countNeedToJoin + ' players to join!');
+
+	} else {
+		//console.log('should start game w/ config:\n', S.gameConfig);
+		_startNewGame();
+	}
+}
+
+
+function onClickResumeGameLobby() {
+	closeGameConfig();
+	gameView();
+}
+// #region helpers
+function valueOfElement(id) {
+	//console.log(id);
+	return document.getElementById(id).value;
+}
+function updateGamename(gamename) {
+	currentGamename = gamename;
+	let gi = allGames[gamename];
+	currentPlayersById = {};
+	plidByIndex = gi.player_names;
+	for (const plid of gi.player_names) {
+		currentPlayersById[plid] = {};
+	}
 	numPlayersMin = arrMin(gi.num_players);
 	numPlayersMax = arrMax(gi.num_players);
-	console.log('game is', gameName, 'with', numPlayersMin);
-	let prefixPl = 'c_b_mm_pl';
-	for (let i = 1; i <= 8; i += 1) {
-		if (i <= numPlayersMin) { checkPlayer(i); makePlayerReadOnly(i); }//showElem(plnId); showElem(pltId); checkPlayer(i); }
-		else if (i <= numPlayersMax) { uncheckPlayer(i); } //showElem(plnId); showElem(pltId); uncheckPlayer(i); }
-		else { hidePlayer(i); }//hideElem(plnId); hideElem(pltId); }
-	}
-	setConfigPlayMode(PLAYMODE);
-	makePlayerTypesReadOnly();
+	//console.log('game is', gamename, 'with', numPlayersMin, 'to', numPlayersMax, 'players');
 }
-function makePlayerTypesReadOnly() {
-	for (let i = 1; i <= 8; i += 1) {
-		makePlayerTypeReadOnly(i);
-	}
-}
-function setConfigGame(inputElem) {
-	currentGameName = inputElem.value.toString();
-	updateGamePlayerConfig(currentGameName);
-}
-function setConfigPlayMode(mode) {
+function updatePlaymode(mode) {
 	currentPlaymode = mode;
-	console.log(currentPlaymode)
-	let prefixPl = 'c_b_mm_plt';
-	let val = 'me';
-	if (mode == 'solo') {
-		for (let i = 1; i <= 8; i += 1) {
-			$('#' + prefixPl + i).val(val); val = 'AI regular';
-		}
-	} else if (mode == 'hotseat') {
-		for (let i = 1; i <= 8; i += 1) {
-			$('#' + prefixPl + i).val(val);
-		}
-	} else {
-		for (let i = 1; i <= 8; i += 1) {
-			$('#' + prefixPl + i).val(val); val = 'human';
-		}
-	}
+	//console.log('current playmode:', currentPlaymode)
+}
+function getidNum(i) { return 'c_b_mm_pln' + i; }
+function getidAvailable(i) { return 'c_b_mm_plj' + i; }
+function getidSpanJoin(i) { return 'spplj' + i; }
+function getidSpan(i) { return 'sppl' + i; }
+function getidType(i) { return 'c_b_mm_plt' + i; }
+function getPlayerInfo(i) { return currentPlayersById[plidByIndex[i]]; }
 
+function updatePlayersForGame() {
+	currentNumPlayers = 0;
+	for (let i = 1; i <= MAX_PLAYERS_AVAILABLE; i += 1) {
+		if (i <= numPlayersMin) { currentNumPlayers += 1; showPlayer(i); checkPlayer(i); makePlayerReadOnly(i); }
+		else if (i <= numPlayersMax) { showPlayer(i); uncheckPlayer(i); }
+		else { hidePlayer(i); }
+	}
+}
+const soloTypes = ['me', 'AI', 'AI random', 'AI pass'];
+const allPlayerTypes = ['me', 'human', 'AI', 'AI random', 'AI pass'];
+function populateSelect(i, listValues, selValue) {
+	let id = getidType(i);
+	let el = document.getElementById(id);
+	clearElement(el);
+	for (opt of listValues) {
+		var newOption = document.createElement("option");
+		newOption.text = opt.toString();
+		// option.setAttribute('value', langArray[i].value);
+		// option.appendChild(document.createTextNode(langArray[i].text));
+		// select.appendChild(option);
+		el.appendChild(newOption);
+	}
+	$(el).val(selValue);//el.setAttribute('value', selValue);
+}
+function updatePlayersForMode() {
+	let mode = currentPlaymode;
+	let val = 'me';
+	let n = MAX_PLAYERS_AVAILABLE;
+	for (let i = 1; i <= n; i += 1) {
+		let id = getidType(i);
+		if (!isVisible(id)) continue;
+		if (mode == 'solo') { populateSelect(i, soloTypes, val); val = 'AI'; }//changeToForInput('soloTypes', id, val); val = 'AI'; }
+		else if (mode == 'hotseat') { populateSelect(i, soloTypes, val); }
+		else { populateSelect(i, allPlayerTypes, val); val = 'human'; }
+		// else if (mode == 'hotseat') { changeToForInput('soloTypes', id, val); }
+		// else { changeToForInput('allPlayerTypes', id, val); val = 'human'; }
+	}
+}
+function changeToForInput(newListName, elid, defaultVal) {
+	console.log("Started", newListName, elid);
+	var x = newListName;//document.getElementById('A').value;
+	//$("#SelectEntityPrimaryName option:selected").attr('value');
+	document.getElementById(elid).value = '';//defaultVal;
+	document.getElementById(elid).setAttribute('list', x);
+}
+function hidePlayer(i) {
+	let id;
+	id = getidNum(i); hideElem(id);
+	id = getidSpan(i); hideElem(id);
+	id = getidType(i); hideElem(id);
+}
+function showPlayer(i) {
+	let id;
+	id = getidNum(i); showElem(id);
+	id = getidSpan(i); showElem(id);
+	id = getidType(i); showElem(id);
 }
 function checkPlayer(i) {
-	let prefixPl = 'c_b_mm_pl';
-	let plnId = prefixPl + 'n' + i;
-	let pltId = prefixPl + 't' + i;
-	$('.pl' + i).show();
-
-	document.getElementById(plnId).checked = true;
-	document.getElementById(pltId).readOnly = false;
+	id = getidNum(i); document.getElementById(id).checked = true;
+}
+function checkAvailable(i) {
+	id = getidAvailable(i); document.getElementById(id).checked = true;
+}
+function uncheckAvailable(i) {
+	id = getidAvailable(i); document.getElementById(id).checked = false;
+}
+function uncheckPlayer(i) {
+	id = getidNum(i); document.getElementById(id).checked = false;
 }
 function isPlayerChecked(i) {
-	let prefixPl = 'c_b_mm_pl';
-	let plnId = prefixPl + 'n' + i;
-	let pltId = prefixPl + 't' + i;
-	return document.getElementById(plnId).checked == true;
-}
-function makePlayerTypeReadOnly(i) {
-	let prefixPl = 'c_b_mm_pl';
-	let pltId = prefixPl + 't' + i;
-	document.getElementById(pltId).readOnly = true;
+	id = getidNum(i); return document.getElementById(id).checked == true;
 }
 function makePlayerReadOnly(i) {
 	let el = getPlayerRadio(i);
@@ -125,98 +397,38 @@ function makePlayerReadOnly(i) {
 	$(el).attr({ 'disabled': true, });
 }
 function getPlayerRadio(n) {
-	return document.getElementById('c_b_mm_pln' + n);
+	return document.getElementById(getidNum(n));
 }
 function getPlayerTypeInput(n) {
-	return document.getElementById('c_b_mm_plt' + n);
+	return document.getElementById(getidType(n));
 
 }
-function uncheckPlayer(i) {
+function makePlayerTypesReadOnly() {
+	for (let i = 1; i <= 8; i += 1) {
+		makePlayerTypeReadOnly(i);
+	}
+}
+function makePlayerTypeReadOnlyX(i) {
 	let prefixPl = 'c_b_mm_pl';
-	let plnId = prefixPl + 'n' + i;
 	let pltId = prefixPl + 't' + i;
-	$('.pl' + i).show();
-	document.getElementById(plnId).checked = false;
 	document.getElementById(pltId).readOnly = true;
 }
-function hidePlayer(i) {
-	$('.pl' + i).hide();
+function change() {
+	changeToForInput('soloTypes', 'c_b_mm_plt1'); return;
+
+	console.log("Started");
+	var x = 'soloTypes';//document.getElementById('A').value;
+
+	document.getElementById('List').value = "";
+	document.getElementById('List').setAttribute('list', x);
 }
-function onClickCreateGameCancel() {
-	closeGameConfig();
+function changeTo(newListName) {
+	console.log("Started");
+	var x = newListName;//document.getElementById('A').value;
+
+	document.getElementById('List').value = "";
+	document.getElementById('List').setAttribute('list', x);
 }
-function onClickCreateGameOk() {
-	//set all game params as in gameConfig
-	closeGameConfig();
-	GAME = S.settings.game = currentGameName;
-	PLAYMODE = S.settings.playMode = setPlayMode(currentPlaymode);
-	playerList = [];
-	//habe gameInfo in allGames
-	let gi = allGames[GAME];
-	S.gameInfo = gi;
-	//set player numbers to number of activated players in player radios
-	//TODO 8 replace by MAX_NUM_PLAYERS
-	let nPlayers = 0;
-	let mePresent = false;
-	for (let i = 1; i <= 8; i++) {
-		if (isPlayerChecked(i) && i <= numPlayersMax) {
-			nPlayers += 1;
-			let plType = $(getPlayerTypeInput(i)).val();
-			if (plType.includes('AI')) plType = plType.substring(3);
-			if (PLAYMODE != 'multiplayer' && plType == 'human') plType = 'regular';
-			//if solo|multiplayer can only play 1 player, others MUST BE AIs
-			if (plType == 'me' && PLAYMODE != 'hotseat') {
-				if (mePresent) plType = 'regular'; else mePresent = true;
-			}
-			playerList.push({ type: plType });
-		}
-	}
-	//console.log(playerList);
-	//next add playernames to types in order of playerList
-	let i = 0;
-	for (const pl of playerList) {
-		pl.id = gi.player_names[i]; i += 1;
-	}
 
-	console.log(playerList);
+// #endregion
 
-	//AI player usernames are picked from bot name list
-
-	if (PLAYMODE == 'solo') {
-		console.log('should start solo game w/', nPlayers, 'players');
-		_startSoloGame();
-		//in solo
-
-	} else if (PLAYMODE == 'hotseat') {
-		//in hotseat game, each players gets user name from user+index
-		console.log('should start hotseat game w/', nPlayers, 'players');
-		_startHotseatGame();
-	} else {
-		//need to collect players to join.
-		//possible add player to game (since he created it!)
-		console.log('should join this user and start waiting for', nPlayers - 1, 'players')
-	}
-}
-function onClickPlayerConfig(n) {
-	//console.log('config player', n);
-	//is player optional?
-	isOptional = (n > numPlayersMin) && (n <= numPlayersMax);
-
-
-	let el = getPlayerRadio(n);
-
-
-	//console.log('readOnly', el.readOnly, 'isOptional', isOptional, 'n', n, 'min', numPlayersMin, 'max', numPlayersMax)
-	if (!isOptional) return;
-	//set the element to checked
-	// console.log('player',n,'is NOT active');
-	// if (!isPlayerChecked(n)) checkPlayer(n);
-	//this player is optional!
-	//toggle value of player
-	let isActive = isPlayerChecked(n);
-	if (!isActive) uncheckPlayer(n); else checkPlayer(n);
-
-
-
-	//look if 
-}

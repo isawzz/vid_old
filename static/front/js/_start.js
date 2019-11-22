@@ -1,20 +1,41 @@
 const names = ['felix', 'amanda', 'sabine', 'tom', 'taka', 'microbe', 'dwight', 'jim', 'michael', 'pam', 'kevin', 'darryl', 'lauren', 'anuj', 'david', 'holly'];
 var view = null;
+var isPlaying = false; //initially
 
 function _start() {
 	_initServer();
 
-	_startLogin();
+	clientData.name = USERNAME; _startLobby();
 
-	login(chooseRandom(names));
-	openGameConfig();
+	//_startLogin(); login(chooseRandom(names)); openGameConfig();
 }
 
 function _startLogin() { loginView(); }
 function _startLobby() { lobbyView(); }
-function _startHotseatGame() { gameView(); initDom(); _startHotseat(); }
-function _startSoloGame() { gameView(); initDom(); _startSolo(); }
-function _startShort() {
+
+// function _startHotseatGame() { gameView(); initDom(); _startHotseat(); }
+// function _startSoloGame() { gameView(); initDom(); _startSolo(); }
+function _startNewGame() { gameView(); initDom(); _startGame(); }
+function _startGame() {
+	timit.start_of_cycle(getFunctionCallerName());
+	S.vars.switchedGame = true;
+	S.settings.game = GAME;
+
+	_checkCleanup();
+
+	S.user = {};
+	G = { table: {}, players: {} }; //server objects
+	UIS = {}; // holds MS objects 
+	IdOwner = {}; //lists of ids by owner
+	id2oids = {}; // { uid : list of server object ids (called oids) }
+	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
+	id2uids = {}; // { uid : list of ms ids related to same oid }
+
+	if (S.settings.useSpec) loadUserSpec([loadUserCode, sendInitNewGame]); else sendInitNewGame();
+}
+
+
+function _startRestartSame() {
 	timit.start_of_cycle(getFunctionCallerName());
 	if (isdef(UIS)) {
 		stopBlinking('a_d_status');
@@ -28,8 +49,8 @@ function _startShort() {
 		_sendRoute('/status/' + user, d7 => {
 			let data = JSON.parse(d7);
 			timit.showTime('start processing');
-			processData(data);
-			gameStep();
+			if (processData(data))	gameStep();
+			else console.log('NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
 	});
 }
@@ -69,11 +90,9 @@ function _initPlayers() {
 		colorName = colorName.toLowerCase();
 		let altName = capitalize(colorName);
 		let color = isdef(playerColors[colorName]) ? playerColors[colorName] : colorName;
-		//let name = isdef(pl.name) ? pl.name : isdef(pl.color) ? id : capitalize(colorName);
-		let username = isdef(S.gameInfo.userList) ? S.gameInfo.userList[i]
-			: isdef(S.plAddedByMe) && S.plAddedByMe[id] ? S.plAddedByMe[id] : 'unknown' + i;
-		//TODO: find out how to get other usernames
-		S.players[id] = { username: username, id: id, color: color, altName: altName, index: i };
+		let plInfo = firstCond(S.gameConfig.players,x=>x.id == id);
+		//console.log('_initPlayers found',id,plInfo);
+		S.players[id] = { username: plInfo.username, playerType:plInfo.playerType, agentType:plInfo.agentType, id: id, color: color, altName: altName, index: plInfo.index };
 		i += 1;
 	}
 }

@@ -6,35 +6,59 @@ function addListItem(idParent, text) {
 	parent.scrollTop = el.offsetTop;
 }
 function addChat(msg) { addListItem('chatEvent', msg); }
-function addMessage(msg) { setMessage(msg); addListItem('events', msg); }
+function addMessage(msg) { 
+	setMessage(msg); 
+	addListItem('events', msg); 
+}
 function setMessage(msg) { const parent = document.getElementById('status_message'); parent.innerHTML = msg;  }
 function clearChat() { clearElement(document.getElementById('chatEvent')); }
 function clearMessages() { clearElement(document.getElementById('events')); }
 function emitChat(msg = '') { let text = msg + getInputValue('chat'); if (!empty(text)) { socket.emit('chat', text); } }
 function enableJoinButton() { enableButton('bJoinGame'); }
 function enableCreateButton() { enableButton('bCreateGame'); }
-function enableButton(id) { enable(id) }
+function enableResumeButton() { 
+	//console.log('disabling RESUME button');
+	enableButton('bResumeGame'); 
+}
+function enableButton(id) { enableStyle(id) }
 function disableJoinButton() { disableButton('bJoinGame'); }
 function disableCreateButton() { disableButton('bCreateGame'); }
-function disableButton(id) { disable(id); }
+function disableResumeButton() { 
+	//console.log('disabling RESUME button');
+	disableButton('bResumeGame'); 
+}
+function disableButton(id) { disableStyle(id); }
 function getInputValue(id) { const input = document.getElementById(id); const text = input.value; input.value = ''; return text; }
-function gameView() { view = 'game'; hideLobby(); hideLogin(); showGame(); removeAllGlobalHandlers(); addGameViewHandlers(); }
+function gameView() { 
+	view = 'game'; isPlaying = true; 
+	hideLobby(); hideLogin(); showGame(); 
+	removeAllGlobalHandlers(); 
+	addGameViewHandlers();  //das sind nur die key handlers
+
+}
 function loginView() { view = 'login'; hideLobby(); showLogin(); hideGame(); clearChat(); clearMessages(); removeAllGlobalHandlers(); addLoginViewHandlers(); }
 function lobbyView() { 
-	view = 'lobby'; hideLogin(); 
-	showLobby(); hideGame(); enableJoinButton(); updateLoginHeader(); 
+	view = 'lobby'; 
+	hideLogin(); 
+	showLobby(); 
+	hideGame(); 
+	updateLoginHeader(); 
 	removeAllGlobalHandlers(); 
 	addLobbyViewHandlers(); 
-	if (!USE_SOCKETIO) openGameConfig();
+	//enable resume button if isPlayer
+	if (isPlaying) enableResumeButton(); else disableResumeButton();
+	//console.log('lobbyView isPlaying=',isPlaying)
+	//enable create game button
+	enableCreateButton();
+	//enableJoinButton 
+	enableJoinButton();
+	if (!USE_SOCKETIO) hideEventList(); // openGameConfig();
 }
 
 function hideGameConfig() { document.getElementById('gameConfig').style.display = 'none'; }
 function hideEventList() { document.getElementById('events').style.display = 'none'; }
 function showGameConfig() { document.getElementById('gameConfig').style.display = null; }
 function showEventList() { document.getElementById('events').style.display = null; }
-
-function hideElem(id){document.getElementById(id).style.display = 'none';}
-function showElem(id){document.getElementById(id).style.display = null;}
 
 function hideGame() { document.getElementById('R_d_root').style.display = 'none'; }
 function hideLogin() { document.getElementById('a_d_login').style.display = 'none'; }
@@ -53,6 +77,7 @@ function addLobbyViewHandlers() {
 	if (USE_SOCKETIO)	document.getElementById('chat_form').addEventListener('submit', onChatSubmitted);
 	document.getElementById('bJoinGame').addEventListener('click', onClickJoinGameLobby);
 	document.getElementById('bCreateGame').addEventListener('click', onClickCreateGameLobby);
+	document.getElementById('bResumeGame').addEventListener('click', onClickResumeGameLobby);
 }
 function removeAllGlobalHandlers() {
 	removeEventListener('keyup', keyUpHandler);
@@ -62,7 +87,7 @@ function removeAllGlobalHandlers() {
 	if (USE_SOCKETIO)	document.getElementById('chat_form').removeEventListener('submit', onChatSubmitted);
 	document.getElementById('bJoinGame').removeEventListener('click', onClickJoinGameLobby);
 	document.getElementById('bCreateGame').removeEventListener('click', onClickCreateGameLobby);
-
+	document.getElementById('bResumeGame').removeEventListener('click', onClickResumeGameLobby);
 }
 
 

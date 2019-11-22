@@ -1,3 +1,4 @@
+#region fe code
 import json
 import http
 import os
@@ -24,7 +25,6 @@ SAVE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saves')
 
 null = http.HTTPStatus.NO_CONTENT
 
-#region FRONT routes
 app = Flask(__name__, static_folder='static')
 app.url_map.converters['lst'] = LstConverter
 CORS(app)
@@ -34,12 +34,12 @@ def _fmt_output(data):
 
 def _ex_wrap(cmd, *args, **kwargs):
 	try:
+		print(cmd,args,kwargs)
 		return cmd(*args, **kwargs)
 	except Exception as e:
 		if isinstance(e, gsm.signals.WrappedException):
 			msg = {'error':{'type':e.etype.__name__, 'msg':e.emsg}}
 		else:
-		
 			msg = {
 				'error': {
 					'type': e.__class__.__name__,
@@ -222,6 +222,51 @@ def _get_roles():
 def _get_active_players():
 	return _ex_wrap(H.get_active_players)
 
+def main(argv=None):
+	parser = argparse.ArgumentParser(description='Start the host server.')
+	
+	parser.add_argument('--host', default='localhost', type=str,
+	                    help='host for the backend')
+	parser.add_argument('--port', default=5000, type=int,
+	                    help='port for the backend')
+	
+	parser.add_argument('--settings', type=str, default='{}',
+	                    help='optional args for interface, specified as a json str (of a dict with kwargs)')
+	
+	args = parser.parse_args(argv)
+	
+	address = 'http://{}:{}/'.format(args.host, args.port)
+	settings = json.loads(args.settings)
+	
+	_hard_restart(address, **settings)
+	
+	app.run(host=args.host, port=args.port)
+
+
+#endregion
+
+
+#region socketio: chat and messaging
+USE_SOCKETIO=True
+from flask_socketio import SocketIO, emit
+import eventlet
+
+if USE_SOCKETIO:
+	eventlet.monkey_patch()
+	socketio = SocketIO(app)
+
+@socketio.on('message')
+def handleMessage(msg):
+	print('Message: ' + msg)
+	emit('message', msg, broadcast=True)
+
+@socketio.on('chat')
+def handleChatMessage(msg):
+	print('Chat message: ' + msg)
+	emit('chat', msg, broadcast=True)
+
+#endregion
+
 #region login
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -235,6 +280,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+usersLoggedIn = []
 
 class User(UserMixin, db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -253,17 +300,24 @@ def defaultLogin():
 @app.route('/login/<username>')
 def login(username):
 	user = User.query.filter_by(username=username).first()
+	if username in usersLoggedIn:
+		return username+' already logged in in another window!'
 	if not user:
-		#add this user to db
-		return None
+		#TODO: add this user to db
+		print('found user!!!')
+		return 'not authorized: '+username
+	usersLoggedIn.append(username)
 	login_user(user)
+	print('logged in',username,usersLoggedIn,'................')
 	return username
 
-@app.route('/logout')
+@app.route('/logout/<username>')
 @login_required
-def logout():
+def logout(username):
+	usersLoggedIn.remove(username)
 	logout_user()
-	return 'You are logged out!'
+	print('logged out',username,usersLoggedIn,'................')
+	return username+', you are logged out!'
 
 @app.route('/lobby')
 @login_required
@@ -271,6 +325,7 @@ def lobby():
 	return current_user.username
 
 #endregion
+
 
 #region static front
 statfold_sim = 'templates'
@@ -294,28 +349,6 @@ def _get_UI_spec(game):
 
 #endregion
 
-
-def main(argv=None):
-	parser = argparse.ArgumentParser(description='Start the host server.')
-	
-	parser.add_argument('--host', default='localhost', type=str,
-	                    help='host for the backend')
-	parser.add_argument('--port', default=5000, type=int,
-	                    help='port for the backend')
-	
-	parser.add_argument('--settings', type=str, default='{}',
-	                    help='optional args for interface, specified as a json str (of a dict with kwargs)')
-	
-	args = parser.parse_args(argv)
-	
-	address = 'http://{}:{}/'.format(args.host, args.port)
-	settings = json.loads(args.settings)
-	
-	_hard_restart(address, **settings)
-	
-	app.run(host=args.host, port=args.port)
-	
-	
 
 if __name__ == "__main__":
 	main()

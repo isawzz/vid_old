@@ -123,14 +123,14 @@ function setCSSVariable(varName, val) {
 //#endregion
 
 //#region DOM helpers
-function enable(id){
+function enableStyle(id){
 	if (isString(id)) id=document.getElementById(id);
 		id.style.pointerEvents = null;
 		id.style.opacity = 1;
 		id.style.cursor = 'pointer';
 }
 
-function disable(id){
+function disableStyle(id){
 	if (isString(id)) id=document.getElementById(id);
 		id.style.pointerEvents = 'none';
 		id.style.opacity = .5;
@@ -2632,6 +2632,11 @@ function insertHere() {
 function isSvg(elem) {
 	return startsWith(elem.constructor.name, 'SVG');
 }
+function hideElem(id){document.getElementById(id).style.display = 'none';}
+function showElem(id){document.getElementById(id).style.display = null;}
+function isVisibleElem(id){return isVisible(document.getElementById(id));}
+
+
 function isVisible(elem) { // Where el is the DOM element you'd like to test for visibility
 	return (elem.offsetParent !== null)
 	// if (isSvg(elem)) {

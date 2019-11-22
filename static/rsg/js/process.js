@@ -1,21 +1,38 @@
 //convert data to various objects in G and M >pre-UI processing
 function processData(data) {
-	// timit.showSince('send', 'processData');
 	S.gameInProgress = true;
 	timit.showTime('start processing!');
+
+	//if it is another human or backend AI's turn what should I do upon receiving data?
+	//I should definitely NOT change player and move for that player!!!!
+	//also I should show the game, but NOT show all the data
+	//maybe I should present the data
+	// I should have a waiting for 
+	// I should present and then enter a kind of waiting loop???
+	// I should maybe send a msg via sockets each time a user has moved
+	// then I could wait for that message and 'itsYouTurn' check whole turn it is and
+	// send status if it is my turn or front AI's turn;
+	// who is sending front AI's turn? it could be the one whose turn it was last
+	// means, I have to wait for me turn to continue playing
+
 	G.serverData = data;
 
 	processTable(data);
 	// timit.showTime('...objects up to date!');
-	processPlayers(data);
+	let itsMyTurn = processPlayers(data);
 	// timit.showTime('...players up to date!');
 
 	// processStatus(); //nothing to do
+
+	if (!itsMyTurn) return false;
+
 	processLog(data);
 
-	if (processEnd(data)) return; //no more actions or waiting_for!
+	if (processEnd(data)) return true; //no more actions or waiting_for!
 
-	if (!processActions(data)) processWaitingFor();
+	if (!processActions(data)) {processWaitingFor();} 
+
+	return true;
 
 	// timit.showTime('...processing done!');
 
@@ -46,12 +63,16 @@ function processTable(data) {
 }
 function processPlayers(data) {
 	//should also process player change!!!
+	//should return true if proceed (it's this terminals turn) or false
 	if (!S.players) _initPlayers();  //adding additional player info for RSG! such as index,id,altName,color
 	G.playersCreated = [];
 	G.playersRemoved = [];
 	G.playersUpdated = {}; //updated also has prop change info
 
 	G.previousPlayer = G.player;
+
+	let canProceed = false;
+
 	delete G.playerChanged;
 	if (data.players) {
 		let plkeys = union(Object.keys(G.players), Object.keys(data.players));
@@ -68,9 +89,28 @@ function processPlayers(data) {
 				}
 			}
 			if (pl_new.obj_type == 'GamePlayer') {
+				//id is the GamePlayer!
+				//if id is me, do as before: set G.player = id
+				//else if id is frontAI, and G.previousPlayer is me, also
+				//else DO NOT send a move
+				//should I see possible moves of opp? NO
+				//maybe should send status and present that instead?
+				//header should definitely show who's turn it is
+				//actions should NOT be presented!
 				if (id != G.previousPlayer) G.playerChanged = true;
-				G.player = id;
-				G.playerIndex = S.players[id].index;
+
+				//console.log(id,'isMyTurn?',isMyTurn(id))
+				//if (G.previousPlayer) console.log(G.previousPlayer,'isMyTurn?',isMyTurn(G.previousPlayer))
+				//console.log(id,'isFrontAITurn?',isFrontAITurn(id))
+
+				if (isMyTurn(id) || G.player == id || isMyTurn(G.previousPlayer) && isFrontAITurn(id)) {
+					G.player = id;
+					G.playerIndex = S.players[id].index;
+					canProceed = true;
+				} else { 
+					console.log('NOT MY TURN!!! HAVE TO WAIT!!!'); 
+				}
+
 			}
 		}
 
@@ -85,8 +125,11 @@ function processPlayers(data) {
 			G.playersAugmented[pl].id = pl; //probier es aus!
 			G.playersAugmented[pl].index = S.players[pl].index; //probier es aus!
 			G.playersAugmented[pl].username = S.players[pl].username; //probier es aus!
+			G.playersAugmented[pl].playerType = S.players[pl].playerType; //probier es aus!
+			G.playersAugmented[pl].agentType = S.players[pl].agentType; //probier es aus!
 		}
 	}
+	return canProceed;
 }
 function processLog(data) {
 	if (!G.log) G.log = {}; //S.log contains all logs for game!
@@ -102,10 +145,10 @@ function processLog(data) {
 	}
 }
 function processEnd(data) {
-	G.end=data.end; return G.end;
+	G.end = data.end; return G.end;
 }
 function processActions(data) {
-	if (nundef(G.serverData.options)) {G.tupleGroups = null; return false;}
+	if (nundef(G.serverData.options)) { G.tupleGroups = null; return false; }
 
 	G.tupleGroups = getTupleGroups();
 	return true;

@@ -147,7 +147,7 @@ function onClickLobby() {
 }
 function onClickRestart() {
 	unfreezeUI();
-	_startShort();
+	_startRestartSame();
 }
 function onClickRunToNextPlayer() {
 	let pl = G.player;

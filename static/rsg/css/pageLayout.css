@@ -308,7 +308,12 @@ fieldset{
 	display: inline-block;
   margin: 7px 5px 1px 5px;
   margin-left:-20px;
-  padding: 3px 4px 3px 4px;
+	padding: 0px;
+	text-align-last: center;
+	/* padding: 0px 12px; */
+	/* text-indent: 30%; */
+	/* text-align:center; */
+	/* padding: 3px 4px 3px 4px; */
   font-size: 12pt;
   font-family: Verdana;
   text-align: center;

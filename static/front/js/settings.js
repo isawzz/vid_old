@@ -7,14 +7,14 @@ function setDefaultSettings() {
 	// let checkedNameInput = document.getElementById('c_b_mm_'+USERNAME.toLowerCase());
 	// // console.log(checkedNameInput);
 	// checkedNameInput.checked = true;
-	
+
 	// init username in main menu: 
-	let checkedModeInput = document.getElementById('c_b_mm_'+PLAYMODE.toLowerCase());
+	let checkedModeInput = document.getElementById('c_b_mm_' + PLAYMODE.toLowerCase());
 	// console.log(checkedModeInput);
 	checkedModeInput.checked = true;
 
 	//init username in main menu: 
-	let checkedGameInput = document.getElementById('c_b_mm_'+GAME.toLowerCase());
+	let checkedGameInput = document.getElementById('c_b_mm_' + GAME.toLowerCase());
 	// console.log(checkedNameInput);
 	checkedGameInput.checked = true;
 
@@ -39,14 +39,25 @@ function setDefaultSettings() {
 	opt.useBehaviors = S_useSpec && S_useBehaviors; //code might reference to spec objects such as areas
 
 	opt.game = GAME;
-	opt.playMode = PLAYMODE;
+	opt.playmode = PLAYMODE;
 
 	S.settings = opt;
 }
+function getUsernameForPlayer(plid) {
+	let uname = S.players[plid].username;
+	console.log('getUsernameForPlayer', uname);
+	return uname;
+}
+function isMyTurn(id) { return S.players[id].playerType == 'me'; }
+function isFrontAITurn(id){return S.players[id].playerType == 'AI' && !USE_BACKEND_AI; }
+
+
+
 function setAutoplayFunctionForMode(mode, isStartup = false) {
 	// in solo playmode, solo player is always index 0 player
-	if (nundef(mode)) mode = S.settings.playMode;
-	if (!isStartup) S_autoplayFunction = mode == 'solo' ? (_g, _) => _g.playerIndex != 0 : () => false;
+	if (nundef(mode)) mode = S.settings.playmode;
+	// if (!isStartup) S_autoplayFunction = mode == 'solo' ? (_g, _) => _g.playerIndex != 0 : () => false;
+	if (!isStartup) S_autoplayFunction = (_g, _) => isFrontAITurn(_g.player);
 }
 function setGame(inputElem) {
 	GAME = inputElem.value.toString();
@@ -54,10 +65,10 @@ function setGame(inputElem) {
 function setUsername(inputElem) {
 	USERNAME = inputElem.value.toString();
 }
-function setPlayMode(mode, isStartup = false) {
-	if (mode != S.settings.playMode) S.playModeChanged = true;
-	PLAYMODE = mode;
-	//console.log('playMode:',S.settings.playMode,'PLAYMODE',PLAYMODE)
+function setPlaymode(mode, isStartup = false) {
+	if (mode != S.settings.playmode) S.playModeChanged = true;
+	S.settings.playmode = PLAYMODE = mode;
+	//console.log('playmode:',S.settings.playmode,'PLAYMODE',PLAYMODE)
 	setAutoplayFunctionForMode(mode, isStartup);
 	if (mode == 'solo') {
 		//hide(document.getElementById('c_b_join'));
@@ -67,7 +78,7 @@ function setPlayMode(mode, isStartup = false) {
 		//hide(document.getElementById('c_b_join'));
 		show(document.getElementById('c_b_NextPlayer'));
 		show(document.getElementById('c_b_RunToEnd'));
-	} else  if (mode == 'multiplayer') {
+	} else if (mode == 'multiplayer') {
 		//show(document.getElementById('c_b_join'));
 		hide(document.getElementById('c_b_NextPlayer'));
 		hide(document.getElementById('c_b_RunToEnd'));
@@ -75,7 +86,7 @@ function setPlayMode(mode, isStartup = false) {
 	return mode;
 }
 function initSETTINGS() {
-	setPlayMode(S.settings.playMode, true);
+	setPlaymode(S.settings.playmode, true);
 
 	//take S.user.spec and override default options
 	if (isdef(S.user.spec) && isdef(S.user.spec.SETTINGS)) { for (const k in S.user.spec.SETTINGS) { S.settings[k] = S.user.spec.SETTINGS[k]; } }

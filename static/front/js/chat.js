@@ -17,8 +17,12 @@ function closeSocket() {
 		socket.close();
 	}
 }
+function socketEmit(msg){
+	if (!USE_SOCKETIO) return;
+	socket.emit('message',msg);
+}
 
-function onMessageReceived(d) { if (!USE_SOCKETIO) return;addMessage(d); }
+function onMessageReceived(d) { if (!USE_SOCKETIO) return;addMessage(d);processMessage(d); }
 function onChatSubmitted(e) { if (!USE_SOCKETIO) return;e.preventDefault(); emitChat(); }
 function onChatReceived(d) { if (!USE_SOCKETIO) return;addChat(d); }
 

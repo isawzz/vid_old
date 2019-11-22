@@ -42,7 +42,7 @@ function gameStep() {
 	if (G.tupleGroups) {
 		presentActions();
 		timit.showTime('...presentation done!');
-		startInteraction();	//...this will eventually end in sendAction>processData>gameStep
+		startInteraction();	
 	} else presentWaitingFor();
 }
 
