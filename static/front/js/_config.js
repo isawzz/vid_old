@@ -1,9 +1,9 @@
 var USERNAME='dwight';
 var GAME='catan'; // catan | ttt
-var PLAYMODE = 'multiplayer'; // multiplayer | hotseat | solo
+var PLAYMODE = 'hotseat'; // multiplayer | hotseat | solo
 
 const USE_SOCKETIO = true;
-const USE_BACKEND_AI = false;
+const USE_BACKEND_AI = true;
 const IS_MIRROR = false;
 const FLASK = true;
 const PORT = '5000';

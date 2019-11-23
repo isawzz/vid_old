@@ -1,3 +1,80 @@
+function pollStatusAs(uname){
+	console.log('_________pollStatusAs',uname);
+	_sendRoute('/status/' + uname, d7 => {
+		let data = JSON.parse(d7);
+		console.log('poll data', data);
+		if (processData(data)) gameStep();
+		else console.log('pollStatusAs: NOT MY TURN!!!! WHAT NOW?!?!?');
+
+	});
+
+}
+
+function sendStatusNewGame() {
+	timit.showTime('sending status init (for joiners)');
+	_sendRoute('/status/' + USERNAME, d7 => {
+		let data = JSON.parse(d7);
+		//console.log('initial data', data)
+		if (processData(data)) specAndDOM([gameStep]);
+		else console.log('sendStatusNewGame: NOT MY TURN!!!! WHAT NOW?!?!?');
+
+	});
+}
+function sendInitNewGame_1() {
+	//hab nur S.gameConfig
+	let gc = S.gameConfig;
+	let nPlayers = gc.numPlayers;
+
+	//TODO: mach chain commands: [[f,route,data],...]
+	let cmdChain = [];
+	let chain = [];
+	for (let i = 0; i < nPlayers; i++) {
+		let plInfo = gc.players[i];
+		let isAI = plInfo.agentType !== null;
+		let isBackendAI = USE_BACKEND_AI && isAI;
+		if (isBackendAI) {
+			//send a command with agent creating /add/client...
+			//not implemented exception
+			let cmd = 'add/client/agent/' + plInfo.username;
+			cmdChain.push({cmd:cmd,f:_postRoute});
+			cmd = '/add/player/' + plInfo.username + '/' + plInfo.id;
+			cmdChain.push({cmd:cmd,f:_sendRoute});
+		} else {
+			//old way to do it, do it that way first! just a normal route
+			let cmd = '/add/player/' + plInfo.username + '/' + plInfo.id;
+			chain.push(cmd);
+			cmdChain.push({cmd:cmd,f:_sendRoute});
+		}
+	}
+	timit.showTime('sending init new game (as starter!)');
+	_sendRoute('/restart', d0 => {
+		timit.showTime('sending select game');
+		_sendRoute('/game/select/' + S.settings.game, d2 => {
+			_sendRoute('/game/info', d3 => {
+				//console.log('game info is:', d3);
+				chainSend(chain, d5 => {
+					//console.log(d5);
+					_sendRoute('/begin/1', d6 => {
+						//console.log(d6);
+						let unameStarts = gc.players[0].username;
+						timit.showTime('sending status');
+						_sendRoute('/status/' + unameStarts, d7 => {
+							console.log('sent status in sendInitNewGame')
+							let data = JSON.parse(d7);
+							if (isReallyMultiplayer) socketEmit({type:'started',data:USERNAME + ' has started the game!'})
+							else socketEmit('wie was??? kein multiplayer game!!!')
+							//console.log('initial data', data)
+							if (processData(data)) specAndDOM([gameStep]);
+							else console.log('sendInitNewGame: NOT MY TURN!!!! WHAT NOW?!?!?');
+
+						});
+					});
+				});
+			})
+		});
+	});
+}
+
 function sendInitNewGame() {
 	//hab nur S.gameConfig
 	let gc = S.gameConfig;
@@ -13,29 +90,37 @@ function sendInitNewGame() {
 		if (isBackendAI) {
 			//send a command with agent creating /add/client...
 			//not implemented exception
+			let cmd = 'add/client/agent/' + plInfo.username;
+			cmdChain.push({cmd:cmd,f:_postRoute});
+			cmd = '/add/player/' + plInfo.username + '/' + plInfo.id;
+			cmdChain.push({cmd:cmd,f:_sendRoute});
 		} else {
 			//old way to do it, do it that way first! just a normal route
 			let cmd = '/add/player/' + plInfo.username + '/' + plInfo.id;
 			chain.push(cmd);
+			cmdChain.push({cmd:cmd,f:_sendRoute});
 		}
 	}
-	timit.showTime('sending restart');
+	timit.showTime('sending init new game (as starter!)');
 	_sendRoute('/restart', d0 => {
 		timit.showTime('sending select game');
 		_sendRoute('/game/select/' + S.settings.game, d2 => {
 			_sendRoute('/game/info', d3 => {
 				//console.log('game info is:', d3);
-				chainSend(chain, d5 => {
+				cmdChainSend(cmdChain, d5 => {
 					//console.log(d5);
 					_sendRoute('/begin/1', d6 => {
 						//console.log(d6);
 						let unameStarts = gc.players[0].username;
 						timit.showTime('sending status');
 						_sendRoute('/status/' + unameStarts, d7 => {
+							console.log('sent status in sendInitNewGame')
 							let data = JSON.parse(d7);
+							if (isReallyMultiplayer) socketEmit({type:'started',data:USERNAME + ' has started the game!'})
+							else socketEmit('wie was??? kein multiplayer game!!!')
 							//console.log('initial data', data)
 							if (processData(data)) specAndDOM([gameStep]);
-							else console.log('NOT MY TURN!!!! WHAT NOW?!?!?');
+							else console.log('sendInitNewGame: NOT MY TURN!!!! WHAT NOW?!?!?');
 
 						});
 					});
@@ -59,7 +144,7 @@ function sendAction(boat, callbacks = []) {
 		data = JSON.parse(data)
 		if (processData(data)) {
 			if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
-		} else console.log('NOT MY TURN!!!! WHAT NOW?!?!?\n', data);
+		} else console.log('sendAction: NOT MY TURN!!!! WHAT NOW?!?!?\n', data);
 
 	});
 }
@@ -87,7 +172,7 @@ function _createAgents(agentNames, agentType = 'regular', callback) {
 	});
 }
 function _postRoute(route, callback) {
-	data = { 'agent_type': 'regular' };//, 'timeout':timeout}
+	data = { agent_type: 'random', timeout:null };//, 'timeout':timeout}
 	if (nundef(counters)) counters = { msg: 0 };
 	counters.msg += 1;
 	let prefix = last(SERVER_URL) == '/' ? dropLast(SERVER_URL) : SERVER_URL;
@@ -216,6 +301,26 @@ function chainSendRec(akku, msgChain, callback) {
 		callback(akku);
 	}
 }
+
+function cmdChainSend(msgChain, callback) {
+	let akku = [];
+	this.cmdChainSendRec(akku, msgChain, callback);
+}
+function cmdChainSendRec(akku, msgChain, callback) {
+	if (msgChain.length > 0) {
+		//console.log('sending:', msgChain[0]);
+		msgChain[0].f(msgChain[0].cmd, d => {
+			//console.log('received:', d)
+			akku.push(d);
+			this.cmdChainSendRec(akku, msgChain.slice(1), callback)
+		});
+	} else {
+		//console.log(akku);
+		callback(akku);
+	}
+}
+
+
 function pickStringForAction(x) {
 	//x is a tuple element, eg., {type:'fixed', val:'pass'} or {ID: "0", val: "hex[0]", type: "obj"}
 	//console.log('pickStringForAction',x)

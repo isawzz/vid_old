@@ -13,11 +13,12 @@ function onClickLogout() { logout(); }
 
 function login(username) {
 	_sendRoute('/login/' + username, d => {
-		console.log('login response', d)
+		//console.log('login response', d)
 		if (d != username) {
 			alert('ERROR: ' + d);
 		} else {
 			USERNAME = clientData.name = d;
+			document.title = 'RSG: '+USERNAME;
 			loggedIn = true;
 			openSocket();
 			lobbyView();

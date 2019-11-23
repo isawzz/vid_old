@@ -90,24 +90,17 @@ function presentPlayers() {
 		// if (S.vars.switchedGame)  measureDefaultPlayerElement(plms);
 	}
 }
-function onPlayerChange() {
-	if (!G.playerChanged) return;
-	let pid = G.player;
+function onPlayerChange(pid) {
+	if (!G.playerChanged || pid != G.player) return;
+	console.log('player has changed!!!!!!!!!!!!!!!!!!!!!!!!!')
 	let o = G.playersAugmented[pid];
 	//console.log(pid, o);
+	updatePageHeader(pid);
 	let ms = getVisual(pid);
-	let msDef = getDefVisual(pid);
-	let msHeader = getPageHeaderDivForPlayer(pid);
-	//console.log(msHeader.id)
-	msHeader.classList.add('gamePlayer')
-	if (G.previousPlayer) {
-		let msHeaderPrevious = getPageHeaderDivForPlayer(G.previousPlayer);
-		msHeaderPrevious.classList.remove('gamePlayer');
-		//console.log('previous', msHeaderPrevious.id);
-	}
 	if (ms) {
 		//console.log(ms.id);
 	}
+	let msDef = getDefVisual(pid);
 	if (msDef) {
 		//console.log('default player id', msDef.id);
 		let msParentId = msDef.parentId;
@@ -116,6 +109,16 @@ function onPlayerChange() {
 		target.parentNode.scrollTop = target.offsetTop;
 		//msDef.elem.scrollIntoView(false);
 	}
+}
+function updatePageHeader(pid){
+	console.log('Turn:',pid)
+	let ms;
+	for (const pl of S.gameConfig.players){
+		ms=getPageHeaderDivForPlayer(pl.id);
+		ms.classList.remove('gamePlayer');
+	}
+	ms = getPageHeaderDivForPlayer(pid);
+	ms.classList.add('gamePlayer');
 }
 function adjustPlayerAreaWise() {
 	//do UI updates that have to do with measuring elements from server
@@ -275,15 +278,25 @@ function presentWaitingFor() {
 	//hier komm ich nur her wenn es mein turn war
 	//also kann switchen wenn entweder der pl me ist oder eine FrontAI
 	let pl = G.serverData.waiting_for[0];
-	if (isMyTurn(id) || isMyTurn(G.previousPlayer) && isFrontAITurn(id)) {
+	if (nundef(G.previousWaitingFor) || G.previousWaitingFor != pl){
+		//now waiting for a new player!!!
+		//update page header with that player and set G.previousWaitingFor
+		G.previousWaitingFor = pl;
+		updatePageHeader(pl);
+	}
+	if (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player)) {
 		let user = G.playersAugmented[pl].username;
 		_sendRoute('/status/' + user, d => {
+			console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
 			//console.log('reply to status request for',user,d);
 			d = JSON.parse(d);
 			if (processData(d)) gameStep();
-			else console.log('NOT MY TURN!!!! WHAT NOW?!?!?');
+			else console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
-	} else console.log('NOT MY TURN!!!! WHAT NOW?!?!?');
+	} else {
+		console.log('presentWaitingFor: NOT MY TURN!!!! sending done!');
+		socketEmit({type:'poll',data:pl});
+	}
 
 }
 

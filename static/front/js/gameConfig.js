@@ -87,7 +87,7 @@ function onClickPlayerPresence(n) {
 	let cnt = 0;
 	for (let i = 1; i <= numPlayersMax; i++) { if (isPlayerChecked(i)) cnt += 1; }
 	currentNumPlayers = cnt;
-	console.log('*** currentNumPlayers', currentNumPlayers);
+	//console.log('*** currentNumPlayers', currentNumPlayers);
 }
 function onClickCreateGameCancel() {
 	//revert to values
@@ -131,10 +131,12 @@ function onClickCreateGameOk() {
 	closeGameConfig();
 	if (countNeedToJoin > 0) {
 		setMessage('new game set up! waiting for ' + countNeedToJoin + ' players to join!');
+		//console.log('*** onClickCreateGameOk ***emitting:\n')
+		socketEmit(JSON.stringify({type:'gc',data:gc}));
 
 	} else {
 		//console.log('should start game w/ config:\n', S.gameConfig);
-		_startNewGame();
+		_startNewGame('starter');//AsStarter();
 	}
 }
 
@@ -161,7 +163,7 @@ function isJoinMenuOpen(){
 function openJoinConfig() {
 	hideEventList();
 	showJoinConfig();
-	setMessage('Setup new game!');
+	setMessage('Join the game!');
 
 	hideElem('bJoinGame');
 	hideElem('bCreateGame');
@@ -174,18 +176,19 @@ function openJoinConfig() {
 }
 function populateJoinList() {
 	let players = S.gameConfig.players;
-	console.log(S.gameConfig)
+
+	console.log('populateJoinList',S.gameConfig)
 	for (let i = 1; i <= S.gameConfig.numPlayers; i++) {
 		let pl = players[i-1];
 		let idRadio = getidAvailable(i);
 		let idSpan = getidSpanJoin(i);
-		console.log(idRadio, idSpan,pl)
-		if (isPlayerChecked(pl.index) && pl.playerType == 'human' && empty(pl.username)) {
+		//console.log(idRadio, idSpan,pl)
+		if (empty(pl.username)) {
 			//idRadio muss unchecked sein!
 			//beide muessen visible sein!
 			showElem(idRadio);
-			uncheckAvailable(i);
 			showElem(idSpan);
+			uncheckAvailable(i);
 			document.getElementById(idSpan).innerHTML = pl.id;
 		} else {
 			hideElem(idRadio);
@@ -197,25 +200,6 @@ function populateJoinList() {
 		let idSpan = getidSpanJoin(i);
 		hideElem(idRadio);
 		hideElem(idSpan);
-	}
-}
-function processMessage(msg) {
-	let parts = msg.split(' ');
-	// username joined as White
-	if (parts.length > 3 && startsWith(parts[1], 'join')) {
-		let uname = parts[0];
-		let plid = parts[3].trim();
-		let players = S.gameConfig.players;
-		//look for player with this player id:
-		let plChosen = firstCond(players, x => x.id == plid);
-		if (plChosen) {
-			if (isJoinMenuOpen()) closeJoinConfig();
-			plChosen.username = uname;
-			if (checkGameConfigComplete() && iAmStarter()){
-				_startNewGame();
-			}
-		}
-		//username has joined the game, need to add his name to player id
 	}
 }
 function checkGameConfigComplete() {
@@ -253,18 +237,13 @@ function onClickJoinGameOk() {
 		}
 		let uname = USERNAME + (countMes > 0 ? countMes : '');
 		joinCandidate.username = uname;
-		console.log('joinCandidate', joinCandidate)
-		if (USE_SOCKETIO) socket.emit('message', uname + ' joined as ' + joinCandidate.id);
+		//console.log('joinCandidate', joinCandidate)
+		socketEmit(uname + ' joined as ' + joinCandidate.id);
 	}
 
 	closeJoinConfig();
 	if (checkGameConfigComplete()) {
-		let msg = 'game ready!';
 		disableJoinButton();
-		if (iAmStarter()) {
-			console.log('STARTING GAME:', USERNAME, 'with config\n', S.gameConfig);
-			_startNewGame();
-		}
 	}
 }
 function iAmStarter(){ return S.gameConfig.players[0].username == USERNAME;}
@@ -340,7 +319,7 @@ function updatePlayersForMode() {
 	}
 }
 function changeToForInput(newListName, elid, defaultVal) {
-	console.log("Started", newListName, elid);
+	//console.log("Started", newListName, elid);
 	var x = newListName;//document.getElementById('A').value;
 	//$("#SelectEntityPrimaryName option:selected").attr('value');
 	document.getElementById(elid).value = '';//defaultVal;
@@ -398,14 +377,14 @@ function makePlayerTypeReadOnlyX(i) {
 function change() {
 	changeToForInput('soloTypes', 'c_b_mm_plt1'); return;
 
-	console.log("Started");
+	//console.log("Started");
 	var x = 'soloTypes';//document.getElementById('A').value;
 
 	document.getElementById('List').value = "";
 	document.getElementById('List').setAttribute('list', x);
 }
 function changeTo(newListName) {
-	console.log("Started");
+	//console.log("Started");
 	var x = newListName;//document.getElementById('A').value;
 
 	document.getElementById('List').value = "";

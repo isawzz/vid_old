@@ -43,13 +43,6 @@ function setDefaultSettings() {
 
 	S.settings = opt;
 }
-function getUsernameForPlayer(plid) {
-	let uname = S.players[plid].username;
-	console.log('getUsernameForPlayer', uname);
-	return uname;
-}
-function isMyTurn(id) { return startsWith(S.players[id].username,USERNAME); } //playerType == 'me'; }
-function isFrontAITurn(id){return S.players[id].playerType == 'AI' && !USE_BACKEND_AI; }
 
 
 
@@ -57,7 +50,7 @@ function setAutoplayFunctionForMode(mode, isStartup = false) {
 	// in solo playmode, solo player is always index 0 player
 	if (nundef(mode)) mode = S.settings.playmode;
 	// if (!isStartup) S_autoplayFunction = mode == 'solo' ? (_g, _) => _g.playerIndex != 0 : () => false;
-	if (!isStartup) S_autoplayFunction = (_g, _) => isFrontAITurn(_g.player);
+	if (!isStartup) S_autoplayFunction = (_g, _) => isFrontAIPlayer(_g.player);
 }
 function setGame(inputElem) {
 	GAME = inputElem.value.toString();

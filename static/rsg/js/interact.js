@@ -118,13 +118,26 @@ function onClickFilterTuples(ev, ms, part) {
 		}
 	}
 }
+function onClickCheat(code){
+	_sendRoute('/cheat/'+code,d=>{
+		console.log('response from cheatCode:',d);
+	});
+}
 function onClickStep() {
 	if (!this.choiceCompleted) {
-		let ms = getRandomBoat();
+		//let ms = getRandomBoat();
 		//let ms = getBoatWith(['demand', 'offer'], false);
-		//let ms = getBoatWith(['buy'], false);
+		let ms = getBoatWith(['buy'], true);
+		if (nundef(ms)) ms=getBoatWith(['pass'],true);
+		if (nundef(ms)) ms=getBoatWith(['demand', 'offer'], false);
+		if (nundef(ms)) ms=getRandomBoat();
 		onClickSelectTuple(null, ms);
 	}
+}
+function onClickPollStatus(){
+	//poll status for USERNAME, and if does not work, poll for waiting for if it belongs to me!
+
+	pollStatusAs(USERNAME);
 }
 function onClickToggleButton(button, handlerList) {
 	let current = button.textContent;

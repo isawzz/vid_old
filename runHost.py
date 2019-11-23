@@ -1,4 +1,4 @@
-#!/var/www/html/flask/scriptapp/scriptapp-venv/bin/python3
+#---!/var/www/html/flask/scriptapp/scriptapp-venv/bin/python3
 
 #region fe code
 import json
@@ -231,10 +231,10 @@ def _get_active_players():
 #region socketio: chat and messaging
 USE_SOCKETIO=True
 from flask_socketio import SocketIO, emit
-import eventlet
+#import eventlet
 
 #if USE_SOCKETIO:
-eventlet.monkey_patch()
+#eventlet.monkey_patch()
 socketio = SocketIO(app)
 
 @socketio.on('message')

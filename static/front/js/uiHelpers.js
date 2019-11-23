@@ -13,7 +13,7 @@ function addMessage(msg) {
 function setMessage(msg) { const parent = document.getElementById('status_message'); parent.innerHTML = msg;  }
 function clearChat() { clearElement(document.getElementById('chatEvent')); }
 function clearMessages() { clearElement(document.getElementById('events')); }
-function emitChat(msg = '') { let text = msg + getInputValue('chat'); if (!empty(text)) { socket.emit('chat', text); } }
+function emitChat(msg = '') { let text = msg + getInputValue('chat'); if (!empty(text)) { socketEmit('chat', text); } }
 function enableJoinButton() { enableButton('bJoinGame'); }
 function enableCreateButton() { enableButton('bCreateGame'); }
 function enableResumeButton() { 
@@ -30,6 +30,9 @@ function disableResumeButton() {
 function disableButton(id) { disableStyle(id); }
 function getInputValue(id) { const input = document.getElementById(id); const text = input.value; input.value = ''; return text; }
 function gameView() { 
+	setIsReallyMultiplayer();
+
+	document.title = GAME+' '+USERNAME;
 	view = 'game'; isPlaying = true; 
 	hideLobby(); hideLogin(); showGame(); 
 	removeAllGlobalHandlers(); 
@@ -98,7 +101,20 @@ function removeAllGlobalHandlers() {
 	document.getElementById('bResumeGame').removeEventListener('click', onClickResumeGameLobby);
 }
 
+function disableButtonsForMultiplayerGame(){
+	if (isReallyMultiplayer) {
+		disableButton('c_b_Restart');
+		disableButton('c_b_Step');
+		disableButton('c_b_RunToEnd');
+	}
+}
+function notMyTurn(){
+	enableButton('c_b_PollStatus');
 
+}
+function isMyTurn(){
+	disableButton('c_b_PollStatus');
+}
 
 
 

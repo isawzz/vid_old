@@ -99,11 +99,11 @@ function processPlayers(data) {
 				//actions should NOT be presented!
 				if (id != G.previousPlayer) G.playerChanged = true;
 
-				//console.log(id,'isMyTurn?',isMyTurn(id))
-				//if (G.previousPlayer) console.log(G.previousPlayer,'isMyTurn?',isMyTurn(G.previousPlayer))
-				//console.log(id,'isFrontAITurn?',isFrontAITurn(id))
+				//console.log(id,'isMyPlayer?',isMyPlayer(id))
+				//if (G.previousPlayer) console.log(G.previousPlayer,'isMyPlayer?',isMyPlayer(G.previousPlayer))
+				//console.log(id,'isFrontAIPlayer?',isFrontAIPlayer(id))
 
-				if (isMyTurn(id) || G.player == id || isMyTurn(G.previousPlayer) && isFrontAITurn(id)) {
+				if (isMyPlayer(id) || G.player == id || isMyPlayer(G.previousPlayer) && isFrontAIPlayer(id)) {
 					G.player = id;
 					G.playerIndex = S.players[id].index;
 					canProceed = true;

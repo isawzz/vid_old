@@ -291,7 +291,6 @@ function pageHeaderGetPlayerHtml(username,playerId,color,asMe){
 	let spl = `<div id='c_c_${username}' class='playerHeader'><div>${username}</div><div style='color:${color}'>${playerId}</div></div>`
 	return spl;
 }
-//#endregion
 
 
 
