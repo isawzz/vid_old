@@ -9,6 +9,16 @@ function _start() {
 	//clientData.name = USERNAME; _startLobby();
 
 	_startLogin(); login(chooseRandom(names)); //openGameConfig();
+
+	// S.gameConfig = {
+	// 	numPlayers: 3,
+	// 	players:[
+	// 		{id:'White',playerType:'human',agentType:null,username:USERNAME},
+	// 		{id:'Red',playerType:'AI',agentType:AI_TYPE,username:'bot0'},
+	// 		{id:'Blue',playerType:'human',agentType:null,username:''},
+	// 	]
+	// }
+	openGameConfig();
 }
 
 function _startLogin() { loginView(); }

@@ -20,61 +20,6 @@ function sendStatusNewGame() {
 
 	});
 }
-function sendInitNewGame_1() {
-	//hab nur S.gameConfig
-	let gc = S.gameConfig;
-	let nPlayers = gc.numPlayers;
-
-	//TODO: mach chain commands: [[f,route,data],...]
-	let cmdChain = [];
-	let chain = [];
-	for (let i = 0; i < nPlayers; i++) {
-		let plInfo = gc.players[i];
-		let isAI = plInfo.agentType !== null;
-		let isBackendAI = USE_BACKEND_AI && isAI;
-		if (isBackendAI) {
-			//send a command with agent creating /add/client...
-			//not implemented exception
-			let cmd = 'add/client/agent/' + plInfo.username;
-			cmdChain.push({cmd:cmd,f:_postRoute});
-			cmd = '/add/player/' + plInfo.username + '/' + plInfo.id;
-			cmdChain.push({cmd:cmd,f:_sendRoute});
-		} else {
-			//old way to do it, do it that way first! just a normal route
-			let cmd = '/add/player/' + plInfo.username + '/' + plInfo.id;
-			chain.push(cmd);
-			cmdChain.push({cmd:cmd,f:_sendRoute});
-		}
-	}
-	timit.showTime('sending init new game (as starter!)');
-	_sendRoute('/restart', d0 => {
-		timit.showTime('sending select game');
-		_sendRoute('/game/select/' + S.settings.game, d2 => {
-			_sendRoute('/game/info', d3 => {
-				//console.log('game info is:', d3);
-				chainSend(chain, d5 => {
-					//console.log(d5);
-					_sendRoute('/begin/1', d6 => {
-						//console.log(d6);
-						let unameStarts = gc.players[0].username;
-						timit.showTime('sending status');
-						_sendRoute('/status/' + unameStarts, d7 => {
-							console.log('sent status in sendInitNewGame')
-							let data = JSON.parse(d7);
-							if (isReallyMultiplayer) socketEmit({type:'started',data:USERNAME + ' has started the game!'})
-							else socketEmit('wie was??? kein multiplayer game!!!')
-							//console.log('initial data', data)
-							if (processData(data)) specAndDOM([gameStep]);
-							else console.log('sendInitNewGame: NOT MY TURN!!!! WHAT NOW?!?!?');
-
-						});
-					});
-				});
-			})
-		});
-	});
-}
-
 function sendInitNewGame() {
 	//hab nur S.gameConfig
 	let gc = S.gameConfig;
@@ -172,7 +117,7 @@ function _createAgents(agentNames, agentType = 'regular', callback) {
 	});
 }
 function _postRoute(route, callback) {
-	data = { agent_type: 'regular', timeout:null };//, 'timeout':timeout}
+	data = { agent_type: AI_TYPE, timeout:null };//, 'timeout':timeout}
 	if (nundef(counters)) counters = { msg: 0 };
 	counters.msg += 1;
 	let prefix = last(SERVER_URL) == '/' ? dropLast(SERVER_URL) : SERVER_URL;

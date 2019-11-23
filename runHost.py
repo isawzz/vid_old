@@ -36,7 +36,7 @@ def _fmt_output(data):
 
 def _ex_wrap(cmd, *args, **kwargs):
 	try:
-		print(cmd,args,kwargs)
+		#print(cmd,args,kwargs)
 		return cmd(*args, **kwargs)
 	except Exception as e:
 		if isinstance(e, gsm.signals.WrappedException):
@@ -239,12 +239,12 @@ socketio = SocketIO(app)
 
 @socketio.on('message')
 def handleMessage(msg):
-	print('Message: ' + msg)
+	#print('Message: ' + msg)
 	emit('message', msg, broadcast=True)
 
 @socketio.on('chat')
 def handleChatMessage(msg):
-	print('Chat message: ' + msg)
+	#print('Chat message: ' + msg)
 	emit('chat', msg, broadcast=True)
 
 #endregion

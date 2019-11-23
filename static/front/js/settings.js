@@ -13,10 +13,9 @@ function setDefaultSettings() {
 	// console.log(checkedModeInput);
 	checkedModeInput.checked = true;
 
-	//init username in main menu: 
-	let checkedGameInput = document.getElementById('c_b_mm_' + GAME.toLowerCase());
-	// console.log(checkedNameInput);
-	checkedGameInput.checked = true;
+	//init gamename in main menu: 
+	// let checkedGameInput = document.getElementById('c_b_mm_' + GAME.toLowerCase());
+	// checkedGameInput.checked = true;
 
 	let opt = { present: { object: {}, player: {} }, game: {} };
 	opt.present.object.createDefault = true; // miss | true | false

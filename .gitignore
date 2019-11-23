@@ -1,7 +1,7 @@
 saves/
 humpack/
-gsm/
-examples/
+#gsm/
+#examples/
 .idea/
 passive_frontend.py
 README.md

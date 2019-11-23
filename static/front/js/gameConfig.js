@@ -1,6 +1,6 @@
 const MAX_PLAYERS_AVAILABLE = 8;
 //wenn initServer mache, hole mir game info fuer alle games! for now, cheating damit schneller
-var allGames = {
+var allGames1 = {
 	ttt: {
 		name: 'TicTacToe',
 		long_name: 'Tic-Tac-Toe',
@@ -17,6 +17,7 @@ var allGames = {
 		player_names: ['White', 'Red', 'Blue', 'Orange'],
 	}
 };
+var allGames = null;
 var numPlayersMin = 0;
 var numPlayersMax = 8;
 var currentGamename;
@@ -45,6 +46,32 @@ function closeGameConfig() {
 }
 function openGameConfig() {
 
+	if (allGames == null) {
+		_sendRoute('/game/available', d => {
+			let glist = JSON.parse(d);
+			console.log(typeof (glist), glist);
+			let chain = [];
+			for (g of glist) chain.push('/game/info/' + g);
+			chainSend(chain, res => {
+				console.log(res);//res is a list!!!
+				let info=[];
+				for(const s of res){
+					let sJSON = JSON.parse(s);
+					let name=sJSON.short_name;
+					info[name]=sJSON;
+				}
+				//let info = JSON.parse(res);
+				//console.log(typeof (info), info);
+				allGames = info;
+				console.log(allGames);
+				populateGamenames();
+				proceedToConfig();
+			})
+		})
+	} else proceedToConfig();
+}
+function proceedToConfig() {
+
 	hideEventList();
 	showGameConfig();
 	setMessage('Setup new game!');
@@ -60,6 +87,26 @@ function openGameConfig() {
 	updatePlayersForGame();
 	updatePlaymode(S.settings.playmode);
 	updatePlayersForMode();
+}
+function populateGamenames(){
+	console.log('populating!!!');
+	let elem = document.getElementById('fChooseGame');
+	console.log(elem);
+	for(const name in allGames){
+		let radio = document.createElement('input');
+		radio.type = 'radio';
+		radio.name = 'game';
+		radio.classList.add('radio');
+		radio.id = 'c_b_mm_'+name;
+		radio.value = name;
+		//radio.onclick = 'onClickGamename(this)';
+		elem.appendChild(radio);
+		elem.appendChild(document.createTextNode(allGames[name].name.toLowerCase()));
+		elem.appendChild(document.createElement('br'))
+	}
+	let checkedGameInput = document.getElementById('c_b_mm_' + GAME.toLowerCase());
+	checkedGameInput.checked = true;
+
 }
 function onClickGamename(inputElem) {
 	updateGamename(inputElem.value.toString());
@@ -132,7 +179,7 @@ function onClickCreateGameOk() {
 	if (countNeedToJoin > 0) {
 		setMessage('new game set up! waiting for ' + countNeedToJoin + ' players to join!');
 		//console.log('*** onClickCreateGameOk ***emitting:\n')
-		socketEmit(JSON.stringify({type:'gc',data:gc}));
+		socketEmit(JSON.stringify({ type: 'gc', data: gc }));
 
 	} else {
 		//console.log('should start game w/ config:\n', S.gameConfig);
@@ -157,7 +204,7 @@ function closeJoinConfig() {
 	hideElem('bLobbyJoinOk');
 	hideElem('bLobbyJoinCancel');
 }
-function isJoinMenuOpen(){
+function isJoinMenuOpen() {
 	return isVisibleElem('bLobbyJoinOk');
 }
 function openJoinConfig() {
@@ -177,9 +224,9 @@ function openJoinConfig() {
 function populateJoinList() {
 	let players = S.gameConfig.players;
 
-	console.log('populateJoinList',S.gameConfig)
+	console.log('populateJoinList', S.gameConfig)
 	for (let i = 1; i <= S.gameConfig.numPlayers; i++) {
-		let pl = players[i-1];
+		let pl = players[i - 1];
 		let idRadio = getidAvailable(i);
 		let idSpan = getidSpanJoin(i);
 		//console.log(idRadio, idSpan,pl)
@@ -246,7 +293,7 @@ function onClickJoinGameOk() {
 		disableJoinButton();
 	}
 }
-function iAmStarter(){ return S.gameConfig.players[0].username == USERNAME;}
+function iAmStarter() { return S.gameConfig.players[0].username == USERNAME; }
 
 function onClickResumeGameLobby() {
 	closeGameConfig();
@@ -307,13 +354,17 @@ function populateSelect(i, listValues, selValue) {
 function updatePlayersForMode() {
 	let mode = currentPlaymode;
 	let val = 'me';
+	
 	let n = MAX_PLAYERS_AVAILABLE;
 	for (let i = 1; i <= n; i += 1) {
 		let id = getidType(i);
 		if (!isVisible(id)) continue;
 		if (mode == 'solo') { populateSelect(i, soloTypes, val); val = 'AI'; }//changeToForInput('soloTypes', id, val); val = 'AI'; }
 		else if (mode == 'hotseat') { populateSelect(i, soloTypes, val); }
-		else { populateSelect(i, allPlayerTypes, val); val = 'human'; }
+		else { 
+			populateSelect(i, allPlayerTypes, val); 
+			val = PLAYER_CONFIG_FOR_MULTIPLAYER.length > i?PLAYER_CONFIG_FOR_MULTIPLAYER[i]:'human'; 
+		}
 		// else if (mode == 'hotseat') { changeToForInput('soloTypes', id, val); }
 		// else { changeToForInput('allPlayerTypes', id, val); val = 'human'; }
 	}

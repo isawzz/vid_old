@@ -294,7 +294,7 @@ function presentWaitingFor() {
 			else console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
 	} else {
-		console.log('presentWaitingFor: NOT MY TURN!!!! sending done!');
+		console.log('presentWaitingFor:',G.playersAugmented[G.player].username,'emits poll',pl);
 		socketEmit({type:'poll',data:pl});
 	}
 

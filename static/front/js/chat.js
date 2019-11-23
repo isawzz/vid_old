@@ -51,7 +51,7 @@ function processMessage(msg) {
 	let omsg = tryConvertToJSON(msg);
 	if (omsg) {
 		let msgType = omsg.type;
-		console.log(msgType, omsg);
+		console.log('got message',msgType, omsg);
 
 		if (omsg.type == 'gc') {
 			S.gameConfig = omsg.data;
