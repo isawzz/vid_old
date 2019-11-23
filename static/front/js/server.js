@@ -172,13 +172,13 @@ function _createAgents(agentNames, agentType = 'regular', callback) {
 	});
 }
 function _postRoute(route, callback) {
-	data = { agent_type: 'random', timeout:null };//, 'timeout':timeout}
+	data = { agent_type: 'regular', timeout:null };//, 'timeout':timeout}
 	if (nundef(counters)) counters = { msg: 0 };
 	counters.msg += 1;
 	let prefix = last(SERVER_URL) == '/' ? dropLast(SERVER_URL) : SERVER_URL;
 	if (route[0] != '/') route = '/' + route;
 	let url = prefix + route;
-	console.log(counters.msg + ': request sent: ' + url);
+	console.log(counters.msg + ': request sent: ' + url + '\nPOST data:',data);
 	$.ajax({
 		type: 'POST',
 		url: url,//"http://localhost:8080/project/server/rest/subjects",
