@@ -118,3 +118,28 @@ function onClickUseBehaviors() {
 	redrawScreen();
 }
 
+function loadUserSpec(callbacks = []) {
+	timit.showTime(getFunctionCallerName());
+	S.path.spec = '/examples_front/' + S.settings.game + '/' + S.settings.game + '_ui.yaml';
+	loadYML(S.path.spec, dSpec => {
+		S.user.spec = dSpec;
+		loadText(S.path.spec, specText=>{
+			S.user.specText = specText;
+			if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		})
+	});
+}
+function loadUserCode(callbacks = []) {
+	timit.showTime(getFunctionCallerName());
+	S.path.script = '/examples_front/' + S.settings.game + '/' + S.settings.game + '_ui.js';
+	loadScript(S.path.script, dScript => {
+		loadText(S.path.script, code => {
+			S.user.script = code;
+			//console.log(code);
+			if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		});
+	});
+}
+
+
+

@@ -19,16 +19,19 @@
 	border-radius: 12px 12px 0px 0px;
 	padding: 4px 12px 0px 12px;
 	background-color: transparent;
+	color: silver;
 	transition: 0.3s;
 	width: auto;
 }
 
 .tab button:hover {
 	background-color: #ccc;
+	color:black;
 }
 
 .tab button.active {
 	background-color: var(--bgTabActive);
+	color: white;
 }
 
 .tabcontent {
@@ -70,4 +73,8 @@
 	/* background-color:red; */
 	background-color: var(--bgTabContent);
 	flex-wrap:wrap;
+}
+.code{
+	text-align: left;
+	display: block;
 }

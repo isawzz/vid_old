@@ -2,30 +2,30 @@ SETTINGS:
   gameAreaSize: [800, 600]
   table:
     optin: [res, num, building, port]
-  piecePosition:
-    field: [0, 0, 30, 30, "%"]
-    edge: [0, 0, 100, 100, "%"]
-    corner: [0, 0, 70, 70, "%"]
-  shape:
-    obj_type:
-      settlement: circle
-      city: square
+  # piecePosition:
+  #   field: [0, 0, 30, 30, "%"]
+  #   edge: [0, 0, 100, 100, "%"]
+  #   corner: [0, 0, 70, 70, "%"]
+  # shape:
+  #   obj_type:
+  #     settlement: circle
+  #     city: square
   dev:
     run_to_buttons: { buy: "buy devcard", hex: "place robber", Corner: "settlement or city", Edge: "road" }
     cheat_buttons: { robber: "cheat robber", devcard: "cheat devcard" }
 
 STRUCTURES:
-  M:
-    location: a_d_game
-    bounds: [0, 0, 800, 600, px]
-    structure: 
-      type: detectBoard #built-in function
-  P:
-    location: a_d_game
-    bounds: [800, 0, 200, 800, px]
-  R:
-    location: a_d_game
-    bounds: [0, 600, 200, 200, px]
-  C:
-    location: a_d_game
-    bounds: [200, 600, 600, 200, px]
+  # M:
+  #   location: a_d_game
+  #   bounds: [0, 0, 800, 600, px]
+  #   structure: 
+  #     type: detectBoard #built-in function
+  # P:
+  #   location: a_d_game
+  #   bounds: [800, 0, 200, 800, px]
+  # R:
+  #   location: a_d_game
+  #   bounds: [0, 600, 200, 200, px]
+  # C:
+  #   location: a_d_game
+  #   bounds: [200, 600, 600, 200, px]

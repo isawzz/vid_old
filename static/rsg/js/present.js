@@ -5,28 +5,35 @@ function presentTable() {
 		deleteOid(oid);
 	}
 	for (const oid of G.tableCreated) {
-		//console.log('NEWLY CREATE:','oid',oid,'def exists',defaultVisualExists(oid),'createDef:',S.settings.table.createDefault)
+		let o = G.table[oid];
+		//console.log('NEWLY CREATE:','oid',oid,'def',defaultVisualExists(oid),'createDef:',S.settings.table.createDefault)
 
 		if (!defaultVisualExists(oid) && S.settings.table.createDefault==true) {
 			//console.log('>>>>>>>>>>>>>>>>>should create default object for',oid)
 			makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 		}
 
-		//console.log('NEWLY CREATE:','main exists',mainVisualExists(oid));
-		if (mainVisualExists(oid)) continue;
+		if (o.obj_type == 'robber') console.log('NEWLY CREATE:','main:'+mainVisualExists(oid));
+		if (mainVisualExists(oid)) {
+			if (o.obj_type == 'robber') console.log(o,getVisual(oid));
+			continue;
+		}
 
 		//hier wuerde dann create behaviors aufrufen
-		if (S.settings.userBehaviors) updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_CREATE);
-		else {
+		if (o.obj_type == 'robber') console.log('robber main does not exist and needs to be created!!!')
+
+		let updatedVisuals;
+		if (S.settings.userBehaviors) {
+			updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_CREATE);
+		}
+		//console.log('updatedVisuals',updatedVisuals)
+		if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
 			let ms = makeMainVisual(oid, G.table[oid]);
-			if (ms === null && S.settings.table.createDefault == 'miss'){
+			if (ms === null && !defaultVisualExists(oid) && S.settings.table.createDefault != false){
 				makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 			}
 		}
 
-		//if (S.settings.tooltips) createTooltip(oid, G.table);
-
-		//i -= 1;	//if (i<=0)return;
 	}
 	for (const oid in G.tableUpdated) {
 		let changedProps = G.tableUpdated[oid].summary;

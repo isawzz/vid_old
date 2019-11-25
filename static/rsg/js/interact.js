@@ -217,6 +217,25 @@ function onClickStop() {
 	//STOP = true;
 	//setTimeout(showStep,100);
 }
+
+
+function onClickTTT(){
+	GAME = S.settings.game = 'ttt';
+	PLAYMODE = S.settings.playmode = 'hotseat'; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
+	S.gameConfig = gcs[GAME];
+	_startNewGame('starter');
+
+}
+function onClickCatan(){
+	GAME = S.settings.game = 'catan';
+	PLAYMODE = S.settings.playmode = 'hotseat'; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
+	S.gameConfig = gcs[GAME];
+	_startNewGame('starter');
+
+}
+
+
+
 //#region helpers
 function addFilterHighlight(ms) { ms.highC('green'); }
 function addStandardInteraction(id) {

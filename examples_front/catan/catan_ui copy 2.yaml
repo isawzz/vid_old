@@ -1,0 +1,8 @@
+SETTINGS:
+  gameAreaSize: [800, 600]
+  table:
+    optin: [res, num, building, port]
+  dev:
+    run_to_buttons: { buy: "buy devcard", hex: "place robber", Corner: "settlement or city", Edge: "road" }
+    cheat_buttons: { robber: "cheat robber", devcard: "cheat devcard" }
+
