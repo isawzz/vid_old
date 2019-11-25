@@ -1,0 +1,38 @@
+SETTINGS:
+  gameAreaSize: [800, 600]
+  boardDetection: true
+  table:
+    optin: [res, num, building, port]
+  color:
+    theme: "#668dff"
+  dev:
+    run_to_buttons: { buy: "buy devcard", hex: "place robber", Corner: "settlement or city", Edge: "road" }
+    cheat_buttons: { robber: "cheat robber", devcard: "cheat devcard" }
+
+STRUCTURES:
+  M:
+    location: a_d_game
+    bounds: [0, 0, 800, 600, px]
+    onInit: detectBoard #built-in function
+  P:
+    location: a_d_game
+    bounds: [800, 0, 200, 800, px]
+    onInit: opponentStats #provided by dev in behaviors
+    binding:
+      pool: players
+      func: presentResources #dev provided
+  R:
+    location: a_d_game
+    bounds: [0, 600, 200, 200, px]
+    binding:
+      pool: players
+      obj_type: gamePlayer
+      prop: res
+      func: presentResources
+  C:
+    location: a_d_game
+    bounds: [200, 600, 600, 200, px]
+    binding:
+      pool: players
+      obj_type: gamePlayer
+      prop: devcards

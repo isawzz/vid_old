@@ -1,0 +1,7 @@
+SETTINGS:
+  gameAreaSize: [600, 600]
+  boardDetection: true
+  table:
+    optin: [symbol]
+
+

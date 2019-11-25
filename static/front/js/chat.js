@@ -19,14 +19,20 @@ function closeSocket() {
 		socket.close();
 	}
 }
-function socketEmit(msg) {
+function socketEmitMessage(msg) {
 	if (!USE_SOCKETIO) return;
+
 	if (isDict(msg)) msg = JSON.stringify(msg);
 	socket.emit('message', msg);
 }
+function socketEmitChat(msg = '') {
+	if (!USE_SOCKETIO) return;
+	let text = msg + getInputValue('chat');
+	if (!empty(text)) { socket.emit('chat', text); }
+}
 
 function onMessageReceived(d) { if (!USE_SOCKETIO) return; processMessage(d); }
-function onChatSubmitted(e) { if (!USE_SOCKETIO) return; e.preventDefault(); emitChat(); }
+function onChatSubmitted(e) { if (!USE_SOCKETIO) return; e.preventDefault(); socketEmitChat(); }
 function onChatReceived(d) { if (!USE_SOCKETIO) return; addChat(d); }
 
 function tryConvertToJSON(s) {
@@ -38,20 +44,12 @@ function tryConvertToJSON(s) {
 	}
 }
 
-function iAmInGame() {
-	//check if gc contains my username USERNAME
-	let gc = S.gameConfig;
-	let players = gc.players;
-	let me = firstCond(players, x => startsWith(x.username, USERNAME));
-	return me !== null;
-}
-
 function processMessage(msg) {
 	console.log('*** processMessage *** message is:\n', msg);
 	let omsg = tryConvertToJSON(msg);
 	if (omsg) {
 		let msgType = omsg.type;
-		console.log('got message',msgType, omsg);
+		console.log('got message', msgType, omsg);
 
 		if (omsg.type == 'gc') {
 			S.gameConfig = omsg.data;
@@ -66,10 +64,19 @@ function processMessage(msg) {
 			}
 		} else if (omsg.type == 'poll') {
 			//soll status holen
-			let pl = omsg.data;
+			let pl = omsg.data; // pl is the waited_for player!!!!
 			if (isMyPlayer(pl)) {
 				let uname = getUsernameForPlayer(pl);
-				pollStatusAs(uname);				
+				pollStatusAs(uname);
+			}
+		} else if (omsg.type == 'end') {
+			console.log('received end!!!');
+			G.signals.receivedEndMessage = true;
+			//soll status holen
+			let pl = omsg.data; //this time, pl is the sender!!!!!
+			if (!isMyPlayer(pl)) {
+				let uname = getUsernameForPlayer(pl);
+				pollStatusAs(uname);
 			}
 		}
 		return;

@@ -310,7 +310,7 @@ function onClickAddDefaultObjects() {
 	timit.showTime('start ' + getFunctionCallerName());
 
 	for(const oid in G.table){
-		let ms = makeDefaultObject(oid, G.table[oid], S.settings.present.object.defaultArea);
+		let ms = makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 		presentDefault(oid, G.table[oid]);
 		//addTestInteraction(ms);
 	}
@@ -325,7 +325,7 @@ function onClickAddDefaultPlayers() {
 	timit.showTime('start ' + getFunctionCallerName());
 
 	for(const oid in G.players){
-		let ms = makeDefaultPlayer(oid, G.playersAugmented[oid], S.settings.present.player.defaultArea);
+		let ms = makeDefaultPlayer(oid, G.playersAugmented[oid], S.settings.player.defaultArea);
 		presentDefault(oid, G.playersAugmented[oid],false);
 		//addTestInteraction(ms);
 	}

@@ -1063,15 +1063,31 @@ class RSG {
 }
 //Brahma
 function getColorHint(o) {
-	if ('color' in o) return o.color;
 	for (const k in o) {
-		if (k == 'Color') return o[k];
+		if (k.toLowerCase() == 'color') return o[k];
 		if (isDict(o[k]) && isdef(o[k]._player)) return getPlayerColor(o[k]._player);
 	}
 	return null;
 }
 function getRandomShape() { return chooseRandom('ellipse', 'roundedRect', 'rect', 'hex'); }
 
+
+function makeArea(areaName,idParent){
+	let ms = new RSG();
+	let id = 'm_a_'+areaName;
+	ms.id = id;
+	ms.elem = document.createElement('div');
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(ms.elem);
+	ms.cat = DOMCATS[ms.domType];
+	ms.idParent = idParent;
+	let parent = UIS[idParent];
+	parent.children.push(id);
+	ms.attach();
+	UIS[id] = ms;
+	listKey(IdOwner, id[2], id);
+	return ms;
+}
 function makeBoardElement(oid, o, idBoard, elType) {
 	let id = 'm_t_' + oid;
 	if (isdef(UIS[id])) {

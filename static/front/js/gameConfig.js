@@ -17,7 +17,7 @@ var allGames1 = {
 		player_names: ['White', 'Red', 'Blue', 'Orange'],
 	}
 };
-var allGames = null;
+var allGames = allGames1;
 var numPlayersMin = 0;
 var numPlayersMax = 8;
 var currentGamename;
@@ -64,14 +64,13 @@ function openGameConfig() {
 				//console.log(typeof (info), info);
 				allGames = info;
 				console.log(allGames);
-				populateGamenames();
 				proceedToConfig();
 			})
 		})
 	} else proceedToConfig();
 }
 function proceedToConfig() {
-
+	populateGamenames();
 	hideEventList();
 	showGameConfig();
 	setMessage('Setup new game!');
@@ -89,9 +88,10 @@ function proceedToConfig() {
 	updatePlayersForMode();
 }
 function populateGamenames(){
-	console.log('populating!!!');
+	//console.log('populating!!!');
 	let elem = document.getElementById('fChooseGame');
-	console.log(elem);
+	clearInit(elem,{innerHTML:'<legend>choose game</legend>'});
+	//console.log(elem);
 	for(const name in allGames){
 		let radio = document.createElement('input');
 		radio.type = 'radio';
@@ -99,7 +99,7 @@ function populateGamenames(){
 		radio.classList.add('radio');
 		radio.id = 'c_b_mm_'+name;
 		radio.value = name;
-		//radio.onclick = 'onClickGamename(this)';
+		radio.addEventListener('click',()=>onClickGamename(radio));
 		elem.appendChild(radio);
 		elem.appendChild(document.createTextNode(allGames[name].name.toLowerCase()));
 		elem.appendChild(document.createElement('br'))
@@ -179,7 +179,7 @@ function onClickCreateGameOk() {
 	if (countNeedToJoin > 0) {
 		setMessage('new game set up! waiting for ' + countNeedToJoin + ' players to join!');
 		//console.log('*** onClickCreateGameOk ***emitting:\n')
-		socketEmit(JSON.stringify({ type: 'gc', data: gc }));
+		socketEmitMessage(JSON.stringify({ type: 'gc', data: gc }));
 
 	} else {
 		//console.log('should start game w/ config:\n', S.gameConfig);
@@ -285,7 +285,7 @@ function onClickJoinGameOk() {
 		let uname = USERNAME + (countMes > 0 ? countMes : '');
 		joinCandidate.username = uname;
 		//console.log('joinCandidate', joinCandidate)
-		socketEmit(uname + ' joined as ' + joinCandidate.id);
+		socketEmitMessage(uname + ' joined as ' + joinCandidate.id);
 	}
 
 	closeJoinConfig();
@@ -318,8 +318,10 @@ function updateGamename(gamename) {
 }
 function updatePlaymode(mode) {
 	currentPlaymode = mode;
+	makePlayermodeReadOnly('multiplayer');
 	//console.log('current playmode:', currentPlaymode)
 }
+function getidPlayermode(mode){return 'c_b_mm_'+mode;}
 function getidNum(i) { return 'c_b_mm_pln' + i; }
 function getidAvailable(i) { return 'c_b_mm_plj' + i; }
 function getidSpanJoin(i) { return 'spplj' + i; }
@@ -408,8 +410,16 @@ function makePlayerReadOnly(i) {
 	//el.readOnly = true;
 	$(el).attr({ 'disabled': true, });
 }
+function makePlayermodeReadOnly(i) {
+	let el = getPlayermodeRadio(i);
+	//el.readOnly = true;
+	$(el).attr({ 'disabled': true, });
+}
 function getPlayerRadio(n) {
 	return document.getElementById(getidNum(n));
+}
+function getPlayermodeRadio(mode) {
+	return document.getElementById(getidNum(mode));
 }
 function getPlayerTypeInput(n) {
 	return document.getElementById(getidType(n));

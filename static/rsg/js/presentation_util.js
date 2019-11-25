@@ -40,6 +40,7 @@ function transformToString(k,val, refs){
 
 	let sval = null;
 	if (isList(val) && empty(val)) { sval = '{ }'; }
+	else if (isList(val) && isString(val[0])) {sval = '{'+val.join(',')+'}'}
 	else if (isListOf(val, '_obj')) { sval = makeRefLinkDiv4ListOf_obj(val, refs); }
 	else if (isListOf(val, '_player')) { sval = makeRefLinkDiv4ListOf_player(val, refs); }
 	else if (val && isDict(val) && '_obj' in val) { sval = makeRefLinkDiv4_obj(val, refs); }
@@ -47,6 +48,11 @@ function transformToString(k,val, refs){
 	else if (val && isDict(val) && '_player' in val) { sval = makeRefLinkDiv4_player(val, refs); }
 	else if (isDict(val)) { sval = tableHTMLX(val, refs); }
 	else sval = simpleRep(val);
+
+	if (k == 'ports'){
+		console.log('ports:',k,val,sval)
+	}
+
 	return sval;
 }
 function tableElemX(o, keys) {
@@ -229,7 +235,7 @@ function makeMainVisual(oid, o) {
 	listKey(IdOwner, id[2], id);
 	UIS[id] = ms;
 
-	let color = getColorHint(o);
+	let color = S.settings.useColorHintForObjects? getColorHint(o): randomColor();
 	//console.log('isEdge',locElem.isa.edge)
 	//if (locElem.isa.edge) console.log(locElem.w,locElem.h,locElem)
 	let [w, h] = locElem.isa.corner ? [locElem.w / 2, locElem.h / 2]

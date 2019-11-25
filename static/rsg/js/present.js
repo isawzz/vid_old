@@ -1,21 +1,31 @@
 function presentTable() {
-	let i = 2;
+	//let i = 2;
 	for (const oid of G.tableRemoved) {
 		//console.log('deleting all related to', oid)
 		deleteOid(oid);
 	}
 	for (const oid of G.tableCreated) {
-		if (!defaultVisualExists(oid) && S.settings.present.object.createDefault) makeDefaultObject(oid, G.table[oid], S.settings.present.object.defaultArea);
+		//console.log('NEWLY CREATE:',oid,defaultVisualExists(oid),S.settings.table.createDefault)
+
+		if (!defaultVisualExists(oid) && S.settings.table.createDefault==true) {
+			//console.log('>>>>>>>>>>>>>>>>>should create default object for',oid)
+			makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
+		}
 
 		if (mainVisualExists(oid)) continue;
 
 		//hier wuerde dann create behaviors aufrufen
-		if (S.settings.useBehaviors) updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_CREATE);
-		else makeMainVisual(oid, G.table[oid]);
+		if (S.settings.userBehaviors) updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_CREATE);
+		else {
+			let ms = makeMainVisual(oid, G.table[oid]);
+			if (ms === null && S.settings.table.createDefault == 'miss'){
+				makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
+			}
+		}
 
 		//if (S.settings.tooltips) createTooltip(oid, G.table);
 
-		i -= 1;	//if (i<=0)return;
+		//i -= 1;	//if (i<=0)return;
 	}
 	for (const oid in G.tableUpdated) {
 		let changedProps = G.tableUpdated[oid].summary;
@@ -27,7 +37,7 @@ function presentTable() {
 		let ms = getVisual(oid);
 		if (ms) {
 			let updatedVisuals = {};
-			if (S.settings.useBehaviors) updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_UPDATE);
+			if (S.settings.userBehaviors) updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_UPDATE);
 			if (!updatedVisuals[oid]) {
 				if (changedProps.includes('loc')) presentLocationChange(oid, ms);
 				presentMain(oid, ms, G.table);
@@ -35,7 +45,7 @@ function presentTable() {
 		}
 
 		//update default visual
-		if (!S.settings.present.object.createDefault || ms && S.settings.present.object.createDefault != true) continue;
+		if (!S.settings.table.createDefault || ms && S.settings.table.createDefault == 'miss') continue;
 		presentDefault(oid, G.table[oid]);
 	}
 }
@@ -58,7 +68,7 @@ function presentPlayers() {
 	//creation of new players
 	for (const pid of G.playersCreated) {
 
-		if (!defaultVisualExists(pid) && S.settings.present.player.createDefault) makeDefaultPlayer(pid, G.playersAugmented[pid], S.settings.present.player.defaultArea);
+		if (!defaultVisualExists(pid) && S.settings.player.createDefault) makeDefaultPlayer(pid, G.playersAugmented[pid], S.settings.player.defaultArea);
 
 		if (mainVisualExists(pid)) continue;
 
@@ -77,12 +87,15 @@ function presentPlayers() {
 		let ms = getVisual(pid);
 		if (ms) {
 			let updatedVisuals = {};
-			if (S.settings.useBehaviors) updatedVisuals = runBEHAVIOR_new(pid, G.playersAugmented, PLAYER_UPDATE);
+			if (S.settings.userBehaviors) updatedVisuals = runBEHAVIOR_new(pid, G.playersAugmented, PLAYER_UPDATE);
+			if (!updatedVisuals[pid]) {
+				presentMain(oid, ms, G.playersAugmented,false);
+			}
 			//if (!updatedVisuals[pid]) o.table(G.playersAugmented[pid]);
 		}
 
 		//update default visual
-		if (!S.settings.present.player.createDefault || ms && S.settings.present.player.createDefault != true) continue;
+		if (!S.settings.player.createDefault || ms && S.settings.player.createDefault != true) continue;
 		let plms = presentDefault(pid, G.playersAugmented[pid], false);
 		onPlayerChange(pid);
 		//measure plms somehow
@@ -92,7 +105,7 @@ function presentPlayers() {
 }
 function onPlayerChange(pid) {
 	if (!G.playerChanged || pid != G.player) return;
-	console.log('player has changed!!!!!!!!!!!!!!!!!!!!!!!!!')
+	//console.log('player has changed!!!!!!!!!!!!!!!!!!!!!!!!!')
 	let o = G.playersAugmented[pid];
 	//console.log(pid, o);
 	updatePageHeader(pid);
@@ -111,7 +124,7 @@ function onPlayerChange(pid) {
 	}
 }
 function updatePageHeader(pid){
-	console.log('Turn:',pid)
+	//console.log('Turn:',pid)
 	let ms;
 	for (const pl of S.gameConfig.players){
 		ms=getPageHeaderDivForPlayer(pl.id);
@@ -123,7 +136,7 @@ function updatePageHeader(pid){
 function adjustPlayerAreaWise() {
 	//do UI updates that have to do with measuring elements from server
 	//players: S.vars.wDefaultPlayer
-	let areaName = S.settings.present.player.defaultArea;
+	let areaName = S.settings.player.defaultArea;
 	let msArea = UIS[areaName];
 	let wArea = msArea.w;
 	let minWidth = S.vars.wDefaultPlayer + 10;
@@ -287,15 +300,15 @@ function presentWaitingFor() {
 	if (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player)) {
 		let user = G.playersAugmented[pl].username;
 		_sendRoute('/status/' + user, d => {
-			console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
+			//console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
 			//console.log('reply to status request for',user,d);
 			d = JSON.parse(d);
-			if (processData(d)) gameStep();
-			else console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
+			processData(d); gameStep();
+			//else console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
 	} else {
-		console.log('presentWaitingFor:',G.playersAugmented[G.player].username,'emits poll',pl);
-		socketEmit({type:'poll',data:pl});
+		//console.log('presentWaitingFor:',G.playersAugmented[G.player].username,'emits poll',pl);
+		socketEmitMessage({type:'poll',data:pl});
 	}
 
 }
@@ -304,17 +317,38 @@ function presentWaitingFor() {
 function getUser(idPlayer) { return G.playersAugmented[idPlayer].username; }
 function getPlayerColor(id) { return G.playersAugmented[id].color }
 function getPlayerColorString(id) { return G.playersAugmented[id].altName }
-function presentMain(oid, ms, pool) {
-	let optin = S.settings.game == 'catan' ? ['res', 'num', 'building', 'port'] : ['symbol']; //cheat! keywords fuer catan vs ttt
+function computePresentedKeys(o,isTableObject){
+	let optin = isTableObject? S.settings.table.optin:S.settings.player.optin;
+	//console.log(optin)
+
+	if (optin) return intersection(Object.keys(o),optin);
+
+	let optout;
+	if (S.settings.useExtendedOptout){
+		let keys = [];
+		optout = S.settings.extendedOptout;
+		for (const k in o){ if (optout[k]) continue; keys.push(k); }
+		return keys;
+	}
+
+	optout = isTableObject? S.settings.table.optout : S.settings.player.optout;
+	for (const k in o){ if (optout[k]) continue; keys.push(k); }
+	return keys;
+
+}
+function presentMain(oid, ms, pool, isTableObject = true) {
+	//let optin = isTableObject?S.settings.table.optin:S.settings.player.optin; //game == 'catan' ? ['res', 'num', 'building', 'port'] : ['symbol']; //cheat! keywords fuer catan vs ttt
+	//console.log(optin)
 
 	let o = pool[oid];
+	let validKeys = computePresentedKeys(o, isTableObject);
+	//console.log(validKeys)
 
-	//first check if color or player is in keys
-	let color = o.color ? o.color : o.player ? getPlayerColor(o.player._player) : ms.fg;
+	let color = S.settings.useColorHintForProperties? getColorHint(o):ms.fg;
+	// console.log(o,color)
 	let akku = [];//isField(o)?[''+oid]:[];
-
-	let bg, fg;
-	for (const k of optin) {
+	// let bg, fg;
+	for (const k of validKeys) {
 		let val = o[k];
 		if (isSimple(val)) akku.push(val.toString());
 	}
@@ -325,10 +359,11 @@ function presentDefault(oid, o, isTableObject = true) {
 	if (!ms) return;
 
 	//filter keys using optin and optout lists
-	let optin = isTableObject ? S.settings.present.object.optin : S.settings.present.player.optin;
-	let optout = isTableObject ? S.settings.present.object.optout : S.settings.present.player.optout;
+	let optin = isTableObject ? S.settings.table.optin : S.settings.player.optin;
+	let optout = isTableObject ? S.settings.table.optout : S.settings.player.optout;
+
 	//console.log('optin',optin,'optout',optout)
-	keys = optin ? optin : optout ? arrMinus(getKeys(o), optout) : getKeys(o);
+	keys = optout ? arrMinus(getKeys(o), optout) : optin ? optin  : getKeys(o);
 
 	let x = ms.tableX(o, keys); //adds or replaces table w/ prop values
 	return x;
@@ -338,6 +373,24 @@ function presentDefault(oid, o, isTableObject = true) {
 }
 
 
+function computePresentedKeysDefault(o,pool){
+	let optin = pool == G.table? S.settings.table.optin:S.settings.player.optin;
+
+	if (optin) return intersection(Object.keys(o),optin);
+
+	let optout;
+	if (S.settings.useExtendedOptout){
+		let keys = [];
+		optout = S.settings.extendedOptout;
+		for (const k in o){ if (optout[k]) continue; keys.push(k); }
+		return keys;
+	}
+
+	optout = pool == G.table? S.settings.table.optout : S.settings.player.optout;
+	for (const k in o){ if (optout[k]) continue; keys.push(k); }
+	return keys;
+
+}
 
 
 

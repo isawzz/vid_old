@@ -17,6 +17,7 @@ function login(username) {
 		if (d != username) {
 			alert('ERROR: ' + d);
 		} else {
+			//console.log('!!!!!!!!! settings USERNAME in login!!!!!!')
 			USERNAME = clientData.name = d;
 			document.title = 'RSG: '+USERNAME;
 			loggedIn = true;

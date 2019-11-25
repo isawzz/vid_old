@@ -15,8 +15,10 @@ function sendStatusNewGame() {
 	_sendRoute('/status/' + USERNAME, d7 => {
 		let data = JSON.parse(d7);
 		//console.log('initial data', data)
-		if (processData(data)) specAndDOM([gameStep]);
-		else console.log('sendStatusNewGame: NOT MY TURN!!!! WHAT NOW?!?!?');
+		processData(data);
+		specAndDOM([gameStep]);
+		// if (processData(data)) specAndDOM([gameStep]);
+		// else console.log('sendStatusNewGame: NOT MY TURN!!!! WHAT NOW?!?!?');
 
 	});
 }
@@ -50,7 +52,9 @@ function sendInitNewGame() {
 	_sendRoute('/restart', d0 => {
 		timit.showTime('sending select game');
 		_sendRoute('/game/select/' + S.settings.game, d2 => {
-			_sendRoute('/game/info', d3 => {
+			// _sendRoute('/game/info', d3 => {
+			// 	let gi = JSON.parse(d3);
+			// 	S.gameInfo = gi;
 				//console.log('game info is:', d3);
 				cmdChainSend(cmdChain, d5 => {
 					//console.log(d5);
@@ -59,16 +63,18 @@ function sendInitNewGame() {
 						let unameStarts = gc.players[0].username;
 						timit.showTime('sending status');
 						_sendRoute('/status/' + unameStarts, d7 => {
-							console.log('sent status in sendInitNewGame')
+							//console.log('sent status in sendInitNewGame')
 							let data = JSON.parse(d7);
-							if (isReallyMultiplayer) socketEmit({type:'started',data:USERNAME + ' has started the game!'})
-							else socketEmit('wie was??? kein multiplayer game!!!')
+							if (isReallyMultiplayer) socketEmitMessage({type:'started',data:USERNAME + ' has started the game!'})
+							//else socketEmitMessage('wie was??? kein multiplayer game!!!')
 							//console.log('initial data', data)
-							if (processData(data)) specAndDOM([gameStep]);
-							else console.log('sendInitNewGame: NOT MY TURN!!!! WHAT NOW?!?!?');
-
+							// if (processData(data)) specAndDOM([gameStep]);
+							// else console.log('sendInitNewGame: NOT MY TURN!!!! WHAT NOW?!?!?');
+							processData(data);
+							specAndDOM([gameStep]);
+					
 						});
-					});
+					// });
 				});
 			})
 		});
@@ -87,9 +93,12 @@ function sendAction(boat, callbacks = []) {
 	_sendRoute(route + t.map(x => pickStringForAction(x)).join('+'), data => {
 		//console.log(data)
 		data = JSON.parse(data)
-		if (processData(data)) {
-			if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
-		} else console.log('sendAction: NOT MY TURN!!!! WHAT NOW?!?!?\n', data);
+		processData(data);
+		if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+
+		// if (processData(data)) {
+		// 	if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		// } else console.log('sendAction: NOT MY TURN!!!! WHAT NOW?!?!?\n', data);
 
 	});
 }

@@ -1,0 +1,36 @@
+SETTINGS:
+  color: 
+    theme: "rgb(126, 174, 217)"
+  dev:
+    run_to_buttons: [[buy, "buy devcard"], [hex, "place robber"], [Corner, "settlement or city"], [Edge, road]]
+  
+TABLES: #existing areas
+  a_d_game: [1000, 800]
+
+STRUCTURES:
+  M:
+    location: a_d_game
+    bounds: [0, 0, 800, 600, px]
+    onInit: detectBoard #built-in function
+  P:
+    location: a_d_game
+    bounds: [800, 0, 200, 800, px]
+    onInit: opponentStats #provided by dev in behaviors
+    binding:
+      pool: players
+      func: presentResources #dev provided
+  R:
+    location: a_d_game
+    bounds: [0, 600, 200, 200, px]
+    binding:
+      pool: players
+      obj_type: gamePlayer
+      prop: res
+      func: presentResources
+  C:
+    location: a_d_game
+    bounds: [200, 600, 600, 200, px]
+    binding:
+      pool: players
+      obj_type: gamePlayer
+      prop: devcards

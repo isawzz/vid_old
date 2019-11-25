@@ -1,5 +1,14 @@
 //convert data to various objects in G and M >pre-UI processing
 function processData(data) {
+	if (G.end){
+		//noch von voriger runde!
+		console.log(USERNAME,'has G.end!!!!')
+		stopBlinking('a_d_status');
+		stopInteraction();
+		clearLog();
+		console.log('signals:',G.signals)
+		//delete G.signals.receivedEndMessage;
+	}
 	S.gameInProgress = true;
 	timit.showTime('start processing!');
 
@@ -18,21 +27,23 @@ function processData(data) {
 	G.serverData = data;
 
 	processTable(data);
+	//console.log('created:',G.tableCreated)
 	// timit.showTime('...objects up to date!');
-	let itsMyTurn = processPlayers(data);
+	//let itsMyTurn = 
+	processPlayers(data);
 	// timit.showTime('...players up to date!');
 
 	// processStatus(); //nothing to do
 
-	if (!itsMyTurn) return false;
+	//if (!itsMyTurn && !G.serverData.end) return false;
 
 	processLog(data);
 
-	if (processEnd(data)) return true; //no more actions or waiting_for!
+	if (processEnd(data)) return;// false; //no more actions or waiting_for!
 
-	if (!processActions(data)) {processWaitingFor();} 
+	if (!processActions(data)) { processWaitingFor(); }
 
-	return true;
+	//return;// itsMyTurn;
 
 	// timit.showTime('...processing done!');
 
@@ -53,6 +64,7 @@ function processTable(data) {
 				G.tableUpdated[id] = changes;
 				if (nundef(o_old)) {
 					G.tableCreated.push(id);
+
 				} else if (nundef(o_new)) {
 					G.tableRemoved.push(id);
 				}
@@ -107,8 +119,8 @@ function processPlayers(data) {
 					G.player = id;
 					G.playerIndex = S.players[id].index;
 					canProceed = true;
-				} else { 
-					console.log('NOT MY TURN!!! HAVE TO WAIT!!!'); 
+				} else {
+					console.log('NOT MY TURN!!! HAVE TO WAIT!!!');
 				}
 
 			}
@@ -145,7 +157,13 @@ function processLog(data) {
 	}
 }
 function processEnd(data) {
-	G.end = data.end; return G.end;
+	G.end = data.end;
+	if (G.end) {
+		if (G.signals.receivedEndMessage) delete G.signals.receivedEndMessage;
+		else socketEmitMessage({ type: 'end', data: G.player });
+		setAutoplayFunctionForMode();
+	}
+	return G.end;
 }
 function processActions(data) {
 	if (nundef(G.serverData.options)) { G.tupleGroups = null; return false; }

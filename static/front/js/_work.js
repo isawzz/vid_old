@@ -112,40 +112,6 @@ function updateColors(o) {
 		}
 	}
 }
-function initTableOptions(playmode) {
-	if (playmode == 'play') {
-		S.settings.table = {
-			// //affect: how to handle new objects coming up in object table
-			// createDummy: false, //unspecified objects are created as dummy objects in 'objects' tab (under game area)
-			// detectBoardLocation: true, //try detecting if this object has a field, edge or corner prop that hints at a board location
-			//updateIf: 'changed', // always, changed, new
-			// propPlayerIsColor: true,
-
-			//affect: presentation of existing object's properties
-			showComplexVals: false, // true, false (show lists and objects)
-			optIn: null,
-			optOut: { visible: -1, obj_type: -1, row: -1, col: -1, rows: -1, cols: -1, neighbors: -1, corners: -1, edges: -1, fields: -1, id: -1, name: -1 }, //any type names likely not to be relevant for username
-			showProps: false,
-			sysprop: { player: presentPlayer }, // S.settings.game == 'catan' ? null : {player: presentPlayer},
-			fontSize: S.settings.game == 'catan' ? 12 : 60
-		};
-	} else {
-		//dev mode
-		S.settings.table = {
-			// createDummy: true, //unspecified objects are created as dummy objects in 'objects' tab (under game area)
-			// detectBoardLocation: false, //try detecting if this object has a field, edge or corner prop that hints at a board location
-			//updateIf: 'always', // always, changed, new
-			// propPlayerIsColor: false,
-
-			showComplexVals: true, // true, false (show lists and objects)
-			optin: null,
-			optOut: { row: -1, col: -1, neighbors: -1, corners: -1, edges: -1, obj_type: -1, name: -1, id: -1 }, //any type names likely not to be relevant for username
-			showProps: true,
-			sysprop: S.settings.game == 'catan' ? null : { visible: presentVisible },
-			fontSize: 12
-		};
-	}
-}
 function areaBlink(id) {
 	let area = UIS[id];
 	if (area) area.elem.classList.add('blink');
@@ -159,33 +125,6 @@ function evToO(ev) {
 }
 
 //#region try commenting out!!!
-function _register(o, keyword, func) {
-	if (nundef(S.registry[keyword])) S.registry[keyword] = {};
-	S.registry[keyword][o.id] = func;
-}
-function _runRegistry(keyword) {
-	if (nundef(S.registry[keyword])) return;
-	for (const id in S.registry[keyword]) {
-		S.registry[keyword][id](getVisual(id));
-	}
-}
-function setBackgroundToPlayerColor() {
-	//console.log(G.players, G.player);
-	let c = G.playersAugmented[G.player].color;
-	//setCSSVariable('--bgBody', c); //macht die gaps auf gesamten screen weiss, blau, rot
-	// getVisual('a_d_game').setBg(c);
-	//getVisual('a_d_game').setBg('transparent');
-}
-function toggleSettings(b, keyList, prefix, toggleList) {
-	let options = S.settings;
-	let val = lookup(options, keyList);
-	let i = toggleList.indexOf(val);
-	let newVal = toggleList[(i + 1) % toggleList.length];
-	setKeys(options, keyList, newVal);
-	b.textContent = prefix + newVal;
-
-	if (keyList.includes('playmode')) initTableOptions(options.playmode);
-}
 function toggleTooltips(b) {
 	if (S.settings.tooltips) {
 		// deactivateTooltips();
@@ -197,16 +136,15 @@ function toggleTooltips(b) {
 		S.settings.tooltips = true;
 	}
 }
-function trash111() {
-	let tgServer = G.serverData.tupleGroups;
-	// let tupleGroups = [];
-	for (const tg of tgServer) {
-		let desc = tg.desc.line.toString();
-		//console.log(tg, desc)
-		let choices = tg.tuples._set; //an array of objects w/ key= '_tuple'
-		let tuples = choices.map(x => x._tuple);
-		//console.log(choices);
-		tupleGroups.push({ desc: desc, tuples: tuples });
-	}
-	return tupleGroups;
-}
+
+
+
+
+
+
+
+
+
+
+
+

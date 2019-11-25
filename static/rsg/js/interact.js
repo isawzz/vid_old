@@ -15,10 +15,10 @@ function startInteraction() {
 	if (isdef(IdOwner.t)) IdOwner.t.map(x => addStandardInteraction(x)); //anderen clickHandler
 	preselectFirstVisualsForBoats();
 	choiceCompleted = false;
-	//console.log(S_autoplayFunction)
-	let autoplay = S_autoplayFunction(G) || getBoatIds().length < 2;
+	let nBoats = getBoatIds().length;
+	let autoplay = S_autoplayFunction(G) || nBoats < 2;
 	if (autoplay) {
-		//console.log('ai is thinking...');
+		//console.log(nBoats<2?'autoplay:...only 1 option!!!':'different function....');
 		setTimeout(onClickStep, S_AIThinkingTime);
 		return;
 	} else {
@@ -59,7 +59,7 @@ function checkArrowKeys(ev) {
 	//if (!isControlKeyDown && boatHighlighted) unhighlightBoat();
 
 	//isControlKeyDown = true;
-	
+
 	if (ev.keyCode == '13' && boatHighlighted) onClickSelectTuple(null, boatHighlighted);
 	else if (ev.keyCode == '38') highlightPrevBoat();
 	else if (ev.keyCode == '40') highlightNextBoat();
@@ -73,10 +73,15 @@ function onClickSelectTuple(ev, ms, part) {
 	choiceCompleted = true;
 	//let id = ms.id;
 	iTuple = ms.o.iTuple;
-	console.log(counters.msg + ': ' + G.player + ' :', iTuple, ms.o.desc, ms.o.text, ms.id);
+	//console.log(counters.msg + ': ' + G.player + ' :', iTuple, ms.o.desc, ms.o.text, ms.id);
 	freezeUI();
 	stopInteractionH();
 	sendAction(ms.o, [gameStep]);
+}
+function onClickFilterOrInfobox(ev, ms, part) {
+	//hat auf irgendein object or player geclickt
+	if (!ev.ctrlKey) onClickFilterTuples(ev, ms, part);
+	else openInfobox(ev, ms, part);
 }
 function onClickFilterAndInfobox(ev, ms, part) {
 	//hat auf irgendein object or player geclickt
@@ -118,9 +123,9 @@ function onClickFilterTuples(ev, ms, part) {
 		}
 	}
 }
-function onClickCheat(code){
-	_sendRoute('/cheat/'+code,d=>{
-		console.log('response from cheatCode:',d);
+function onClickCheat(code) {
+	_sendRoute('/cheat/' + code, d => {
+		console.log('response from cheatCode:', d);
 	});
 }
 function onClickStep() {
@@ -128,13 +133,13 @@ function onClickStep() {
 		//let ms = getRandomBoat();
 		//let ms = getBoatWith(['demand', 'offer'], false);
 		let ms = getBoatWith(['buy'], true);
-		if (nundef(ms)) ms=getBoatWith(['pass'],true);
-		if (nundef(ms)) ms=getBoatWith(['demand', 'offer'], false);
-		if (nundef(ms)) ms=getRandomBoat();
+		if (nundef(ms)) ms = getBoatWith(['pass'], true);
+		if (nundef(ms)) ms = getBoatWith(['demand', 'offer'], false);
+		if (nundef(ms)) ms = getRandomBoat();
 		onClickSelectTuple(null, ms);
 	}
 }
-function onClickPollStatus(){
+function onClickPollStatus() {
 	//poll status for USERNAME, and if does not work, poll for waiting for if it belongs to me!
 
 	pollStatusAs(USERNAME);
@@ -157,6 +162,7 @@ function onClickToggleButton(button, handlerList) {
 }
 function onClickLobby() {
 	lobbyView();
+	if (!isReallyMultiplayer) openGameConfig();
 }
 function onClickRestart() {
 	unfreezeUI();
@@ -184,6 +190,7 @@ function onClickRunToEnd() {
 }
 function onClickRunToAction(bId, keyword) {
 	let b = document.getElementById(bId);
+	console.log(getFunctionCallerName(), bId, keyword)
 	S_autoplayFunction = (_G) => {
 		//run to action available that contains keyword
 		//should return true unless one of the boats.tuple has an element with val.includes(keyword)
@@ -191,6 +198,7 @@ function onClickRunToAction(bId, keyword) {
 		for (const ms of getBoats()) {
 			for (const ti of ms.o.tuple) {
 				if (ti.val.toString().includes(keyword)) {
+					//console.log('STOP!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 					setAutoplayFunctionForMode();
 					return false;
 				}
@@ -209,6 +217,74 @@ function onClickStop() {
 	//STOP = true;
 	//setTimeout(showStep,100);
 }
+function redrawScreen(){
+	gameView();
+	initDom();
+	S.settings.game = GAME;
+
+	_checkCleanup();
+
+	let serverData = G.serverData;
+	// S.user = {};
+	G = { table: {}, players: {}, signals: {} }; //server objects
+	UIS = {}; // holds MS objects 
+	IdOwner = {}; //lists of ids by owner
+	id2oids = {}; // { uid : list of server object ids (called oids) }
+	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
+	id2uids = {}; // { uid : list of ms ids related to same oid }
+
+	processData(serverData);
+	specAndDOM([gameStep]);
+
+}
+function redrawScreenNEIN() {
+	if (isdef(UIS)) {
+		stopBlinking('a_d_status');
+		stopInteraction();
+		clearLog();
+		delete G.end;
+		delete G.signals.receivedEndMessage;
+		pageHeaderClearAll();
+		// restoreBehaviors();
+		openTabTesting('London');
+		UIS['a_d_status'].clear({ innerHTML: '<div id="c_d_statusText">status</div>' });
+		UIS['a_d_actions'].clear({ innerHTML: '<div id="a_d_divSelect" class="sidenav1"></div>' });
+		let areaPlayer = isdef(UIS['a_d_player']) ? 'a_d_player' : isdef(UIS['a_d_players']) ? 'a_d_players' : 'a_d_options';
+		for (const id of ['a_d_log', 'a_d_objects', areaPlayer, 'a_d_game']) clearElement(id);
+	}
+
+	gameView();
+	initDom();
+	S.settings.game = GAME;
+
+	// // S.user = {};
+	// G = { table: {}, players: {}, signals: {} }; //server objects
+	UIS = {}; // holds MS objects 
+	IdOwner = {}; //lists of ids by owner
+	id2oids = {}; // { uid : list of server object ids (called oids) }
+	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
+	id2uids = {}; // { uid : list of ms ids related to same oid }
+
+	specAndDOM([gameStep]);
+}
+function onClickUseSettings() {
+	S.settings.userBehaviors = false;
+	S.settings.userStructures = false;
+	S.settings.userSettings = true;
+	redrawScreen();
+}
+function onClickUseStructures() {
+	S.settings.userBehaviors = false;
+	S.settings.userStructures = true;
+	S.settings.userSettings = true;
+	redrawScreen();
+}
+function onClickUseBehaviors() {
+	S.settings.userBehaviors = true;
+	S.settings.userStructures = true;
+	S.settings.userSettings = true;
+	redrawScreen();
+}
 
 //#region helpers
 function addFilterHighlight(ms) { ms.highC('green'); }
@@ -221,7 +297,7 @@ function addStandardInteraction(id) {
 		case 'r': break;
 		case 't':
 			if (id[0] == 'm') { //main objects in game area
-				ms.addClickHandler('elem', onClickFilterAndInfobox)
+				ms.addClickHandler('elem', onClickFilterOrInfobox)
 			} else {
 				ms.addClickHandler('elem', onClickFilterTuples);
 			}

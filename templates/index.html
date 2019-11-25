@@ -23,6 +23,7 @@
 			'gameConfig',
 			'gameStep',
 			'helpers', //TODO: gehoert mal ausgemistet!!!
+			'identity',
 			'login',
 			'server',
 			'settings',
@@ -102,7 +103,7 @@
 
 	<!-- #region HTML -->
 	<!-- login -->
-	<div id="a_d_login" class="layout_login">
+	<div id="a_d_login" class="layout_login" style='display:none;'>
 		<div class='logo'>⛱</div>
 		<div id='login_message'>welcome! please, log in</div>
 		<form id="login_form">
@@ -141,7 +142,7 @@
 								<legend>play mode</legend>
 								<input class='radio' id='c_b_mm_solo' type="radio" name="playmode" value="solo" onclick='onClickPlaymode("solo")'>solo<br>
 								<input class='radio' id='c_b_mm_hotseat' type="radio" name="playmode" value="hotseat" onclick='onClickPlaymode("hotseat")'>hotseat<br>
-								<input class='radio' id='c_b_mm_multiplayer' type="radio" name="playmode" value="multiplayer" onclick='onClickPlaymode("multiplayer")'>multiplayer<br>
+								<!-- <input class='radio' id='c_b_mm_multiplayer' type="radio" name="playmode" value="multiplayer" onclick='onClickPlaymode("multiplayer")'>multiplayer<br> -->
 							</fieldset>
 							<fieldset id='fChoosePlayers' style='height:220px'>
 								<legend>players</legend>
@@ -261,12 +262,17 @@
 			<button  id='c_b_Restart'  onclick="onClickRestart()">restart</button>
 			<br />
 			<br />
+			<button onclick="onClickUseSettings()">settings</button>
+			<button onclick="onClickUseStructures()">structures</button>
+			<button onclick="onClickUseBehaviors()">behaviors</button>
+			<br />
+			<br />
 			<button id='c_b_Step' onclick="if (FLASK) onClickStep(); else console.log('set FLASK=true in game.html!');">STEP</button>
 			<button id='c_b_RunToEnd' onclick="onClickRunToEnd()">run to end</button>
 			<br />
 			<br />
-			<button id='c_b_CheatDev' onclick="onClickCheat('devcard')">cheat devcard</button>
-			<button id='c_b_CheatRob' onclick="onClickCheat('robber')">cheat robber</button>
+			<!-- <button id='c_b_CheatDev' onclick="onClickCheat('devcard')">cheat devcard</button>
+			<button id='c_b_CheatRob' onclick="onClickCheat('robber')">cheat robber</button> -->
 
 			<button id='c_b_Pass' style='display:none' onclick="onClickPass()">pass</button>
 			<button onclick="onClickToggleButton(this,[['view:default',fullViewObjects],['view:minimized',minimizeObjects]])">view:default</button>
@@ -310,6 +316,10 @@
 						<button id='c_b_NextPlayer' onclick="onClickRunToNextPlayer()">next player</button>
 						<button id='c_b_NextTurn' onclick="onClickRunToNextTurn()">next turn</button>
 						<br />
+					</fieldset>
+					<fieldset id='a_d_cheat_buttons'>
+						<legend>cheats</legend>
+						
 					</fieldset>
 					<fieldset>
 						<legend>miscellaneous</legend>

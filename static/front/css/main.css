@@ -1,7 +1,7 @@
 /* #region root */
 :root{
-	--fzLobby:20px;
-	--hLobbyStatus:300px;
+	--fzLobby:24px;
+	--hLobbyStatus:500px;
 	--hLobbyChat:200px;
 
 	--gap:0px;
@@ -82,7 +82,7 @@ input {
 	/* padding: 6px 6px 6px 8px; */
   /* padding: 3px 15px; */
   color: white;
-  line-height: 25px;
+  /* line-height: 25px; */
   background-color: var(--bgLobby);
   border: none;
   border-radius: 10px;
@@ -149,7 +149,7 @@ input {
 	flex-grow: 1;
 	background-color: rgb(0, 0, 0, .5);
 	color:silver;
-	height: 290px;
+	height: 500px;
 }
 #events li {
   padding: 10px 10px 10px 10px;

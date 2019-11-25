@@ -13,7 +13,6 @@ function addMessage(msg) {
 function setMessage(msg) { const parent = document.getElementById('status_message'); parent.innerHTML = msg;  }
 function clearChat() { clearElement(document.getElementById('chatEvent')); }
 function clearMessages() { clearElement(document.getElementById('events')); }
-function emitChat(msg = '') { let text = msg + getInputValue('chat'); if (!empty(text)) { socketEmit('chat', text); } }
 function enableJoinButton() { enableButton('bJoinGame'); }
 function enableCreateButton() { enableButton('bCreateGame'); }
 function enableResumeButton() { 
@@ -31,6 +30,10 @@ function disableButton(id) { disableStyle(id); }
 function getInputValue(id) { const input = document.getElementById(id); const text = input.value; input.value = ''; return text; }
 function gameView() { 
 	setIsReallyMultiplayer();
+
+	if (!isReallyMultiplayer){
+		hideElem('c_b_PollStatus');
+	}
 
 	document.title = GAME+' '+USERNAME;
 	view = 'game'; isPlaying = true; 
@@ -103,7 +106,7 @@ function removeAllGlobalHandlers() {
 
 function disableButtonsForMultiplayerGame(){
 	if (isReallyMultiplayer) {
-		disableButton('c_b_Restart');
+		if (iAmStarter()) enableButton('c_b_Restart'); else disableButton('c_b_Restart');
 		disableButton('c_b_Step');
 		disableButton('c_b_RunToEnd');
 	}

@@ -30,10 +30,10 @@ function getFirstVisual(oid) { let res = getVisual(oid); return res ? res : getD
 function _getChildrenOf(id) { let ui = UIS[id]; return ui.children; }
 function getList(lst) { return isdef(lst) ? lst : []; }
 
-function getDefaultObjectIds() { return _getChildrenOf(S.settings.present.object.defaultArea); }
+function getDefaultObjectIds() { return _getChildrenOf(S.settings.table.defaultArea); }
 function getDefaultObjects() { return getDefaultObjectIds(x => UIS[x]); }
 
-function getDefaultPlayerIds() { return _getChildrenOf(S.settings.present.player.defaultArea); }
+function getDefaultPlayerIds() { return _getChildrenOf(S.settings.player.defaultArea); }
 function getDefaultPlayers() { return getDefaultPlayerIds(x => UIS[x]); }
 
 function getAuxIds() { return getList(IdOwner.l); }

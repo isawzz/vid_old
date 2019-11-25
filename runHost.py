@@ -1,4 +1,4 @@
-#---!/var/www/html/flask/scriptapp/scriptapp-venv/bin/python3
+#...#!/var/www/html/flask/scriptapp/scriptapp-venv/bin/python3
 
 #region fe code
 import json
@@ -229,23 +229,23 @@ def _get_active_players():
 
 
 #region socketio: chat and messaging
-USE_SOCKETIO=True
-from flask_socketio import SocketIO, emit
-#import eventlet
+# USE_SOCKETIO=True
+# from flask_socketio import SocketIO, emit
+# #import eventlet
 
-#if USE_SOCKETIO:
-#eventlet.monkey_patch()
-socketio = SocketIO(app)
+# #if USE_SOCKETIO:
+# #eventlet.monkey_patch()
+# socketio = SocketIO(app)
 
-@socketio.on('message')
-def handleMessage(msg):
-	#print('Message: ' + msg)
-	emit('message', msg, broadcast=True)
+# @socketio.on('message')
+# def handleMessage(msg):
+# 	#print('Message: ' + msg)
+# 	emit('message', msg, broadcast=True)
 
-@socketio.on('chat')
-def handleChatMessage(msg):
-	#print('Chat message: ' + msg)
-	emit('chat', msg, broadcast=True)
+# @socketio.on('chat')
+# def handleChatMessage(msg):
+# 	#print('Chat message: ' + msg)
+# 	emit('chat', msg, broadcast=True)
 
 #endregion
 
@@ -352,8 +352,8 @@ def main(argv=None):
 	
 	_hard_restart(address, **settings)
 	
-	#app.run(host=args.host, port=args.port)
-	socketio.run(app, host=args.host,port=args.port) #, debug=True)
+	app.run(host=args.host, port=args.port)
+	#socketio.run(app, host=args.host,port=args.port) #, debug=True)
 
 if __name__ == "__main__":
 	main()

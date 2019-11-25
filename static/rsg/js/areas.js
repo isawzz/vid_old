@@ -23,9 +23,11 @@ function specAndDOM(callbacks = []) {
 	initTABLES();
 	initDom();
 	//for now just 1 board detected
-	if (S.settings.useSpec) initSTRUCTURES(); else detectBoard(G.table,'a_d_game'); //spaeter kommt das mit board detection!!!
+	if (S.settings.userStructures) initSTRUCTURES();
+	if (S.settings.boardDetection) {detectBoard(G.table,'a_d_game'); }//	{	openTabTesting('London');	detectBoard(G.table,'a_d_game'); }
 
-	openTabTesting('Seattle')
+	// openTabTesting('London');//
+	openTabTesting(S.settings.openTab);
 	if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 }
 function initPageHeader() {
@@ -33,42 +35,28 @@ function initPageHeader() {
 	pageHeaderSetPlayers();
 }
 function initTABLES() {
-	// timit.showTime(getFunctionCallerName());
-
 	//prepare areas for default objects
-	let tables;
-	if (nundef(S.user.spec) && S_boardDetection) {
-		S.settings.present.object.defaultArea = 'a_d_objects';
-		S.settings.present.player.defaultArea = 'a_d_player'; //'a_d_options';
-		//openTabTesting('London');
-		tables = {
-			a_d_game: [1000, 800],
-		};
-	} else	if (nundef(S.user.spec)) {
-		S.settings.present.object.defaultArea = 'a_d_game';
-		S.settings.present.player.defaultArea = 'a_d_player'; //'a_d_options';
-		//openTabTesting('London');
-		tables = {
-			a_d_game: [1000, '65vh'],
-		};
-	} else{
-		S.settings.present.object.defaultArea = 'a_d_objects';
-		S.settings.present.player.defaultArea = 'a_d_player'; //'a_d_options';
-		tables = S.user.spec.TABLES;
+	let tables= {
+		a_d_game: S.settings.gameAreaSize,
+	};
+	if (S.settings.boardDetection || isdef(S.user.spec)) {
+		S.settings.table.defaultArea = 'a_d_objects';
+		S.settings.player.defaultArea = 'a_d_player'; //'a_d_options';
 		let d = document.getElementById('a_d_game');
-		d.style.overflow = 'hidden';
+		d.style.overflow = 'visible';
 		d.classList.remove('flexWrap')
-		//openTabTesting('Seattle');
+	} else { //no spec, no boardDetection!
+		S.settings.table.defaultArea = 'a_d_game';
+		S.settings.player.defaultArea = 'a_d_player'; //'a_d_options';
 	}
 
-	for (const areaName of [S.settings.present.object.defaultArea, S.settings.present.player.defaultArea]) {
+	for (const areaName of [S.settings.table.defaultArea, S.settings.player.defaultArea]) {
 		let d = document.getElementById(areaName);
 		if (d.id != 'a_d_player') d.style.overflow = 'auto';
 		d.classList.add('flexWrap');
 	}
 
-	//set table sizes
-	//console.log('tables', tables)
+	//set game area size
 	for (const areaName in tables) {
 		//TODO: add area if not exists as Tab in previous area! for now, just existing areas!
 		let cssVarNameWidth = AREAS[areaName][0];
@@ -87,9 +75,9 @@ function initSTRUCTURES() {
 	if (nundef(data)) return;
 
 	for (const areaName in data) {
-		//console.log(areaName)
 		reqs = data[areaName];
-		let ms = createMainDiv(areaName, reqs.location);
+		console.log(areaName,reqs.location)
+		let ms = makeArea(areaName, reqs.location);
 
 		for (const prop in reqs) {
 			if (prop == 'location') continue;
@@ -135,7 +123,7 @@ function initDom() {
 	createMSTree(ROOT); //existing DOM wrapped in MS, each area stored in UIS
 	// timit.showTime('...ms tree built');
 
-	simpleColors(S.settings.colors[0]);
+	simpleColors(S.settings.color.theme);
 	// timit.showTime('...colors');
 
 	measureMSTree(ROOT); //each div is measured: x,y,w,h
@@ -268,7 +256,7 @@ function pageHeaderClearPlayers() {
 }
 function pageHeaderSetGame() {
 	let divGamename = document.getElementById('a_d_divGamename');
-	divGamename.innerHTML = `<div style='float:right;margin:14px'><b>${capitalize(GAME)}</b><br>(${PLAYMODE})</div>`;
+	divGamename.innerHTML = `<div style='float:right;margin:14px'><b>${allGames[GAME].name}</b><br>(${PLAYMODE})</div>`;
 }
 function pageHeaderSetPlayers() {
 	let divPlayerNames = document.getElementById('a_d_divPlayerNames');
