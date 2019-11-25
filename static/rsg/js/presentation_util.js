@@ -49,9 +49,9 @@ function transformToString(k,val, refs){
 	else if (isDict(val)) { sval = tableHTMLX(val, refs); }
 	else sval = simpleRep(val);
 
-	if (k == 'ports'){
-		console.log('ports:',k,val,sval)
-	}
+	// if (k == 'ports'){
+	// 	console.log('ports:',k,val,sval)
+	// }
 
 	return sval;
 }
@@ -236,6 +236,7 @@ function makeMainVisual(oid, o) {
 	UIS[id] = ms;
 
 	let color = S.settings.useColorHintForObjects? getColorHint(o): randomColor();
+	if (nundef(color)) color=randomColor();
 	//console.log('isEdge',locElem.isa.edge)
 	//if (locElem.isa.edge) console.log(locElem.w,locElem.h,locElem)
 	let [w, h] = locElem.isa.corner ? [locElem.w / 2, locElem.h / 2]

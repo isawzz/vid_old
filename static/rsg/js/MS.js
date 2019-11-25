@@ -2,7 +2,8 @@ class RSG {
 	constructor() {
 		this.children = [];
 		this.parts = {};
-		this.handlers = { click: {}, mouseenter: {}, mouseleave: {} }; this.isAttached = false;
+		this.handlers = { click: {}, mouseenter: {}, mouseleave: {} }; 
+		this.isAttached = false;
 		this.texts = []; //akku for text elems, each elem {w:textWidth,el:elem}
 		this.refs = {}; //by key same as parts
 		this.isa = {};
@@ -49,7 +50,7 @@ class RSG {
 	}
 
 	addFrame(color) {
-		if (this.type == 'DIV') {
+		if (this.cat == 'd') {
 			//console.log(this.body)
 			this.body.style.boxSizing = 'border-box';
 			//console.log('adding a frame')
@@ -92,7 +93,7 @@ class RSG {
 	} = {}) {
 
 
-		if (this.type == 'DIV') {
+		if (this.cat == 'd') {
 			if (nundef(this.body) || nundef(this.title)) {
 				this.addFlexTitleBody();
 			}
@@ -145,7 +146,11 @@ class RSG {
 		//console.log('classes attached to new text element',r.getAttribute('class'),r.classList);
 
 		textBg = this.setTextFill(r, fill, alpha, textBg);
-		if (isFirstChild) { this.bgs.ground = textBg; this.fg.ground = fill; }
+		if (isFirstChild) { 
+			//console.log('ist das hier?!?!?!?!?!?!?')
+			this.bgs.ground = textBg; 
+			this.fgs.ground = fill; 
+		}
 		//console.log('text: textBg='+textBg)
 		let wText = this.calcTextWidth(txt, fz, family, weight);
 
@@ -205,13 +210,32 @@ class RSG {
 		weight = ''
 	} = {}) {
 
-		if (this.type == 'DIV') {
+		//console.log('MS.text: family:',family)
+		if (this.cat == 'd') {
+
+			if (empty(txt)) {
+				//console.log('erasing...')
+				this.elem.innerHTML = ''; return this;
+			}
+			//console.log('ist ein text!!!!!')
+			//this.elem.style.maxWidth = this.w+'px';
 			this.elem.style.textAlign = 'center';
-			this.elem.style.color = fill ? fill : 'white';
-			this.elem.style.padding = '20px';
-			this.elem.innerHTML = txt;
+			this.elem.style.color = fill ? fill : this.fg? this.fg : 'white';
+			//this.elem.style.padding = '20px';
+			//console.log('fz',fz,this.elem)
+			let margin = this.h/2 - fz/2;
+			this.elem.innerHTML = `<div style='margin-top:${margin}px;font-size:${fz}px;'>${txt}</div>`;
+			this.elem.boxSizing = 'border-box';
 			return this;
 		}
+
+		if (empty(txt)) {
+			//console.log('erasing...')
+
+			this.removeTexts();return this;
+		}
+
+
 		// ms.text({txt: val, force: force, shrinkFont: shrinkFont, wrap: wrap, fz: fz, bg: 'white', fill: 'black'});
 		//TODO: shrinkFont,wrap,ellipsis options implementieren
 		//if replaceFirst true ... if this elem already contains a text, that text child is replaced by new text
@@ -226,6 +250,8 @@ class RSG {
 		r.setAttribute('font-family', family);
 		r.setAttribute('font-weight', weight);
 
+		//console.log()
+
 		// CSS classes
 		if (isOverlay) {
 			r.classList.add('overlay'); //className);
@@ -238,7 +264,10 @@ class RSG {
 		//console.log('classes attached to new text element',r.getAttribute('class'),r.classList);
 
 		textBg = this.setTextFill(r, fill, alpha, textBg);
-		if (isFirstChild) { this.bgs.ground = textBg; this.fg.ground = fill; }
+		if (isFirstChild) { 
+			this.bgs.ground = textBg; 
+			this.fgs.ground = fill; 
+		}
 		//console.log('text: textBg='+textBg)
 		let wText = this.calcTextWidth(txt, fz, family, weight);
 
@@ -264,7 +293,7 @@ class RSG {
 		if (replaceFirst && this.texts.length > 0) {
 			let ch = this.texts[0].el; //findChildOfType('text', this.elem);
 
-			//console.log('this.textx[0]',ch,this.texts,this)
+			//console.log('this.texts[0].el',ch, '\nr', r,'\ntexts:',this.texts,this)
 			this.elem.insertBefore(r, ch);
 			if (this.isLine) {
 				this.elem.insertBefore(this.textBackground, r);
@@ -289,7 +318,7 @@ class RSG {
 		//this.elem.removeChild(el);
 		el.setAttribute('font-size', '' + fz + 'px');
 	}
-	clearText(){this.removeTexts();}
+	clearText() { this.removeTexts(); }
 	removeTexts() {
 		for (const t of this.texts) {
 			this.elem.removeChild(t.el);
@@ -893,6 +922,24 @@ class RSG {
 		this.setSize(parent.w, parent.h);
 		this.setPos(0, 0);
 	}
+	setBounds(x, y, w, h, unit = '%') {
+		//console.log('setBounds',x,y,w,h,unit)
+		let el = this.elem;
+		//console.log(el,this.idParent)
+		// el.style.position = 'absolute';
+		// el.style.left='100px';
+		// el.style.top='100px';
+		// el.style.width='100px';
+		// el.style.height='100px';
+		//TODO: compute size if unit is %
+		this.setSize(w, h);
+		this.setPos(x, y);
+	}
+	setColor(c){
+		//console.log('setColor',c)
+		// this.elem.backgroundColor = 'red';//
+		this.setBg(c);
+	}
 	setSize(w, h) {
 		//console.log('setSize',this.id,w,h)
 		this.w = w; this.h = h;
@@ -1038,8 +1085,8 @@ class RSG {
 	clear(startProps = {}) {
 		//all children are destroyed: only destroys UI and removes from parent.children,
 		//does NOT destroy RSG objects of children or remove them from any lists/dictionaries such as UIS,IdOwner,id2uids....
-		let ids = this.children.map(x=>x);
-		for(const id of ids) {
+		let ids = this.children.map(x => x);
+		for (const id of ids) {
 			//console.log('delete',id)
 			deleteRSG(id);
 		}
@@ -1071,12 +1118,20 @@ function getColorHint(o) {
 }
 function getRandomShape() { return chooseRandom('ellipse', 'roundedRect', 'rect', 'hex'); }
 
-
-function makeArea(areaName,idParent){
+// var testPosY=0;
+function makeArea(areaName, idParent) {
 	let ms = new RSG();
-	let id = 'm_a_'+areaName;
+	let id = 'm_A_' + areaName;
 	ms.id = id;
-	ms.elem = document.createElement('div');
+	let el = document.createElement('div');
+	//el.innerHTML='hallo!';
+	// el.style.backgroundColor = randomColor();
+	el.style.position = 'absolute';
+	// el.style.left='0px';
+	// el.style.top=''+testPosY+'px'; testPosY+=100;
+	// el.style.width='100%';
+	// el.style.height='50%';
+	ms.elem = el;
 	ms.parts.elem = ms.elem;
 	ms.domType = getTypeOf(ms.elem);
 	ms.cat = DOMCATS[ms.domType];
@@ -1085,6 +1140,8 @@ function makeArea(areaName,idParent){
 	parent.children.push(id);
 	ms.attach();
 	UIS[id] = ms;
+	linkObjects(id, areaName);
+	//console.log(oid2ids[areaName]);
 	listKey(IdOwner, id[2], id);
 	return ms;
 }

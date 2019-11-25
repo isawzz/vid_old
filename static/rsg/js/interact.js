@@ -11,7 +11,7 @@ function startInteraction() {
 	if (isdef(IdOwner.l)) IdOwner.l.map(x => addStandardInteraction(x)); //da muss click handler removen!!!!
 	if (isdef(IdOwner.p)) IdOwner.p.map(x => addStandardInteraction(x));
 	if (isdef(IdOwner.r)) IdOwner.r.map(x => addStandardInteraction(x));
-	if (isdef(IdOwner.s)) IdOwner.s.map(x => addStandardInteraction(x)); //anderen clickHandler
+	//if (isdef(IdOwner.s)) IdOwner.s.map(x => addStandardInteraction(x)); //anderen clickHandler
 	if (isdef(IdOwner.t)) IdOwner.t.map(x => addStandardInteraction(x)); //anderen clickHandler
 	preselectFirstVisualsForBoats();
 	choiceCompleted = false;
@@ -217,75 +217,6 @@ function onClickStop() {
 	//STOP = true;
 	//setTimeout(showStep,100);
 }
-function redrawScreen(){
-	gameView();
-	initDom();
-	S.settings.game = GAME;
-
-	_checkCleanup();
-
-	let serverData = G.serverData;
-	// S.user = {};
-	G = { table: {}, players: {}, signals: {} }; //server objects
-	UIS = {}; // holds MS objects 
-	IdOwner = {}; //lists of ids by owner
-	id2oids = {}; // { uid : list of server object ids (called oids) }
-	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
-	id2uids = {}; // { uid : list of ms ids related to same oid }
-
-	processData(serverData);
-	specAndDOM([gameStep]);
-
-}
-function redrawScreenNEIN() {
-	if (isdef(UIS)) {
-		stopBlinking('a_d_status');
-		stopInteraction();
-		clearLog();
-		delete G.end;
-		delete G.signals.receivedEndMessage;
-		pageHeaderClearAll();
-		// restoreBehaviors();
-		openTabTesting('London');
-		UIS['a_d_status'].clear({ innerHTML: '<div id="c_d_statusText">status</div>' });
-		UIS['a_d_actions'].clear({ innerHTML: '<div id="a_d_divSelect" class="sidenav1"></div>' });
-		let areaPlayer = isdef(UIS['a_d_player']) ? 'a_d_player' : isdef(UIS['a_d_players']) ? 'a_d_players' : 'a_d_options';
-		for (const id of ['a_d_log', 'a_d_objects', areaPlayer, 'a_d_game']) clearElement(id);
-	}
-
-	gameView();
-	initDom();
-	S.settings.game = GAME;
-
-	// // S.user = {};
-	// G = { table: {}, players: {}, signals: {} }; //server objects
-	UIS = {}; // holds MS objects 
-	IdOwner = {}; //lists of ids by owner
-	id2oids = {}; // { uid : list of server object ids (called oids) }
-	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
-	id2uids = {}; // { uid : list of ms ids related to same oid }
-
-	specAndDOM([gameStep]);
-}
-function onClickUseSettings() {
-	S.settings.userBehaviors = false;
-	S.settings.userStructures = false;
-	S.settings.userSettings = true;
-	redrawScreen();
-}
-function onClickUseStructures() {
-	S.settings.userBehaviors = false;
-	S.settings.userStructures = true;
-	S.settings.userSettings = true;
-	redrawScreen();
-}
-function onClickUseBehaviors() {
-	S.settings.userBehaviors = true;
-	S.settings.userStructures = true;
-	S.settings.userSettings = true;
-	redrawScreen();
-}
-
 //#region helpers
 function addFilterHighlight(ms) { ms.highC('green'); }
 function addStandardInteraction(id) {

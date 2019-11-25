@@ -117,7 +117,7 @@ function getAuxVisuals(id) { return getVisuals(id, 'aux') }
 //general shortcut to create g shapes sollte fuer beide systeme gehen!!!
 function createVisual(id, areaName, { rings = 3, bg = 'darkslategray', fg = 'lime', label, shape = 'circle', iPalette, ipal, fill, x = 0, y = 0, w = 25, h = 25, sPoints, border = 'green', thickness = 1, rounding, path, txt, fz = 12, sz, overlay = true, draw = true } = {}) {
 	let parent = getVisual(areaName);
-	if (parent.type == 'DIV') {
+	if (parent.cat == 'd') {
 		if (parent.ids.length != 1) {
 			error('DIV cannot have more than 1 G child!!!');
 		} else {

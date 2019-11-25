@@ -5,13 +5,14 @@ function presentTable() {
 		deleteOid(oid);
 	}
 	for (const oid of G.tableCreated) {
-		//console.log('NEWLY CREATE:',oid,defaultVisualExists(oid),S.settings.table.createDefault)
+		//console.log('NEWLY CREATE:','oid',oid,'def exists',defaultVisualExists(oid),'createDef:',S.settings.table.createDefault)
 
 		if (!defaultVisualExists(oid) && S.settings.table.createDefault==true) {
 			//console.log('>>>>>>>>>>>>>>>>>should create default object for',oid)
 			makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 		}
 
+		//console.log('NEWLY CREATE:','main exists',mainVisualExists(oid));
 		if (mainVisualExists(oid)) continue;
 
 		//hier wuerde dann create behaviors aufrufen
@@ -29,6 +30,7 @@ function presentTable() {
 	}
 	for (const oid in G.tableUpdated) {
 		let changedProps = G.tableUpdated[oid].summary;
+		//console.log('update:',oid,changedProps);
 		//if (G.tableCreated.includes(oid)) { continue; }
 
 		//if (S.settings.tooltips && TT_JUST_UPDATED == oid) updateTooltipContent(oid, G.table);
@@ -36,11 +38,17 @@ function presentTable() {
 		//update main visual
 		let ms = getVisual(oid);
 		if (ms) {
-			let updatedVisuals = {};
-			if (S.settings.userBehaviors) updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_UPDATE);
-			if (!updatedVisuals[oid]) {
+			let updatedVisuals;
+			if (S.settings.userBehaviors) {
+				updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_UPDATE);
+			}
+			//console.log('updatedVisuals',updatedVisuals)
+			if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
+				//console.log('oid',oid,'has NOT been updated!!!!!')
 				if (changedProps.includes('loc')) presentLocationChange(oid, ms);
 				presentMain(oid, ms, G.table);
+			}else{
+				//console.log('oid',oid,'has been updated!!!!!')
 			}
 		}
 

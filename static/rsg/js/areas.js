@@ -23,8 +23,13 @@ function specAndDOM(callbacks = []) {
 	initTABLES();
 	initDom();
 	//for now just 1 board detected
-	if (S.settings.userStructures) initSTRUCTURES();
-	if (S.settings.boardDetection) {detectBoard(G.table,'a_d_game'); }//	{	openTabTesting('London');	detectBoard(G.table,'a_d_game'); }
+	let hasStructure=false;
+	if (S.settings.userStructures) hasStructure = initSTRUCTURES();
+	//console.log('hasStructure:',hasStructure,'boardDetection',S.settings.boardDetection)
+	if (!hasStructure && S.settings.boardDetection) {
+		
+		detectBoard(G.table,'a_d_game'); 
+	}//	{	openTabTesting('London');	detectBoard(G.table,'a_d_game'); }
 
 	// openTabTesting('London');//
 	openTabTesting(S.settings.openTab);
@@ -67,53 +72,6 @@ function initTABLES() {
 		let h = tables[areaName][1];
 		if (isNumber(h)) h = '' + h + 'px';
 		setCSSVariable(cssVarNameHeight, h);
-	}
-}
-function initSTRUCTURES() {
-	// timit.showTime(getFunctionCallerName());
-	let data = S.user.spec.STRUCTURES;
-	if (nundef(data)) return;
-
-	for (const areaName in data) {
-		reqs = data[areaName];
-		console.log(areaName,reqs.location)
-		let ms = makeArea(areaName, reqs.location);
-
-		for (const prop in reqs) {
-			if (prop == 'location') continue;
-			if (prop == 'structure') {
-				let info = reqs.structure;
-
-				let func = info.type; // rsg will build a structure of desired type if known! eg., hexGrid, quadGrid,...
-
-				let odict = parseDictionaryName(info.object_pool);
-				if (!odict) odict = G.table; //default object pool to get board and board member objects from
-
-				let boardInfo = info.cond; //object in object_pool representing board, its id will be board main id!
-
-				let structObject = window[func](odict, areaName, boardInfo);
-				//console.log(structObject,func,areaName)
-			} else if (typeof reqs[prop] == 'object' && 'binding' in reqs[prop]) {
-				let info = reqs[prop].binding;
-				//hier muss ich jetzt registry einsetzen!!!
-				/**
-				 * wenn ich playerUpdate mache, muss ich 
-				 * 
-				 */
-				let filterFunc = 0;//d
-				let statement = `getVisual(${areaName}).set${prop.toUpperCase}(${info.object_pool}.)`
-				let odict = parseDictionaryName(info.object_pool);
-
-			} else {
-				// rsg tries to set this prop for areaName object! eg., visual props bg, fg, bounds
-				let lst = jsCopy(reqs[prop]);
-
-				let func = 'set' + capitalize(prop);
-				let params = lst;
-				if (!Array.isArray(params)) params = params.split(',');
-				if (ms[func] !== null) ms[func](...params);
-			}
-		}
 	}
 }
 function initDom() {

@@ -121,7 +121,7 @@ function quadGrid(soDict, loc, condList) {
 	return _quadGrid(loc, idBoard, sBoard, soDict);
 }
 
-//#region helpers                                  
+//#region helpers
 function _quadGrid(loc, idBoard, sBoard, soDict) {
 	let board = createGrid(loc, idBoard, sBoard, soDict, 'quad');
 	addVisuals(board);

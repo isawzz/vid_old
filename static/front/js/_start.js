@@ -9,14 +9,6 @@ function _start() {
 
 	_startNewGame('starter');
 
-	// S.gameConfig = {
-	// 	numPlayers: 3,
-	// 	players:[
-	// 		{id:'White',playerType:'human',agentType:null,username:USERNAME},
-	// 		{id:'Red',playerType:'AI',agentType:AI_TYPE,username:'bot0'},
-	// 		{id:'Blue',playerType:'human',agentType:null,username:''},
-	// 	]
-	// }
 }
 
 function _startLogin() { loginView(); }

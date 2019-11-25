@@ -1,18 +1,20 @@
 TABLE_UPDATE = {
-	resources_numbers: (id, o) => {
-		if (o.obj_type == 'Tick') { return { f: field_update, vis:['P'] }; }
+	present_field: (oid, o) => {
+		if (o.obj_type == 'Tick') { return { f: field_update, vis: [oid, 'P'] }; }
 	},
 }
 
-function field_update(id, o) {
-	if (nundef(o.player)) return;
-	vis = getVisual(id);
-	let pl = getPlayer(o.player._player); //player who just placed!
-	let color = pl.color;
-	let fz = vis.h / 2;
-	vis.text({ txt: o.symbol, fill: color, fz: fz, family: 'arial black' });
-	let P = getVisual('P');
-	P.text({txt:pl.id+' placed in '+o.row+','+o.col,fill:'white'});
-	return [id,'P'];
+function field_update(oid, o, field, panel) {
+
+	if (nundef(o.player)) { panel.text(); field.text(); }
+	else {
+		let pl = getPlayer(o.player._player);
+
+		field.text({ txt: o.symbol, fill: pl.color, fz: field.h / 2, family: 'AlgerianRegular' });
+
+		panel.text({ txt: pl.id + ' placed in ' + o.row + ',' + o.col, fill: 'white' });
+	}
+
+	return true;
 }
 

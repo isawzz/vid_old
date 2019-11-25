@@ -38,9 +38,9 @@ function sendInitNewGame() {
 			//send a command with agent creating /add/client...
 			//not implemented exception
 			let cmd = 'add/client/agent/' + plInfo.username;
-			cmdChain.push({cmd:cmd,f:_postRoute});
+			cmdChain.push({cmd:cmd,f:_postRoute, data:{agent_type:plInfo.agentType,timeout:null}});
 			cmd = '/add/player/' + plInfo.username + '/' + plInfo.id;
-			cmdChain.push({cmd:cmd,f:_sendRoute});
+			cmdChain.push({cmd:cmd,f:_sendRoute,data:null});
 		} else {
 			//old way to do it, do it that way first! just a normal route
 			let cmd = '/add/player/' + plInfo.username + '/' + plInfo.id;
@@ -125,8 +125,8 @@ function _createAgents(agentNames, agentType = 'regular', callback) {
 		contentType: "application/json"
 	});
 }
-function _postRoute(route, callback) {
-	data = { agent_type: AI_TYPE, timeout:null };//, 'timeout':timeout}
+function _postRoute(route, callback, data) {
+	//data = { agent_type: AI_TYPE, timeout:null };//, 'timeout':timeout}
 	if (nundef(counters)) counters = { msg: 0 };
 	counters.msg += 1;
 	let prefix = last(SERVER_URL) == '/' ? dropLast(SERVER_URL) : SERVER_URL;
@@ -267,7 +267,7 @@ function cmdChainSendRec(akku, msgChain, callback) {
 			//console.log('received:', d)
 			akku.push(d);
 			this.cmdChainSendRec(akku, msgChain.slice(1), callback)
-		});
+		}, msgChain[0].data);
 	} else {
 		//console.log(akku);
 		callback(akku);

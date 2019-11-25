@@ -9,6 +9,12 @@ V = {
 	}
 };
 
+PLAYER_UPDATE = {
+	player_on_turn: (id, o) => {
+		if (o.obj_type == 'GamePlayer') { return { f: game_player_update, vis: ['PMain'] }; }
+	}
+};
+
 TABLE_UPDATE = {
 	resources_numbers: (id, o, phase) => {
 		if (phase == 'setup' && o.obj_type == 'hex') { return { f: setup_field }; }

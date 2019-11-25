@@ -7,10 +7,12 @@ function clearLog(){
 
 }
 function restoreBehaviors() {
-	PLAYER_UPDATE = [];
-	TABLE_UPDATE = [];
-	PLAYER_CREATE = [];
-	TABLE_CREATE = [];
+	PLAYER_UPDATE = {};
+	TABLE_UPDATE = {};
+	PLAYER_CREATE = {};
+	TABLE_CREATE = {};
+	V = {};
+
 }
 
 

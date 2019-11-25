@@ -21,7 +21,7 @@ function setDefaultSettings() {
 }
 function setDefaultRSGSettings() {
 	//rsg settings defaults (muss bei game switch resetted werden!)
-	S.settings.table.createDefault = 'miss'; // miss | true | false
+	S.settings.table.createDefault = true; // miss | true | false
 	S.settings.player.createDefault = true; // miss | true | false
 	S.settings.boardDetection = S_boardDetection;
 	S.settings.useColorHintForProperties = S_useColorHintForProperties;
