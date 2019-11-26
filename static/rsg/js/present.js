@@ -13,14 +13,14 @@ function presentTable() {
 			makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 		}
 
-		if (o.obj_type == 'robber') console.log('NEWLY CREATE:','main:'+mainVisualExists(oid));
+		//if (o.obj_type == 'robber') console.log('NEWLY CREATE:','main:'+mainVisualExists(oid));
 		if (mainVisualExists(oid)) {
 			if (o.obj_type == 'robber') console.log(o,getVisual(oid));
 			continue;
 		}
 
 		//hier wuerde dann create behaviors aufrufen
-		if (o.obj_type == 'robber') console.log('robber main does not exist and needs to be created!!!')
+		//if (o.obj_type == 'robber') console.log('robber main does not exist and needs to be created!!!')
 
 		let updatedVisuals;
 		if (S.settings.userBehaviors) {

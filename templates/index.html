@@ -259,12 +259,15 @@
 			<br />
 			<button onclick="onClickLobby()">lobby</button>
 			<br />
-			<button  id='c_b_Restart'  onclick="onClickRestart()">restart</button>
+			<button id='c_b_Restart' onclick="onClickRestart()">restart</button>
 			<br />
 			<br />
-			<button onclick="onClickUseSettings()">settings</button>
-			<button onclick="onClickUseStructures()">structures</button>
-			<button onclick="onClickUseBehaviors()">behaviors</button>
+			<button onclick="onClickUseNoSpec()">just defaults</button>
+			<button onclick="onClickUseStructures()">yaml spec</button>
+			<!-- <button onclick="onClickUseSettings()">settings</button>
+			<button onclick="onClickUseStructures()">structures</button> -->
+			<button onclick="onClickUseBehaviors()">spec & code</button>
+			<button onclick="onClickReloadSpec()">reload spec</button>
 			<br />
 			<br />
 			<button id='c_b_Step' onclick="if (FLASK) onClickStep(); else console.log('set FLASK=true in game.html!');">STEP</button>
@@ -304,16 +307,23 @@
 				</div>
 			</div>
 
-			<div id="a_d_Vienna" class="tabcontent"><div id='a_d_players' class='divInTab'>				</div>			</div>
+			<div id="a_d_Vienna" class="tabcontent">
+				<div id='a_d_players' class='divInTab'> </div>
+			</div>
 
 			<!-- <div id="a_d_Redmond" class="tabcontent"></div> -->
 
 			<div id="a_d_Paris" class="tabcontent">
-				<div class='divInTab' id='a_d_spec'><pre class='code' id='a_d_spec_content'></pre></div>
+				<div class='divInTab' id='a_d_spec' style='overflow-y:auto;text-align:left;'>
+					<!-- <textarea id='a_d_spec_content' style='font-size:20px;margin:auto;width:90%;height:90%'></textarea> -->
+					<pre id='a_d_spec_content'></pre>
+				</div>
 			</div>
 
 			<div id="a_d_Oslo" class="tabcontent">
-				<div class='divInTab' id='a_d_code'><pre  class='code'  id='a_d_code_content'></pre></div>
+				<div class='divInTab' id='a_d_code' style='overflow-y:auto;text-align:left;'>
+					<pre id='a_d_code_content'></pre>
+				</div>
 			</div>
 
 			<div id="a_d_Seattle" class="tabcontent">
@@ -326,7 +336,7 @@
 					</fieldset>
 					<fieldset id='a_d_cheat_buttons'>
 						<legend>cheats</legend>
-						
+
 					</fieldset>
 					<fieldset>
 						<legend>miscellaneous</legend>

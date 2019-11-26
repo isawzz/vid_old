@@ -8,6 +8,7 @@ import random
 import sys
 import time
 import traceback
+import yaml
 from collections import OrderedDict, namedtuple
 from itertools import chain, product
 from string import Formatter
@@ -326,11 +327,48 @@ def rootsimPath(path):
 	res = send_from_directory('', path)
 	return send_from_directory('', path)
 
+def userSpecPath(game,ext,v=None):
+	rootPath = os.path.dirname(os.path.abspath(__file__))  #path of this file app_interface.py
+	fname = game
+	if v != None:
+		fname += '_'+v
+	path = os.path.join(rootPath, 'examples_front/' + game + '/' + fname + '_ui.' + ext)
+	return path
+
+def ymlFile_jString(path):
+	return json.dumps(yaml.load(open(path, 'r')))
+def ymlFile_pyObject(path):
+	return yaml.load(open(path, 'r'))
+
 @app.route('/get_UI_spec/<game>')
-def _get_UI_spec(game):
-	path = userSpecYmlPath(game)
-	res = ymlFile_jString(userSpecYmlPath(game))
+@app.route('/get_UI_spec/<game>/<v>')
+def _get_UI_spec(game,v=None):
+	path = userSpecPath(game,'yaml',v)
+	res = ymlFile_jString(path)
 	return res
+
+@app.route('/get_UI_code/<game>')
+@app.route('/get_UI_code/<game>/<v>')
+def _get_UI_code(game,v=None):
+	path = userSpecPath(game,'js',v)
+	res = ymlFile_jString(path)
+	return res
+
+@app.route('/save_UI_spec/<game>/<code>')
+@app.route('/save_UI_spec/<game>/<code>/<v>')
+def _save_UI_spec(game,code,v=None):
+	path = userSpecPath(game,'yaml',v)
+	f = open(path,"w+")
+	f.write(code)
+	return path
+
+@app.route('/save_UI_code/<game>/<code>')
+@app.route('/save_UI_code/<game>/<code>/<v>')
+def _save_UI_code(game,code,v=None):
+	path = userSpecPath(game,'yaml',v)
+	f = open(path,"w+")
+	f.write(code)
+	return path
 
 #endregion
 

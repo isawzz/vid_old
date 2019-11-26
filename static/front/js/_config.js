@@ -8,13 +8,13 @@ const USE_SOCKETIO = false;
 const USE_BACKEND_AI = true;
 const IS_MIRROR = false;
 const FLASK = true;
-const PORT = '5002';
+const PORT = '5000';
 const NGROK = null;// 'http://ee91c9fa.ngrok.io/'; // null;//'http://f3629de0.ngrok.io/'; //null; //'http://b29082d5.ngrok.io/' //null; //'http://2d97cdbd.ngrok.io/';// MUSS / am ende!!! 
 const SERVER_URL = IS_MIRROR ? 'http://localhost:5555/' : FLASK ? (NGROK ? NGROK : 'http://localhost:'+PORT+'/') : 'http://localhost:5005/';
 
 //general settings: 
 var S_tooltips = 'OFF';
-var S_openTab = 'Seattle';
+var S_openTab = 'Paris';
 
 var S_userSettings = true;
 var S_userStructures = true;

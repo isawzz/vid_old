@@ -75,6 +75,14 @@
 	flex-wrap:wrap;
 }
 .code{
+	margin:0;
+	padding:0;
+	position:absolute;
+	top:6%;
+	left:1%;
+	width:98%;
+	height:92%;
+	background-color: var(--bgTabContent);
 	text-align: left;
-	display: block;
+	/* overflow: auto; */
 }

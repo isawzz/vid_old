@@ -98,7 +98,7 @@ function anyColorToStandardString(cAny, a, allowHsl = false) {
 			//this is rbg or rgba string
 			if (cAny[3] == 'a') {
 				//rgba string!
-				console.log('its an rgba string!!!!!');
+				//console.log('its an rgba string!!!!!');
 				if (a < 1) {
 					return stringBeforeLast(cAny, ',') + ',' + a + ')';
 				} else {

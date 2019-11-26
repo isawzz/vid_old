@@ -12,44 +12,6 @@ const AREAS = {
 	a_d_testing: ['--wGame', '--hTesting'],
 	a_d_options: ['--wLog', '--hTesting'],
 }
-function specAndDOM(callbacks = []) {
-	timit.showTime(getFunctionCallerName());
-
-	//after getting init data: G is up to date, ready to be presented
-	initSETTINGS();
-
-	//init DOM: prepare UI for game, structure and table setup
-	initPageHeader();
-	initTABLES();
-	initDom();
-	//for now just 1 board detected
-
-
-	//if user spec and/or code is present, load them into corresponding tabs!!!
-	if (S.user.spec){
-		let d=document.getElementById('a_d_spec_content');
-		d.innerHTML = S.user.specText;
-	}
-	if (S.user.script){
-		let d=document.getElementById('a_d_code_content');
-		d.innerHTML = S.user.script;
-	}
-	$('pre').html(function() {
-    return this.innerHTML.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
-	});
-
-	let hasStructure=false;
-	if (S.settings.userStructures) hasStructure = initSTRUCTURES();
-	console.log('hasStructure:',hasStructure,'boardDetection',S.settings.boardDetection)
-	if (!hasStructure && S.settings.boardDetection) {
-
-		detectBoard(G.table,'a_d_game'); 
-	}//	{	openTabTesting('London');	detectBoard(G.table,'a_d_game'); }
-
-	// openTabTesting('London');//
-	openTabTesting(S.settings.openTab);
-	if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
-}
 function initPageHeader() {
 	pageHeaderSetGame();
 	pageHeaderSetPlayers();
