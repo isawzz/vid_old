@@ -184,6 +184,11 @@ function onClickRunToNextTurn() {
 	};
 	onClickStep(G);
 }
+function onClickRunToNextPhase() {
+	let phase = G.phase;
+	S_autoplayFunction = (_G) => _G.phase == phase;
+	onClickStep(G);
+}
 function onClickRunToEnd() {
 	S_autoplayFunction = () => true;
 	onClickStep(G);

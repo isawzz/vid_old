@@ -25,6 +25,7 @@ function processData(data) {
 	// means, I have to wait for me turn to continue playing
 
 	G.serverData = data;
+	G.phase = G.serverData.phase;
 
 	processTable(data);
 	//console.log('created:',G.tableCreated)

@@ -64,19 +64,19 @@ function setPlaymode(mode, isStartup = false) {
 	S.settings.playmode = PLAYMODE = mode;
 	//console.log('playmode:',S.settings.playmode,'PLAYMODE',PLAYMODE)
 	setAutoplayFunctionForMode(mode, isStartup);
-	if (mode == 'solo') {
-		//hide(document.getElementById('c_b_join'));
-		hide(document.getElementById('c_b_NextPlayer'));
-		hide(document.getElementById('c_b_RunToEnd'));
-	} else if (mode == 'hotseat') {
-		//hide(document.getElementById('c_b_join'));
-		show(document.getElementById('c_b_NextPlayer'));
-		show(document.getElementById('c_b_RunToEnd'));
-	} else if (mode == 'multiplayer') {
-		//show(document.getElementById('c_b_join'));
-		hide(document.getElementById('c_b_NextPlayer'));
-		hide(document.getElementById('c_b_RunToEnd'));
-	}
+	// if (mode == 'solo') {
+	// 	//hide(document.getElementById('c_b_join'));
+	// 	hide(document.getElementById('c_b_NextPlayer'));
+	// 	hide(document.getElementById('c_b_RunToEnd'));
+	// } else if (mode == 'hotseat') {
+	// 	//hide(document.getElementById('c_b_join'));
+	// 	show(document.getElementById('c_b_NextPlayer'));
+	// 	show(document.getElementById('c_b_RunToEnd'));
+	// } else if (mode == 'multiplayer') {
+	// 	//show(document.getElementById('c_b_join'));
+	// 	hide(document.getElementById('c_b_NextPlayer'));
+	// 	hide(document.getElementById('c_b_RunToEnd'));
+	// }
 	return mode;
 }
 function initSETTINGS() {
@@ -114,7 +114,7 @@ function initAutoplayToActionButtons() {
 
 	let d = document.getElementById('a_d_autoplay_buttons');
 	let buttons = [...d.children];
-	let defaultIds = ['c_b_NextPlayer', 'c_b_NextTurn'];
+	let defaultIds = ['c_b_NextPlayer', 'c_b_NextTurn', 'c_b_NextPhase'];
 	let kws = lookup(S.settings, ['dev', 'run_to_buttons']);
 
 	if (!kws) kws = {};

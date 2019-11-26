@@ -327,6 +327,22 @@ def rootsimPath(path):
 	res = send_from_directory('', path)
 	return send_from_directory('', path)
 
+@app.route('/spec/<game>')
+def _rootsimPathSpec(game):
+	path = userSpecPath(game,'yaml',None)
+	f=open(path, "r")
+	txt = f.read()
+	print(txt)
+	return txt
+
+@app.route('/behaviors/<game>')
+def _rootsimPathCode(game):
+	path = userSpecPath(game,'js',None)
+	f=open(path, "r")
+	txt = f.read()
+	print(txt)
+	return txt
+
 def userSpecPath(game,ext,v=None):
 	rootPath = os.path.dirname(os.path.abspath(__file__))  #path of this file app_interface.py
 	fname = game
@@ -337,6 +353,8 @@ def userSpecPath(game,ext,v=None):
 
 def ymlFile_jString(path):
 	return json.dumps(yaml.load(open(path, 'r')))
+def ymlText(path):
+	return yaml.load(open(path, 'r'))
 def ymlFile_pyObject(path):
 	return yaml.load(open(path, 'r'))
 
@@ -344,15 +362,15 @@ def ymlFile_pyObject(path):
 @app.route('/get_UI_spec/<game>/<v>')
 def _get_UI_spec(game,v=None):
 	path = userSpecPath(game,'yaml',v)
-	res = ymlFile_jString(path)
+	res = ymlFile_jString(path) #ymlText(path) 
 	return res
 
-@app.route('/get_UI_code/<game>')
-@app.route('/get_UI_code/<game>/<v>')
-def _get_UI_code(game,v=None):
-	path = userSpecPath(game,'js',v)
-	res = ymlFile_jString(path)
-	return res
+# @app.route('/get_UI_code/<game>')
+# @app.route('/get_UI_code/<game>/<v>')
+# def _get_UI_code(game,v=None):
+# 	path = userSpecPath(game,'js',v)
+# 	res = ymlFile_jString(path)
+# 	return res
 
 @app.route('/save_UI_spec/<game>/<code>')
 @app.route('/save_UI_spec/<game>/<code>/<v>')

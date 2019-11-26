@@ -14,8 +14,8 @@ function presentTable() {
 		}
 
 		//if (o.obj_type == 'robber') console.log('NEWLY CREATE:','main:'+mainVisualExists(oid));
-		if (mainVisualExists(oid)) {
-			if (o.obj_type == 'robber') console.log(o,getVisual(oid));
+		if (mainVisualExists(oid) || !S.settings.bardDetection && !S.settings.userStructures) {
+			//if (o.obj_type == 'robber') console.log(o,getVisual(oid));
 			continue;
 		}
 

@@ -52,5 +52,27 @@
 	z-index: -3;
 }
 
+/* .layout2 {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	display: grid;
+	grid-template-columns: var(--wActions) var(--wGame) minmax(var(--wPlayers),auto) minmax(var(--wActions),auto);
+	grid-template-rows:calc(2*var(--h_1)) var(--h_1)  var(--hGame) minmax(800px, auto);
+	grid-template-areas:
+		'h h h h'
+		'ah s s hh'
+		'a g g l'
+		'bl t t l';
+	grid-gap: 4px;
+	background-color: null;
+	min-height: 100%;
+	width: 100%;
+	color: white;
+	padding: 4px;
+	box-sizing: border-box;
+	z-index: -3;
+} */
+
 
 

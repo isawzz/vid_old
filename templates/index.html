@@ -262,8 +262,9 @@
 			<button id='c_b_Restart' onclick="onClickRestart()">restart</button>
 			<br />
 			<br />
-			<button onclick="onClickUseNoSpec()">just defaults</button>
-			<button onclick="onClickUseStructures()">yaml spec</button>
+			<button onclick="onClickUseNoBoardDetection()">just desserts</button>
+			<button onclick="onClickUseNoSpec()">boardDetection</button>
+			<button onclick="onClickUseStructures()">spec</button>
 			<!-- <button onclick="onClickUseSettings()">settings</button>
 			<button onclick="onClickUseStructures()">structures</button> -->
 			<button onclick="onClickUseBehaviors()">spec & code</button>
@@ -272,6 +273,8 @@
 			<br />
 			<button id='c_b_Step' onclick="if (FLASK) onClickStep(); else console.log('set FLASK=true in game.html!');">STEP</button>
 			<button id='c_b_RunToEnd' onclick="onClickRunToEnd()">run to end</button>
+			<br />
+			<br />
 			<button id='c_b_ttt' onclick="onClickTTT()">ttt</button>
 			<button id='c_b_catan' onclick="onClickCatan()">catan</button>
 			<br />
@@ -332,6 +335,7 @@
 						<legend>autoplay</legend>
 						<button id='c_b_NextPlayer' onclick="onClickRunToNextPlayer()">next player</button>
 						<button id='c_b_NextTurn' onclick="onClickRunToNextTurn()">next turn</button>
+						<button id='c_b_NextPhase' onclick="onClickRunToNextPhase()">next phase</button>
 						<br />
 					</fieldset>
 					<fieldset id='a_d_cheat_buttons'>

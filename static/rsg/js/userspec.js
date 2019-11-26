@@ -1,6 +1,17 @@
 function specAndDOM(callbacks = []) {
 	timit.showTime(getFunctionCallerName());
 
+	// console.log(S.settings.boardDetection)
+	// console.log(S.settings.userSettings)
+	// if (!S.settings.boardDetection && !S.settings.userSettings) {
+	// 	console.log('layout2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+	// 	document.getElementById('R_d_root').classList.remove('layout1');
+	// 	document.getElementById('R_d_root').classList.add('layout2');
+	// } else {
+	// 	document.getElementById('R_d_root').classList.add('layout1');
+	// 	document.getElementById('R_d_root').classList.remove('layout2');
+	// }
+
 	//after getting init data: G is up to date, ready to be presented
 	initSETTINGS();
 
@@ -87,8 +98,8 @@ function initSTRUCTURES() {
 	}
 	return hasStructure;
 }
-function presentSpecAndCode() {
-	console.log('presenting!!!\n',S.user.specText)
+function presentSpecAndCode(callbacks = []) {
+	//console.log('presenting!!!\n', S.user.specText)
 	if (S.user.spec) {
 		let d = document.getElementById('a_d_spec_content');
 		d.innerHTML = S.user.specText;
@@ -100,7 +111,7 @@ function presentSpecAndCode() {
 	$('pre').html(function () {
 		return this.innerHTML.replace(/\t/g, '&nbsp;&nbsp;');
 	});
-
+	if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 }
 
 function redrawScreen() {
@@ -141,36 +152,78 @@ function proceedRedraw() {
 	processData(xdata)
 	specAndDOM([gameStep]);
 }
+function onClickUseNoBoardDetection() {
+	S.settings.userBehaviors = false;
+	S.settings.userStructures = false;
+	S.settings.userSettings = false;
+	S.settings.boardDetection = S_boardDetection = false;
+	redrawScreen();
+}
 function onClickUseNoSpec() {
 	S.settings.userBehaviors = false;
 	S.settings.userStructures = false;
 	S.settings.userSettings = false;
+	S.settings.boardDetection = S_boardDetection = true;
 	redrawScreen();
 }
 function onClickUseSettings() {
 	S.settings.userBehaviors = false;
 	S.settings.userStructures = false;
 	S.settings.userSettings = true;
+	S.settings.boardDetection = S_boardDetection = true;
 	redrawScreen();
 }
 function onClickUseStructures() {
 	S.settings.userBehaviors = false;
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;
+	S.settings.boardDetection = S_boardDetection = true;
 	redrawScreen();
 }
 function onClickUseBehaviors() {
 	S.settings.userBehaviors = true;
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;
+	S.settings.boardDetection = S_boardDetection = true;
 	redrawScreen();
 }
 function onClickReloadSpec() {
-	loadUserSpec([loadUserCode,presentSpecAndCode]);
+	loadUserSpec([loadUserCode, presentSpecAndCode, redrawScreen]);
+}
+
+function loadUserSpec(callbacks = []) {
+	_sendRoute('/get_UI_spec/' + GAME, d1 => {
+		S.user.spec = JSON.parse(d1);
+		//console.log(S.user.spec);
+		_sendRoute('/spec/' + GAME, d2 => {
+			//console.log(d2);
+			S.user.specText = d2;
+			if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		});
+	});
+}
+function loadUserCode1blablabl(callbacks = []) {
+	//restoreBehaviors();
+	_sendRoute('/behaviors/' + GAME, d2 => {
+		console.log('............CODE ROUTE\n', d2);
+		loadScript(S.path.script, dScript => {
+			loadText(S.path.script, code => {
+				console.log('............code (load)\n', code);
+				S.user.script = code;
+				if (d2 != code) {
+					alert('different!!!')
+				}
+				// S.user.script = d2;
+				window.eval(`${d2}`);
+
+				if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+			});
+		});
+	});
 }
 
 
-function loadUserSpec(callbacks = []) {
+function loadUserSpecblablabla(callbacks = []) {
 	timit.showTime(getFunctionCallerName());
 	S.path.spec = '/examples_front/' + S.settings.game + '/' + S.settings.game + '_ui.yaml';
 	loadYML(S.path.spec, dSpec => {
@@ -182,15 +235,60 @@ function loadUserSpec(callbacks = []) {
 	});
 }
 function loadUserCode(callbacks = []) {
-	timit.showTime(getFunctionCallerName());
-	S.path.script = '/examples_front/' + S.settings.game + '/' + S.settings.game + '_ui.js';
-	loadScript(S.path.script, dScript => {
-		loadText(S.path.script, code => {
-			S.user.script = code;
-			if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+	//timit.showTime(getFunctionCallerName());
+	let fname = S.user.spec.CODE;
+	if (nundef(fname)) {
+		S.user.script = 'no code';
+		if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+	} else {
+		console.log('code filename is:', fname)
+		S.path.script = '/examples_front/' + S.settings.game + '/' + fname + '.js';
+		loadScript(S.path.script, dScript => {
+			loadText(S.path.script, code => {
+				S.user.script = code;
+				if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+			});
 		});
-	});
+	}
 }
+
+//usage:
+// if (iNeedSomeMore) {
+// 	Script.load("myBigCodeLibrary.js"); // includes code for myFancyMethod();
+// 	myFancyMethod(); // cool, no need for callbacks!
+// }
+var Script = {
+	_loadedScripts: [],
+	include: function (script) {
+		// include script only once
+		if (this._loadedScripts.include(script)) {
+			return false;
+		}
+		// request file synchronous
+		var code = new Ajax.Request(script, {
+			asynchronous: false,
+			method: "GET",
+			evalJS: false,
+			evalJSON: false
+		}).transport.responseText;
+		// eval code on global level
+		if (Prototype.Browser.IE) {
+			window.execScript(code);
+		} else if (Prototype.Browser.WebKit) {
+			$$("head").first().insert(Object.extend(
+				new Element("script", {
+					type: "text/javascript"
+				}), {
+				text: code
+			}
+			));
+		} else {
+			window.eval(code);
+		}
+		// remember included script
+		this._loadedScripts.push(script);
+	}
+};
 
 
 

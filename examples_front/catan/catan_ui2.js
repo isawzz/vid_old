@@ -17,10 +17,10 @@ TABLE_UPDATE = {
 
 FUNCS = {
 	setup_field1: (oid, o, hallo1) => {
-		// console.log('..........in setup_field1')
-		// console.log('oid', oid)
-		// console.log('o', o)
-		// console.log('field', hallo1)
+		console.log('..........in setup_field1')
+		console.log('oid', oid)
+		console.log('o', o)
+		console.log('field', hallo1)
 
 		if (nundef(o.res)) { hallo1.setBg(V.colors.desert); }
 		else {

@@ -18,18 +18,23 @@ function initPageHeader() {
 }
 function initTABLES() {
 	//prepare areas for default objects
-	let tables= {
+	let tables = {
 		a_d_game: S.settings.gameAreaSize,
 	};
-	if (S.settings.boardDetection || isdef(S.user.spec)) {
+	if (!S.settings.boardDetection && !S.settings.userStructures) {
+		document.getElementById('a_d_player_header').innerHTML = '';
+		setCSSVariable('--wPlayers','0px');
+		S.settings.table.defaultArea = 'a_d_game';
+		S.settings.player.defaultArea = 'a_d_objects'; //'a_d_options';
+		tables.a_d_game = [1400, '65vh'];
+	} else {
+		document.getElementById('a_d_player_header').innerHTML = '<p>players</p>';
+		setCSSVariable('--wPlayers','290px');
 		S.settings.table.defaultArea = 'a_d_objects';
 		S.settings.player.defaultArea = 'a_d_player'; //'a_d_options';
 		let d = document.getElementById('a_d_game');
 		d.style.overflow = 'visible';
 		d.classList.remove('flexWrap')
-	} else { //no spec, no boardDetection!
-		S.settings.table.defaultArea = 'a_d_game';
-		S.settings.player.defaultArea = 'a_d_player'; //'a_d_options';
 	}
 
 	for (const areaName of [S.settings.table.defaultArea, S.settings.player.defaultArea]) {
@@ -149,7 +154,7 @@ function simpleColors(c = 'powderblue') {
 	// timit.showTime(getFunctionCallerName());
 
 	let pal = getPalette(c);
-	S.settings.palette=pal;
+	S.settings.palette = pal;
 
 	ROOT.children.map(x => UIS[x].setBg(pal[2], true));
 
@@ -199,17 +204,17 @@ function pageHeaderSetPlayers() {
 	let s = '<div style="float:left">Players:&nbsp;</div>';//&nbsp;';
 	for (const pid in G.playersAugmented) {
 		let pl = G.playersAugmented[pid];
-		spl = pageHeaderGetPlayerHtml(pl.username,pid,pl.color,pl.isMe);
+		spl = pageHeaderGetPlayerHtml(pl.username, pid, pl.color, pl.isMe);
 		s += spl;
 	}
 	divPlayerNames.innerHTML = s;
 }
 function pageHeaderAddPlayer(username, playerId, color, asMe = false) {
 	let divPlayerNames = document.getElementById('a_d_divPlayerNames');
-	divPlayerNames.insertAdjacentHTML('beforeend', pageHeaderGetPlayerHtml(username,playerId,color,asMe));
-	
+	divPlayerNames.insertAdjacentHTML('beforeend', pageHeaderGetPlayerHtml(username, playerId, color, asMe));
+
 }
-function pageHeaderGetPlayerHtml(username,playerId,color,asMe){
+function pageHeaderGetPlayerHtml(username, playerId, color, asMe) {
 	// let spl = `<div id='c_c_${username}' class='playerHeader'><div>${username}${asMe ? ' (me)' : ''}</div><div style='color:${color}'>${playerId}</div></div>`
 	let spl = `<div id='c_c_${username}' class='playerHeader'><div>${username}</div><div style='color:${color}'>${playerId}</div></div>`
 	return spl;

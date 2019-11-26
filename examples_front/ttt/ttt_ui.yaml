@@ -16,5 +16,5 @@ STRUCTURES:
     structure: 
       type: detectBoard
 
-
+CODE: ttt_ui
 

@@ -9,6 +9,7 @@ function clearLog(){
 function restoreBehaviors() {
 	PLAYER_UPDATE = {};
 	TABLE_UPDATE = {};
+	FUNCS = {};
 	PLAYER_CREATE = {};
 	TABLE_CREATE = {};
 	V = {};
