@@ -16,7 +16,7 @@ function initPageHeader() {
 	pageHeaderSetGame();
 	pageHeaderSetPlayers();
 }
-function isPlain(){return !S.settings.boardDetection && !S.settings.userStructures}
+function isPlain() { return !S.settings.boardDetection && !S.settings.userStructures }
 function initTABLES() {
 	//prepare areas for default objects
 	let tables = {
@@ -26,10 +26,10 @@ function initTABLES() {
 	if (isPlain()) {
 		let space = 400;
 		let pmainSpace = space;
-		let pothersSpace = (space-100) * (S.gameConfig.numPlayers - 1);
+		let pothersSpace = (space - 100) * (S.gameConfig.numPlayers - 1);
 
 		//document.getElementById('a_d_player_header').innerHTML = '';
-		setCSSVariable('--wPlayers',''+pothersSpace+'px');
+		setCSSVariable('--wPlayers', '' + pothersSpace + 'px');
 
 		S.settings.table.defaultArea = 'a_d_objects';
 		S.settings.player.defaultArea = 'a_d_player'; //'a_d_options';
@@ -38,7 +38,7 @@ function initTABLES() {
 		document.getElementById('c_d_statusText').innerHTML = 'Me'
 	} else {
 		document.getElementById('a_d_player_header').innerHTML = '<p>players</p>';
-		setCSSVariable('--wPlayers','290px');
+		setCSSVariable('--wPlayers', '290px');
 		S.settings.table.defaultArea = 'a_d_objects';
 		S.settings.player.defaultArea = 'a_d_player'; //'a_d_options';
 		S.settings.player.defaultMainArea = null;
@@ -47,25 +47,61 @@ function initTABLES() {
 		d.classList.remove('flexWrap')
 	}
 
-	for (const areaName of [S.settings.table.defaultArea, S.settings.player.defaultArea,S.settings.player.defaultMainArea]) {
+	for (const areaName of [S.settings.table.defaultArea, S.settings.player.defaultArea, S.settings.player.defaultMainArea]) {
 		if (areaName === null) continue;
 		let d = document.getElementById(areaName);
-		if (d.id != 'a_d_player') d.style.overflow = 'auto';
+		if (d.id != 'a_d_player') {d.style.overflowY = 'auto';d.style.overflowX='hidden';}
 		d.classList.add('flexWrap');
 	}
 
 	//set game area size
 	for (const areaName in tables) {
 		//TODO: add area if not exists as Tab in previous area! for now, just existing areas!
-		let cssVarNameWidth = AREAS[areaName][0];
-		let w = tables[areaName][0];
-		if (isNumber(w)) w = '' + w + 'px';
-		setCSSVariable(cssVarNameWidth, w);
-		let cssVarNameHeight = AREAS[areaName][1];
-		let h = tables[areaName][1];
-		if (isNumber(h)) h = '' + h + 'px';
-		setCSSVariable(cssVarNameHeight, h);
+		setAreaWidth(areaName, tables[areaName][0]);
+		setAreaHeight(areaName, tables[areaName][1]);
 	}
+}
+function setAreaWidth(areaName, w) {
+	let wString;
+	let wNum = null;
+	if (isString(w)){
+		console.log(w)
+		let n = firstNumber(w);
+		if (isNumber(n)) wNum = n;
+		wString = w;
+	}else {
+		wNum = w;
+		wString = ''+w+'px';
+	}
+	let varName = AREAS[areaName][0];
+	setCSSVariable(varName, wString);
+	if (UIS[areaName] && wNum) UIS[areaName].w = wNum;
+	console.log('width of', areaName, w,wNum,wString);
+}
+function setAreaHeight(areaName, h) {
+	let varName = AREAS[areaName][1];
+	let hAttr = isNumber(h)? '' + h + 'px':h;
+	setCSSVariable(varName, hAttr);
+	if (UIS[areaName]) UIS[areaName].h = h;
+	console.log('height of', areaName, h,'attr',hAttr)
+}
+function growIfDefaultMainAreaWidth(ms) {
+	//return;
+	console.log('real w of table:',ms.parts.table.offsetWidth)
+	console.log('width of table is:', ms.elem.offsetWidth, ms.elem, ms.idParent);
+	let wElem = ms.parts.table.offsetWidth; //ms.elem.offsetWidth;
+	let areaName = ms.idParent;
+	if (isdef(wElem) && isdef(AREAS[areaName])) {
+		let wNeeded = wElem + 40;
+		let wArea = UIS[areaName].w;
+		console.log('wNeeded',wNeeded,'wArea',wArea);
+		if (wArea < wNeeded || wArea > wNeeded+100) {
+			setAreaWidth(areaName, wNeeded);
+			console.log('---> w of', areaName, 'from', wArea, 'to', wNeeded);
+		}
+
+	}
+
 }
 function initDom() {
 	// timit.showTime(getFunctionCallerName());

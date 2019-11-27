@@ -11,7 +11,7 @@ function makeIdDefaultPlayer(oid){return 'd_p_'+oid;}
 
 
 //get ids for oid as list
-function isStructuralElement(oid){return 'fields' in G.table[oid];}
+function isStructuralElement(oid){ if (nundef(G.table) || !(oid in G.table)) return false; return 'fields' in G.table[oid];}
 function defaultVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'd'); }
 function someVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'd' || x[0] == 'm'); }
 function mainVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'm'); }

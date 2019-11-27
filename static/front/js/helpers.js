@@ -4260,7 +4260,14 @@ function getLines(s) {
 
 function firstNumber(s) {
 	// returns first number in string s
-	return s ? Number(s.match(/-?\d+/).shift()) : -1;
+	if (s){
+		let m = s.match(/-?\d+/);
+		if (m){
+			let sh = m.shift();
+			if (sh){ return Number(sh); }
+		}
+	}
+	return null;
 }
 
 function firstPositiveNumber(s) {

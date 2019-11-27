@@ -420,6 +420,9 @@ function presentMainPlayer(oid, ms, pool, isTableObject) {
 	keys = optout ? arrMinus(getKeys(o), optout) : optin ? optin  : getKeys(o);
 
 	let x = ms.tableX(o, keys); //adds or replaces table w/ prop values
+
+	growIfDefaultMainAreaWidth(ms);
+
 	return x;
 
 
