@@ -1,6 +1,6 @@
 #...#!/var/www/html/flask/scriptapp/scriptapp-venv/bin/python3
 
-#region fe code
+#region imports
 import json
 import http
 import os
@@ -8,7 +8,6 @@ import random
 import sys
 import time
 import traceback
-import yaml
 from collections import OrderedDict, namedtuple
 from itertools import chain, product
 from string import Formatter
@@ -27,7 +26,9 @@ SAVE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saves')
 
 
 null = http.HTTPStatus.NO_CONTENT
+#endregion
 
+#region FRONT routes
 app = Flask(__name__, static_folder='static')
 app.url_map.converters['lst'] = LstConverter
 CORS(app)
@@ -37,15 +38,15 @@ def _fmt_output(data):
 
 def _ex_wrap(cmd, *args, **kwargs):
 	try:
-		#print(cmd,args,kwargs)
 		return cmd(*args, **kwargs)
 	except Exception as e:
 		if isinstance(e, gsm.signals.WrappedException):
-			msg = {'error':{'type':e.etype.__name__, 'msg':e.emsg}}
+			msg = {'error':{'type':str(e.etype), 'msg':e.emsg}}
 		else:
+		
 			msg = {
 				'error': {
-					'type': e.__class__.__name__,
+					'type': e.__class__.__name__ if '__name__' in e.__class__ else e.__class__,
 					'msg': ''.join(traceback.format_exception(*sys.exc_info())),
 				},
 			}
@@ -61,6 +62,7 @@ def _hard_restart(address=None, debug=False, **settings):
 	global H
 	
 	address = 'http://localhost:5000' 
+
 	if address is None:
 		assert H is not None, 'must provide an address if no host is running'
 		address = H.address
@@ -224,10 +226,7 @@ def _get_roles():
 @app.route('/active')
 def _get_active_players():
 	return _ex_wrap(H.get_active_players)
-
-
 #endregion
-
 
 #region socketio: chat and messaging
 # USE_SOCKETIO=True
@@ -312,11 +311,10 @@ def lobby():
 
 #endregion
 
-
 #region static front
+import yaml
 statfold_sim = 'templates'
 statfold_path = 'static'
-
 @app.route('/sim')
 @app.route('/sim/')
 def rootsim():
@@ -390,6 +388,9 @@ def _save_UI_code(game,code,v=None):
 
 #endregion
 
+
+
+
 def main(argv=None):
 	parser = argparse.ArgumentParser(description='Start the host server.')
 	
@@ -410,6 +411,8 @@ def main(argv=None):
 	
 	app.run(host=args.host, port=args.port)
 	#socketio.run(app, host=args.host,port=args.port) #, debug=True)
+	
+	
 
 if __name__ == "__main__":
 	main()
