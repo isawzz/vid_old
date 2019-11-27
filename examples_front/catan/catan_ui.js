@@ -11,7 +11,7 @@ V = {
 
 TABLE_UPDATE = {
 	resources_numbers: (id, o, phase) => {
-		if (phase == 'setup' && o.obj_type == 'hex') { return { f: 'setup_field', vis: [id] }; }
+		if (o.obj_type == 'hex') { return { f: 'setup_field', vis: [id] }; }
 	},
 };
 

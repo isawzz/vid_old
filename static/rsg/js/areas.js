@@ -11,6 +11,8 @@ const AREAS = {
 	a_d_buttons: ['--wActions', '--hTesting'],
 	a_d_testing: ['--wGame', '--hTesting'],
 	a_d_options: ['--wLog', '--hTesting'],
+
+	a_d_player:['--wPlayers','--hGame'],
 }
 function initPageHeader() {
 	pageHeaderSetGame();
@@ -38,19 +40,21 @@ function initTABLES() {
 		document.getElementById('c_d_statusText').innerHTML = 'Me'
 	} else {
 		document.getElementById('a_d_player_header').innerHTML = '<p>players</p>';
-		setCSSVariable('--wPlayers', '290px');
+		setCSSVariable('--wPlayers', '400px');
 		S.settings.table.defaultArea = 'a_d_objects';
 		S.settings.player.defaultArea = 'a_d_player'; //'a_d_options';
 		S.settings.player.defaultMainArea = null;
 		let d = document.getElementById('a_d_game');
 		d.style.overflow = 'visible';
-		d.classList.remove('flexWrap')
+		d.classList.remove('flexWrap');
+		// setAreaWidth('a_d_player',400);
 	}
 
 	for (const areaName of [S.settings.table.defaultArea, S.settings.player.defaultArea, S.settings.player.defaultMainArea]) {
 		if (areaName === null) continue;
 		let d = document.getElementById(areaName);
-		if (d.id != 'a_d_player') {d.style.overflowY = 'auto';d.style.overflowX='hidden';}
+		if (d.id != 'a_d_player') {d.style.overflowY = 'auto';}
+		d.style.overflowX='hidden';
 		d.classList.add('flexWrap');
 	}
 
@@ -62,6 +66,7 @@ function initTABLES() {
 	}
 }
 function setAreaWidth(areaName, w) {
+	if (!(areaName in AREAS)){alert('not in AREAS!!! '+areaName)}
 	let wString;
 	let wNum = null;
 	if (isString(w)){
@@ -86,6 +91,24 @@ function setAreaHeight(areaName, h) {
 	//console.log('height of', areaName, h,'attr',hAttr)
 }
 function growIfDefaultMainAreaWidth(ms) {
+	//return;
+	//console.log('real w of table:',ms.parts.table.offsetWidth)
+	//console.log('width of table is:', ms.elem.offsetWidth, ms.elem, ms.idParent);
+	let wElem = ms.parts.table.offsetWidth; //ms.elem.offsetWidth;
+	let areaName = ms.idParent;
+	if (isdef(wElem) && isdef(AREAS[areaName])) {
+		let wNeeded = wElem + 40;
+		let wArea = UIS[areaName].w;
+		console.log('wNeeded',wNeeded,'wArea',wArea);
+		if (wArea < wNeeded || wArea > wNeeded+100) {
+			setAreaWidth(areaName, wNeeded);
+			//console.log('---> w of', areaName, 'from', wArea, 'to', wNeeded);
+		}
+
+	}
+
+}
+function growIfDefaultPlayerAreaWidthblablabla(ms) {
 	//return;
 	//console.log('real w of table:',ms.parts.table.offsetWidth)
 	//console.log('width of table is:', ms.elem.offsetWidth, ms.elem, ms.idParent);

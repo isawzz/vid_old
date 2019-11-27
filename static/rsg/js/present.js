@@ -400,6 +400,11 @@ function presentDefault(oid, o, isTableObject = true) {
 	keys = optout ? arrMinus(getKeys(o), optout) : optin ? optin  : getKeys(o);
 
 	let x = ms.tableX(o, keys); //adds or replaces table w/ prop values
+	
+	if (!isPlain() && !isTableObject){
+		growIfDefaultMainAreaWidth(ms);
+	}
+	
 	return x;
 
 
