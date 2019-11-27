@@ -140,9 +140,14 @@
 							</fieldset>
 							<fieldset id='fChooseMode'>
 								<legend>play mode</legend>
-								<input class='radio' id='c_b_mm_solo' type="radio" name="playmode" value="solo" onclick='onClickPlaymode("solo")'>solo<br>
+								<!-- <input class='radio' id='c_b_mm_solo' type="radio" name="playmode" value="solo" onclick='onClickPlaymode("solo")'>solo<br> -->
 								<input class='radio' id='c_b_mm_hotseat' type="radio" name="playmode" value="hotseat" onclick='onClickPlaymode("hotseat")'>hotseat<br>
+								<input class='radio' id='c_b_mm_passplay' type="radio" name="playmode" value="passplay" onclick='onClickPlaymode("passplay")'>P & P<br>
 								<!-- <input class='radio' id='c_b_mm_multiplayer' type="radio" name="playmode" value="multiplayer" onclick='onClickPlaymode("multiplayer")'>multiplayer<br> -->
+							</fieldset>
+							<fieldset id='fChooseSeed'>
+								<legend>seed</legend>
+								<input class='input' style='width:60px;' id='c_b_mm_seed' type="number" value=1>
 							</fieldset>
 							<fieldset id='fChoosePlayers' style='height:220px'>
 								<legend>players</legend>
@@ -232,6 +237,7 @@
 			<div id='a_d_divPlayerNames' style='float:left;margin:4px 10px;color:dimgray'>
 				Players:&nbsp;
 			</div>
+			<div id="c_d_statusInHeaderText" style='color:black'>status</div>
 		</div>
 
 		<div id="a_d_action_header" class="area">
@@ -262,12 +268,14 @@
 			<button id='c_b_Restart' onclick="onClickRestart()">restart</button>
 			<br />
 			<br />
-			<button onclick="onClickUseNoBoardDetection()">just desserts</button>
+			<button onclick="onClickUseNoBoardDetection()">plain</button>
 			<button onclick="onClickUseNoSpec()">boardDetection</button>
 			<button onclick="onClickUseStructures()">spec</button>
 			<!-- <button onclick="onClickUseSettings()">settings</button>
 			<button onclick="onClickUseStructures()">structures</button> -->
 			<button onclick="onClickUseBehaviors()">spec & code</button>
+			<br />
+			<br />
 			<button onclick="onClickReloadSpec()">reload spec</button>
 			<br />
 			<br />

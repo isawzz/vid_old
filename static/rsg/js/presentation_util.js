@@ -56,6 +56,7 @@ function transformToString(k,val, refs){
 	return sval;
 }
 function tableElemX(o, keys) {
+	console.log(o,keys)
 	let t = document.createElement('table');
 	t.classList.add('tttable');
 	let refs = [];//collect references to objects and players inside of table {oids:[oids],clid:clid,type:'p'|'t'} => parts
@@ -244,6 +245,38 @@ function makeMainVisual(oid, o) {
 	let [x, y] = [locElem.x, locElem.y];
 	ms.ellipse({ w: w, h: h, fill: color }); ms.setPos(x, y); ms.attach();//.text('hallo').attach();
 
+	return ms;
+
+}
+function makeMainPlayer(oid, o, areaName) {
+	let id = 'm_p_' + oid;
+	if (isdef(UIS[id])) { console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+	let ms = new RSG();
+	ms.id = id;
+	let title = 'player: ' + oid + '(' + getPlayerColorString(oid) + ', ' + getUser(oid) + ')';
+	// _makeDefault(makeIdDefaultPlayer(oid), oid, o, areaName, ); }
+	let domel = document.createElement('div');
+	domel.style.cursor = 'default';
+	ms.elem = domel;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(domel);
+	ms.cat = DOMCATS[ms.domType];
+	let idParent = areaName;
+	ms.idParent = idParent;
+	let parent = UIS[idParent];
+	parent.children.push(id);
+
+	let sTitle = title;
+	let color = G.playersAugmented[oid].color;
+	ms.title(sTitle,'title',color);
+
+	ms.o = o;
+	ms.isa.player = true;
+
+	linkObjects(id, oid);
+	listKey(IdOwner, id[2], id);
+	UIS[id] = ms;
+	ms.attach();
 	return ms;
 
 }

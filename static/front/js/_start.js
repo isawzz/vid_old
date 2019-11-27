@@ -10,50 +10,19 @@ function _start() {
 	_startNewGame('starter');
 
 }
-
 function _startLogin() { loginView(); }
-function _startLobby() { lobbyView(); }
 
-// function _startHotseatGame() { gameView(); initDom(); _startHotseat(); }
-// function _startSoloGame() { gameView(); initDom(); _startSolo(); }
-function setIsReallyMultiplayer() {
-	let gc = S.gameConfig;
-	// if any of the players is not front ai and is not me, is real multiplayer game and has to be announced!!!
-	let players = gc.players;
-	let foreign = firstCond(players, x => !isMyPlayer(x.id) && x.playerType == 'human');
-	isReallyMultiplayer = (foreign != null);
-	disableButtonsForMultiplayerGame();
-}
-function getUsernameForPlayer(id) {
-	//console.log('getUsernameForPlayer id:',id)
-	let players = S.gameConfig.players;
-	let pl = firstCond(players, x => x.id == id);
-	let uname = pl.username;
-	return uname;
-}
-function isMyPlayer(id) {
-	let uname = getUsernameForPlayer(id);
-	return startsWith(uname, USERNAME);
-}
-function isFrontAIPlayer(id) {
-	if (USE_BACKEND_AI) return false;
-	console.log('!!!!!!!!!isFrontAIPlayer: should NOT get here if USE_BACKEND_AI=='+USE_BACKEND_AI);
-	let players = S.gameConfig.players;
-	let pl = firstCond(players, x => x.id == id);
-	let playerType = pl.playerType;
-	return playerType == 'AI';
-}
+function _startLobby() { lobbyView(); }
 
 function _startNewGame(role) {
 	gameView();
-	initDom();
 	//console.log('starting as',role,'multiplayer=',isReallyMultiplayer);
 
 	timit.start_of_cycle(getFunctionCallerName());
 	S.vars.switchedGame = true;
 	S.settings.game = GAME;
 
-	_checkCleanup();
+	checkCleanup_III();
 
 	S.user = {};
 	G = { table: {}, players: {}, signals: {} }; //server objects
@@ -63,6 +32,7 @@ function _startNewGame(role) {
 	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
 	id2uids = {}; // { uid : list of ms ids related to same oid }
 
+
 	if (role == 'starter') {
 		loadUserSpec([loadUserCode, sendInitNewGame]);
 		//if (S.settings.userSettings) loadUserSpec([loadUserCode, sendInitNewGame]); else sendInitNewGame();
@@ -71,80 +41,26 @@ function _startNewGame(role) {
 		//if (S.settings.userSettings) loadUserSpec([loadUserCode, sendStatusNewGame]); else sendStatusNewGame();
 	}
 }
-function _startGameAsJoiner() {
-	timit.start_of_cycle(getFunctionCallerName());
-	S.vars.switchedGame = true;
-	S.settings.game = GAME;
-
-	_checkCleanup();
-
-	S.user = {};
-	G = { table: {}, players: {} }; //server objects
-	UIS = {}; // holds MS objects 
-	IdOwner = {}; //lists of ids by owner
-	id2oids = {}; // { uid : list of server object ids (called oids) }
-	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
-	id2uids = {}; // { uid : list of ms ids related to same oid }
-
-	loadUserSpec([loadUserCode, sendStatusNewGame]);
-	//if (S.settings.userSettings) loadUserSpec([loadUserCode, sendStatusNewGame]); else sendStatusNewGame();
-}
-function _startGameAsStarter() {
-	timit.start_of_cycle(getFunctionCallerName());
-	S.vars.switchedGame = true;
-	S.settings.game = GAME;
-
-	_checkCleanup();
-
-	S.user = {};
-	G = { table: {}, players: {} }; //server objects
-	UIS = {}; // holds MS objects 
-	IdOwner = {}; //lists of ids by owner
-	id2oids = {}; // { uid : list of server object ids (called oids) }
-	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
-	id2uids = {}; // { uid : list of ms ids related to same oid }
-
-	loadUserSpec([loadUserCode, sendInitNewGame]);
-	//if (S.settings.userSettings) loadUserSpec([loadUserCode, sendInitNewGame]); else sendInitNewGame();
-}
-
 function _startRestartSame() {
-	timit.start_of_cycle(getFunctionCallerName());
-	if (isdef(UIS)) {
-		stopBlinking('a_d_status');
-		stopInteraction();
-		clearLog();
-		delete G.end;
-		delete G.signals.receivedEndMessage;
-	}
-
-	_sendRoute('/begin/1', d6 => {
+	checkCleanup_I();
+	_sendRoute('/begin/'+SEED, d6 => {
 		let user = USERNAME;
 		timit.showTime('sending status');
 		_sendRoute('/status/' + user, d7 => {
 			let data = JSON.parse(d7);
 			timit.showTime('start processing');
 			processData(data); gameStep();
-			//if (processData(data)) gameStep();
-			//else console.log('_startRestartSame: NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
 	});
 }
 
 //#region helpers
-function _checkCleanup() {
-	if (!S.vars.firstTime) { //cleanup
-		pageHeaderClearAll();
-		restoreBehaviors();
-		stopBlinking('a_d_status');
-		openTabTesting('London');
-		UIS['a_d_status'].clear({ innerHTML: '<div id="c_d_statusText">status</div>' });
-		UIS['a_d_actions'].clear({ innerHTML: '<div id="a_d_divSelect" class="sidenav1"></div>' });
-		let areaPlayer = isdef(UIS['a_d_player']) ? 'a_d_player' : isdef(UIS['a_d_players']) ? 'a_d_players' : 'a_d_options';
-		//console.log('area for players is', areaPlayer)
-		for (const id of ['a_d_log', 'a_d_objects', areaPlayer, 'a_d_game']) clearElement(id);
-		delete S.players;
-	} else S.vars.firstTime = false;
+function getUsernameForPlayer(id) {
+	//console.log('getUsernameForPlayer id:',id)
+	let players = S.gameConfig.players;
+	let pl = firstCond(players, x => x.id == id);
+	let uname = pl.username;
+	return uname;
 }
 function inferPlayerColorFromNameOrInit(plid, index) {
 	let cname = plid.toLowerCase();
@@ -154,6 +70,7 @@ function inferPlayerColorFromNameOrInit(plid, index) {
 	return playerColors[ckeys[index] % playerColors.length];
 }
 function _initPlayers() {
+	//TODO: eliminate S.players, das ist jetzt in S.gameConfig
 	S.players = {}; //da sollen die objects {username,isMe,id,color} drin sein!!!
 	G.players = {};
 	let ckeys = Object.keys(playerColors);
@@ -167,7 +84,7 @@ function _initPlayers() {
 		let altName = capitalize(colorName);
 		let color = isdef(playerColors[colorName]) ? playerColors[colorName] : colorName;
 		let plInfo = firstCond(S.gameConfig.players, x => x.id == id);
-		//console.log('_initPlayers found',id,plInfo);
+
 		S.players[id] = { username: plInfo.username, playerType: plInfo.playerType, agentType: plInfo.agentType, id: id, color: color, altName: altName, index: plInfo.index };
 		i += 1;
 	}
@@ -178,16 +95,15 @@ function _initServer() {
 	timit = new TimeIt(getFunctionCallerName());
 	timit.tacit();
 
-	S = { path: {}, user: {}, settings: {}, vars: { firstTime: true } };
+	S = { path: {}, user: {}, settings: {}, vars: {} };
 	counters = { msg: 0, click: 0, mouseenter: 0, mouseleave: 0, events: 0 };
 
 	setDefaultSettings();
 	S.vars.switchedGame = true;
-	S.vars.firstTime = false;
 
-	_initGameGlobals();
-	S.gameInProgress = false;
-	initDom();
+	// _initGameGlobals();
+	// S.gameInProgress = false;
+	// initDom();
 }
 function _initGameGlobals() {
 	S.user = {};
@@ -200,4 +116,25 @@ function _initGameGlobals() {
 	DELETED_IDS = [];
 
 }
+function isMyPlayer(id) {
+	let uname = getUsernameForPlayer(id);
+	return startsWith(uname, USERNAME);
+}
+function isFrontAIPlayer(id) {
+	if (USE_BACKEND_AI) return false;
+	console.log('!!!!!!!!!isFrontAIPlayer: should NOT get here if USE_BACKEND_AI=='+USE_BACKEND_AI);
+	let players = S.gameConfig.players;
+	let pl = firstCond(players, x => x.id == id);
+	let playerType = pl.playerType;
+	return playerType == 'AI';
+}
+function setIsReallyMultiplayer() {
+	let gc = S.gameConfig;
+	// if any of the players is not front ai and is not me, is real multiplayer game and has to be announced!!!
+	let players = gc.players;
+	let foreign = firstCond(players, x => !isMyPlayer(x.id) && x.playerType == 'human');
+	isReallyMultiplayer = (foreign != null);
+	disableButtonsForMultiplayerGame();
+}
+
 

@@ -22,7 +22,7 @@ function addPlayer(playerId, callback) {
 	//console.log('adding user',username,'as player',playerId)
 	let route = '/add/player/' + username + '/' + playerId; _sendRouteJS(route, callback);
 }
-function tryBegin(callback) { let route = '/begin/1'; _sendRouteJS(route, callback); }
+function tryBegin(callback) { let route = '/begin/'+SEED; _sendRouteJS(route, callback); }
 function restartHost(callback) { let route = '/restart'; _sendRouteJS(route, callback); }
 
 //#region misc helpers

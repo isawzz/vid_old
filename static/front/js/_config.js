@@ -1,6 +1,7 @@
 var USERNAME='dwight';
 var GAME='catan'; // catan | ttt
-var PLAYMODE = 'hotseat'; // multiplayer | hotseat | solo
+var PLAYMODE = 'hotseat'; // multiplayer | hotseat | solo | passplay
+var SEED = 1;
 //var AI_TYPE = 'random';
 const PLAYER_CONFIG_FOR_MULTIPLAYER = ['me','human','human'];
 

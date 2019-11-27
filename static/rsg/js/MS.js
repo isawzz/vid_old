@@ -897,7 +897,7 @@ class RSG {
 			part.style.backgroundColor = c;
 		}
 		if (updateFg) {
-			this.setFg(colorIdealText(c), true);
+			this.setFg(colorIdealText(c),{partName:partName});
 		}
 		return this;
 	}
@@ -976,7 +976,7 @@ class RSG {
 	//#endregion
 
 	//#region parts
-	title(s, key = 'title') {
+	title(s, key = 'title', color='dimgray') {
 		if (this.parts[key]) {
 			//console.log('HALLLLLLLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO', this.parts[key], this.elem); 
 			this.parts[key].style.backgroundColor = randomColor();
@@ -985,7 +985,7 @@ class RSG {
 		let t = document.createElement('div');
 		t.style.borderRadius = '8px';
 		t.style.padding = '4px 8px';
-		let bg = 'dimgray';
+		let bg = color;
 		//t.style.backgroundColor = bg;
 		t.classList.add('tttitle');
 		t.innerHTML = s;
@@ -993,7 +993,7 @@ class RSG {
 		this.parts[key] = t;
 		//add these props to part:
 		$(t).attrs({ name: key });//, bg: bg });
-		this.setBg(bg, { partName: key });
+		this.setBg(bg, { updateFg:(color!='dimgray'), partName: key });
 		// t.name = key;
 		// t.bg = t.style.backgroundColor;
 		return this;

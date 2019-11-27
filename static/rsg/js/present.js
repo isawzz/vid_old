@@ -19,9 +19,6 @@ function presentTable() {
 			continue;
 		}
 
-		//hier wuerde dann create behaviors aufrufen
-		//if (o.obj_type == 'robber') console.log('robber main does not exist and needs to be created!!!')
-
 		let updatedVisuals;
 		if (S.settings.userBehaviors) {
 			updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_CREATE);
@@ -83,13 +80,22 @@ function presentPlayers() {
 	//creation of new players
 	for (const pid of G.playersCreated) {
 
-		if (!defaultVisualExists(pid) && S.settings.player.createDefault) makeDefaultPlayer(pid, G.playersAugmented[pid], S.settings.player.defaultArea);
+		if (!defaultVisualExists(pid) && S.settings.player.createDefault) 
+			makeDefaultPlayer(pid, G.playersAugmented[pid], S.settings.player.defaultArea);
 
 		if (mainVisualExists(pid)) continue;
 
-		//hier wuerde dann create behaviors aufrufen
-
-		//if (S.settings.tooltips) createTooltip(pid, G.playersAugmented);
+		let updatedVisuals;
+		if (S.settings.userBehaviors) {
+			updatedVisuals = runBEHAVIOR_new(pid, G.playersAugmented, PLAYER_CREATE);
+		}
+		//console.log('updatedVisuals',updatedVisuals)
+		if (isPlain() && (nundef(updatedVisuals) || !updatedVisuals.includes(pid))) {
+			let ms = makeMainPlayer(pid, G.playersAugmented[pid], S.settings.player.defaultMainArea);
+			if (ms === null && !defaultVisualExists(pid) && S.settings.table.createDefault != false){
+				makeDefaultObject(pid, G.playersAugmented[pid], S.settings.table.defaultArea);
+			}
+		}
 	}
 	//presentation of existing changed players 
 	for (const pid in G.playersUpdated) {
@@ -104,7 +110,7 @@ function presentPlayers() {
 			let updatedVisuals = {};
 			if (S.settings.userBehaviors) updatedVisuals = runBEHAVIOR_new(pid, G.playersAugmented, PLAYER_UPDATE);
 			if (!updatedVisuals[pid]) {
-				presentMain(oid, ms, G.playersAugmented,false);
+				presentMainPlayer(pid, ms, G.playersAugmented,false);
 			}
 			//if (!updatedVisuals[pid]) o.table(G.playersAugmented[pid]);
 		}
@@ -119,6 +125,7 @@ function presentPlayers() {
 	}
 }
 function onPlayerChange(pid) {
+	if (isPlain()) return;
 	if (!G.playerChanged || pid != G.player) return;
 	//console.log('player has changed!!!!!!!!!!!!!!!!!!!!!!!!!')
 	let o = G.playersAugmented[pid];
@@ -177,7 +184,7 @@ function measureDefaultPlayerElement(plms) {
 function presentStatus() {
 	if (isdef(G.serverData.status)) {
 		let lineArr = G.serverData.status.line;
-		let areaName = 'c_d_statusText';
+		let areaName = isPlain()? 'c_d_statusInHeaderText':'c_d_statusText';
 		let d = document.getElementById(areaName);
 		let ms = UIS[areaName];
 		ms.clear(); clearElement(d);
@@ -372,6 +379,8 @@ function presentMain(oid, ms, pool, isTableObject = true) {
 function presentDefault(oid, o, isTableObject = true) {
 	let ms = getDefVisual(oid);
 	if (!ms) return;
+	if (isPlain() && !isTableObject && G.player == oid) {ms.hide(); return null;}
+	if (isPlain() && !isTableObject) ms.show();
 
 	//filter keys using optin and optout lists
 	let optin = isTableObject ? S.settings.table.optin : S.settings.player.optin;
@@ -386,6 +395,27 @@ function presentDefault(oid, o, isTableObject = true) {
 
 
 }
+function presentMainPlayer(oid, ms, pool, isTableObject) {
+	let o = pool[oid];
+	console.log(oid,o,G.player)
+	//let ms = getVisual(oid);
+	if (!ms) return;
+	if (oid != G.player) {ms.hide(); return;} else ms.show();
+
+	//filter keys using optin and optout lists
+	let optin = S.settings.player.optin;
+	let optout = S.settings.player.optout;
+
+	//console.log('optin',optin,'optout',optout)
+	keys = optout ? arrMinus(getKeys(o), optout) : optin ? optin  : getKeys(o);
+
+	let x = ms.tableX(o, keys); //adds or replaces table w/ prop values
+	return x;
+
+
+
+}
+
 
 
 function computePresentedKeysDefault(o,pool){

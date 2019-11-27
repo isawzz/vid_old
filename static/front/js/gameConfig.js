@@ -20,10 +20,10 @@ var allGames1 = {
 var allGames = allGames1;
 var numPlayersMin = 0;
 var numPlayersMax = 8;
+var currentSeed;
 var currentGamename;
 var currentPlaymode;
 var currentNumPlayers;
-//var joinedPlayers = null; //for humans to join
 var joinCandidate = null;
 
 
@@ -149,6 +149,8 @@ function onClickCreateGameOk() {
 	//update real settings: getting ready for game unless multiplayer
 	GAME = S.settings.game = currentGamename;
 	PLAYMODE = S.settings.playmode = currentPlaymode; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
+	currentSeed = document.getElementById('c_b_mm_seed').value;
+	SEED = S.settings.seed = Number(currentSeed);
 
 	joinedPlayers = [];
 	let gi = allGames[GAME];
@@ -165,7 +167,8 @@ function onClickCreateGameOk() {
 		pl.id = gi.player_names[i];
 		let selType = valueOfElement(getidType(i + 1));
 		pl.playerType = startsWith(selType, 'AI') ? 'AI' : selType;
-		pl.agentType = pl.playerType == 'AI' ? selType == 'AI' ? 'regular' : stringAfter(selType, ' ') : null;
+		// pl.agentType = pl.playerType == 'AI' ? selType == 'AI' ? 'regular' : stringAfter(selType, ' ') : null;
+		pl.agentType = pl.playerType == 'AI' ? stringAfter(selType, ' ') : null;
 		pl.username = selType == 'me' ? USERNAME + (countMes > 0 ? countMes : '')
 			: selType == 'human' ? '' : 'bot' + iBots;
 		if (selType == 'me') countMes += 1;
@@ -337,8 +340,8 @@ function updatePlayersForGame() {
 		else { hidePlayer(i); }
 	}
 }
-const soloTypes = ['me', 'AI', 'AI random', 'AI pass'];
-const allPlayerTypes = ['me', 'human', 'AI', 'AI random', 'AI pass'];
+const soloTypes = ['me', 'AI regular', 'AI random', 'AI pass'];
+const allPlayerTypes = ['me', 'human', 'AI regular', 'AI random', 'AI pass'];
 function populateSelect(i, listValues, selValue) {
 	let id = getidType(i);
 	let el = document.getElementById(id);
@@ -361,8 +364,8 @@ function updatePlayersForMode() {
 	for (let i = 1; i <= n; i += 1) {
 		let id = getidType(i);
 		if (!isVisible(id)) continue;
-		if (mode == 'solo') { populateSelect(i, soloTypes, val); val = 'AI'; }//changeToForInput('soloTypes', id, val); val = 'AI'; }
-		else if (mode == 'hotseat') { populateSelect(i, soloTypes, val); }
+		if (mode == 'solo') { populateSelect(i, soloTypes, val); val = 'AI regular'; }
+		else if (mode == 'hotseat' || mode == 'passplay') { populateSelect(i, soloTypes, val); }
 		else { 
 			populateSelect(i, allPlayerTypes, val); 
 			val = PLAYER_CONFIG_FOR_MULTIPLAYER.length > i?PLAYER_CONFIG_FOR_MULTIPLAYER[i]:'human'; 

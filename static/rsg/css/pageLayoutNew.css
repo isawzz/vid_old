@@ -35,7 +35,7 @@
 	left: 0px;
 	top: 0px;
 	display: grid;
-	grid-template-columns: var(--wActions) var(--wGame) minmax(var(--wPlayers),auto) minmax(var(--wActions),auto);
+	grid-template-columns: var(--wActions) minmax(var(--wGame),auto) minmax(var(--wPlayers),auto) minmax(var(--wActions),auto);
 	grid-template-rows:calc(2*var(--h_1)) var(--h_1)  var(--hGame) minmax(800px, auto);
 	grid-template-areas:
 		'h h h h'

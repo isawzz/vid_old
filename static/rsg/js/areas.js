@@ -16,28 +16,37 @@ function initPageHeader() {
 	pageHeaderSetGame();
 	pageHeaderSetPlayers();
 }
+function isPlain(){return !S.settings.boardDetection && !S.settings.userStructures}
 function initTABLES() {
 	//prepare areas for default objects
 	let tables = {
 		a_d_game: S.settings.gameAreaSize,
 	};
-	if (!S.settings.boardDetection && !S.settings.userStructures) {
-		document.getElementById('a_d_player_header').innerHTML = '';
-		setCSSVariable('--wPlayers','0px');
-		S.settings.table.defaultArea = 'a_d_game';
-		S.settings.player.defaultArea = 'a_d_objects'; //'a_d_options';
-		tables.a_d_game = [1400, '65vh'];
+	if (isPlain()) {
+		let space = 300;
+		let pmainSpace = space;
+		let pothersSpace = space * S.gameConfig.numPlayers - 1;
+
+		//document.getElementById('a_d_player_header').innerHTML = '';
+		setCSSVariable('--wPlayers',''+pothersSpace+'px');
+
+		S.settings.table.defaultArea = 'a_d_objects';
+		S.settings.player.defaultArea = 'a_d_player'; //'a_d_options';
+		S.settings.player.defaultMainArea = 'a_d_game';
+		tables.a_d_game = [300, 700];
 	} else {
 		document.getElementById('a_d_player_header').innerHTML = '<p>players</p>';
 		setCSSVariable('--wPlayers','290px');
 		S.settings.table.defaultArea = 'a_d_objects';
 		S.settings.player.defaultArea = 'a_d_player'; //'a_d_options';
+		S.settings.player.defaultMainArea = null;
 		let d = document.getElementById('a_d_game');
 		d.style.overflow = 'visible';
 		d.classList.remove('flexWrap')
 	}
 
-	for (const areaName of [S.settings.table.defaultArea, S.settings.player.defaultArea]) {
+	for (const areaName of [S.settings.table.defaultArea, S.settings.player.defaultArea,S.settings.player.defaultMainArea]) {
+		if (areaName === null) continue;
 		let d = document.getElementById(areaName);
 		if (d.id != 'a_d_player') d.style.overflow = 'auto';
 		d.classList.add('flexWrap');

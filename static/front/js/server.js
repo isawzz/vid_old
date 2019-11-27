@@ -58,7 +58,7 @@ function sendInitNewGame() {
 				//console.log('game info is:', d3);
 				cmdChainSend(cmdChain, d5 => {
 					//console.log(d5);
-					_sendRoute('/begin/1', d6 => {
+					_sendRoute('/begin/'+SEED, d6 => {
 						//console.log(d6);
 						let unameStarts = gc.players[0].username;
 						timit.showTime('sending status');
