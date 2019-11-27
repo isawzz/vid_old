@@ -1,6 +1,6 @@
 V = {
 	colors: {
-		ore: 'green',
+		ore: 'dimgray',
 		wheat: colorTrans('goldenrod', .75),
 		sheep: colorTrans('lime'),
 		brick: colorTrans('tomato'),
@@ -11,17 +11,12 @@ V = {
 
 TABLE_UPDATE = {
 	resources_numbers: (id, o, phase) => {
-		if (phase == 'setup' && o.obj_type == 'hex') { return { f: 'setup_field1', vis: [id] }; }
+		if (phase == 'setup' && o.obj_type == 'hex') { return { f: 'setup_field', vis: [id] }; }
 	},
 };
 
 FUNCS = {
-	setup_field1: (oid, o, hallo1) => {
-		// console.log('..........in setup_field1')
-		// console.log('oid', oid)
-		// console.log('o', o)
-		// console.log('field', hallo1)
-
+	setup_field: (oid, o, hallo1) => {
 		if (nundef(o.res)) { hallo1.setBg(V.colors.desert); }
 		else {
 			let color = V.colors[o.res];

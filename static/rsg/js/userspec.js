@@ -202,41 +202,10 @@ function loadUserSpec(callbacks = []) {
 		});
 	});
 }
-function loadUserCode1blablabl(callbacks = []) {
-	//restoreBehaviors();
-	_sendRoute('/behaviors/' + GAME, d2 => {
-		console.log('............CODE ROUTE\n', d2);
-		loadScript(S.path.script, dScript => {
-			loadText(S.path.script, code => {
-				console.log('............code (load)\n', code);
-				S.user.script = code;
-				if (d2 != code) {
-					alert('different!!!')
-				}
-				// S.user.script = d2;
-				window.eval(`${d2}`);
-
-				if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
-			});
-		});
-	});
-}
-
-
-function loadUserSpecblablabla(callbacks = []) {
-	timit.showTime(getFunctionCallerName());
-	S.path.spec = '/examples_front/' + S.settings.game + '/' + S.settings.game + '_ui.yaml';
-	loadYML(S.path.spec, dSpec => {
-		S.user.spec = dSpec;
-		loadText(S.path.spec, specText => {
-			S.user.specText = specText;
-			if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
-		})
-	});
-}
 function loadUserCode(callbacks = []) {
 	//timit.showTime(getFunctionCallerName());
 	let fname = S.user.spec.CODE;
+	console.log('...loading code from',fname+'.js')
 	if (nundef(fname)) {
 		S.user.script = 'no code';
 		if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));

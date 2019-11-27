@@ -12,5 +12,5 @@ SETTINGS:
       robber: "cheat robber" 
       devcard: "cheat devcard"
 
-CODE: some_catan_implementation
+CODE: catan_ui
 
