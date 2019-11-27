@@ -65,7 +65,7 @@ function setAreaWidth(areaName, w) {
 	let wString;
 	let wNum = null;
 	if (isString(w)){
-		console.log(w)
+		//console.log(w)
 		let n = firstNumber(w);
 		if (isNumber(n)) wNum = n;
 		wString = w;
@@ -76,28 +76,28 @@ function setAreaWidth(areaName, w) {
 	let varName = AREAS[areaName][0];
 	setCSSVariable(varName, wString);
 	if (UIS[areaName] && wNum) UIS[areaName].w = wNum;
-	console.log('width of', areaName, w,wNum,wString);
+	//console.log('width of', areaName, w,wNum,wString);
 }
 function setAreaHeight(areaName, h) {
 	let varName = AREAS[areaName][1];
 	let hAttr = isNumber(h)? '' + h + 'px':h;
 	setCSSVariable(varName, hAttr);
 	if (UIS[areaName]) UIS[areaName].h = h;
-	console.log('height of', areaName, h,'attr',hAttr)
+	//console.log('height of', areaName, h,'attr',hAttr)
 }
 function growIfDefaultMainAreaWidth(ms) {
 	//return;
-	console.log('real w of table:',ms.parts.table.offsetWidth)
-	console.log('width of table is:', ms.elem.offsetWidth, ms.elem, ms.idParent);
+	//console.log('real w of table:',ms.parts.table.offsetWidth)
+	//console.log('width of table is:', ms.elem.offsetWidth, ms.elem, ms.idParent);
 	let wElem = ms.parts.table.offsetWidth; //ms.elem.offsetWidth;
 	let areaName = ms.idParent;
 	if (isdef(wElem) && isdef(AREAS[areaName])) {
 		let wNeeded = wElem + 40;
 		let wArea = UIS[areaName].w;
-		console.log('wNeeded',wNeeded,'wArea',wArea);
+		//console.log('wNeeded',wNeeded,'wArea',wArea);
 		if (wArea < wNeeded || wArea > wNeeded+100) {
 			setAreaWidth(areaName, wNeeded);
-			console.log('---> w of', areaName, 'from', wArea, 'to', wNeeded);
+			//console.log('---> w of', areaName, 'from', wArea, 'to', wNeeded);
 		}
 
 	}

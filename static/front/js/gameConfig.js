@@ -417,7 +417,7 @@ function makePlayerReadOnly(i) {
 function makePlayermodeReadOnly(mode) {
 	let el = getPlayermodeRadio(mode);
 	el=document.getElementById('c_b_mm_'+mode);
-	console.log(el)
+	//console.log(el)
 	//el.readOnly = true;
 	$(el).attr({ 'disabled': true, });
 	document.getElementById('span_'+mode).style.color='silver';
