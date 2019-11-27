@@ -33,6 +33,10 @@ function presentTable() {
 
 	}
 	for (const oid in G.tableUpdated) {
+
+		//structures are invisible? or should this be an options?!?!?
+		if (isStructuralElement(oid)) continue;
+
 		let changedProps = G.tableUpdated[oid].summary;
 		//console.log('update:',oid,changedProps);
 		//if (G.tableCreated.includes(oid)) { continue; }
@@ -347,9 +351,15 @@ function computePresentedKeys(o,isTableObject){
 
 	let optout;
 	if (S.settings.useExtendedOptout){
+		//console.log('using extended optout')
 		let keys = [];
 		optout = S.settings.extendedOptout;
-		for (const k in o){ if (optout[k]) continue; keys.push(k); }
+		//console.log('extendedOptout')
+		for (const k in o){ 
+			if (optout[k]) continue; 
+			//console.log(k,'not in',optout)
+			keys.push(k); 
+		}
 		return keys;
 	}
 
@@ -364,7 +374,7 @@ function presentMain(oid, ms, pool, isTableObject = true) {
 
 	let o = pool[oid];
 	let validKeys = computePresentedKeys(o, isTableObject);
-	//console.log(validKeys)
+	//console.log(validKeys);
 
 	let color = S.settings.useColorHintForProperties? getColorHint(o):ms.fg;
 	// console.log(o,color)
@@ -397,7 +407,7 @@ function presentDefault(oid, o, isTableObject = true) {
 }
 function presentMainPlayer(oid, ms, pool, isTableObject) {
 	let o = pool[oid];
-	console.log(oid,o,G.player)
+	//console.log(oid,o,G.player)
 	//let ms = getVisual(oid);
 	if (!ms) return;
 	if (oid != G.player) {ms.hide(); return;} else ms.show();

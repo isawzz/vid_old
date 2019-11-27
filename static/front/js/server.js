@@ -146,7 +146,7 @@ function _postRoute(route, callback, data) {
 		// }),
 		success: response => callback(response),
 		error: function (e) {
-			console.log(e);
+			//console.log(e);
 			callback(e.responseText)
 		},
 		dataType: "json",

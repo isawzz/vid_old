@@ -15,7 +15,7 @@ const SERVER_URL = IS_MIRROR ? 'http://localhost:5555/' : FLASK ? (NGROK ? NGROK
 
 //general settings: 
 var S_tooltips = 'OFF';
-var S_openTab = 'Paris';
+var S_openTab = 'London';
 
 var S_userSettings = true;
 var S_userStructures = true;

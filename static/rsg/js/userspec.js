@@ -68,17 +68,20 @@ function initSTRUCTURES() {
 	return hasStructure;
 }
 function presentSpecAndCode(callbacks = []) {
-	if (S.user.spec) {
-		let d = document.getElementById('a_d_spec_content');
+	let d = document.getElementById('a_d_spec_content');
+	if (S.user.spec && S.settings.userSettings) {
 		d.innerHTML = S.user.specText;
-	}
-	if (S.user.script) {
-		let d = document.getElementById('a_d_code_content');
+	}else{d.innerHTML = '';}
+	
+	d = document.getElementById('a_d_code_content');
+	if (S.user.script  && S.settings.userBehaviors) {
 		d.innerHTML = S.user.script;
-	}
+	}else{d.innerHTML = '';}
+	
 	$('pre').html(function () {
 		return this.innerHTML.replace(/\t/g, '&nbsp;&nbsp;');
 	});
+	
 	if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 }
 
@@ -98,7 +101,7 @@ function proceedRedraw() {
 	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
 	id2uids = {}; // { uid : list of ms ids related to same oid }
 
-	console.log(jsCopy(S), jsCopy(G));
+	//console.log(jsCopy(S), jsCopy(G));
 
 	initDom();
 	processData(xdata)
@@ -110,6 +113,7 @@ function onClickUseNoBoardDetection() {
 	S.settings.userStructures = false;
 	S.settings.userSettings = false;
 	S.settings.boardDetection = S_boardDetection = false;
+	S.settings.openTab='London';
 	redrawScreen();
 }
 function onClickUseNoSpec() {
@@ -117,6 +121,7 @@ function onClickUseNoSpec() {
 	S.settings.userStructures = false;
 	S.settings.userSettings = false;
 	S.settings.boardDetection = S_boardDetection = true;
+	S.settings.openTab='London';
 	redrawScreen();
 }
 function onClickUseSettings() {
@@ -124,6 +129,7 @@ function onClickUseSettings() {
 	S.settings.userStructures = false;
 	S.settings.userSettings = true;
 	S.settings.boardDetection = S_boardDetection = true;
+	S.settings.openTab='Seattle';
 	redrawScreen();
 }
 function onClickUseStructures() {
@@ -131,6 +137,7 @@ function onClickUseStructures() {
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;
 	S.settings.boardDetection = S_boardDetection = true;
+	S.settings.openTab='Paris';
 	redrawScreen();
 }
 function onClickUseBehaviors() {
@@ -138,6 +145,7 @@ function onClickUseBehaviors() {
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;
 	S.settings.boardDetection = S_boardDetection = true;
+	S.settings.openTab='Oslo';
 	redrawScreen();
 }
 function onClickReloadSpec() {
@@ -163,7 +171,7 @@ function loadUserCode(callbacks = []) {
 		S.user.script = 'no code';
 		if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 	} else {
-		console.log('code filename is:', fname)
+		//console.log('code filename is:', fname)
 		S.path.script = '/examples_front/' + S.settings.game + '/' + fname + '.js';
 		loadScript(S.path.script, dScript => {
 			loadText(S.path.script, code => {

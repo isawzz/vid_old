@@ -56,7 +56,7 @@ function transformToString(k,val, refs){
 	return sval;
 }
 function tableElemX(o, keys) {
-	console.log(o,keys)
+	//console.log(o,keys)
 	let t = document.createElement('table');
 	t.classList.add('tttable');
 	let refs = [];//collect references to objects and players inside of table {oids:[oids],clid:clid,type:'p'|'t'} => parts

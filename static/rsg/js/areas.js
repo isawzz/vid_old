@@ -22,10 +22,11 @@ function initTABLES() {
 	let tables = {
 		a_d_game: S.settings.gameAreaSize,
 	};
+	document.getElementById('c_d_statusInHeaderText').innerHTML = ''
 	if (isPlain()) {
-		let space = 300;
+		let space = 400;
 		let pmainSpace = space;
-		let pothersSpace = space * S.gameConfig.numPlayers - 1;
+		let pothersSpace = (space-100) * (S.gameConfig.numPlayers - 1);
 
 		//document.getElementById('a_d_player_header').innerHTML = '';
 		setCSSVariable('--wPlayers',''+pothersSpace+'px');
@@ -33,7 +34,8 @@ function initTABLES() {
 		S.settings.table.defaultArea = 'a_d_objects';
 		S.settings.player.defaultArea = 'a_d_player'; //'a_d_options';
 		S.settings.player.defaultMainArea = 'a_d_game';
-		tables.a_d_game = [300, 700];
+		tables.a_d_game = [pmainSpace, 800];
+		document.getElementById('c_d_statusText').innerHTML = 'Me'
 	} else {
 		document.getElementById('a_d_player_header').innerHTML = '<p>players</p>';
 		setCSSVariable('--wPlayers','290px');

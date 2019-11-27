@@ -322,6 +322,7 @@ function updateGamename(gamename) {
 function updatePlaymode(mode) {
 	currentPlaymode = mode;
 	makePlayermodeReadOnly('multiplayer');
+	makePlayermodeReadOnly('passplay');
 	//console.log('current playmode:', currentPlaymode)
 }
 function getidPlayermode(mode){return 'c_b_mm_'+mode;}
@@ -413,10 +414,14 @@ function makePlayerReadOnly(i) {
 	//el.readOnly = true;
 	$(el).attr({ 'disabled': true, });
 }
-function makePlayermodeReadOnly(i) {
-	let el = getPlayermodeRadio(i);
+function makePlayermodeReadOnly(mode) {
+	let el = getPlayermodeRadio(mode);
+	el=document.getElementById('c_b_mm_'+mode);
+	console.log(el)
 	//el.readOnly = true;
 	$(el).attr({ 'disabled': true, });
+	document.getElementById('span_'+mode).style.color='silver';
+	
 }
 function getPlayerRadio(n) {
 	return document.getElementById(getidNum(n));

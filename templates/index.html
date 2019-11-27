@@ -141,9 +141,9 @@
 							<fieldset id='fChooseMode'>
 								<legend>play mode</legend>
 								<!-- <input class='radio' id='c_b_mm_solo' type="radio" name="playmode" value="solo" onclick='onClickPlaymode("solo")'>solo<br> -->
-								<input class='radio' id='c_b_mm_hotseat' type="radio" name="playmode" value="hotseat" onclick='onClickPlaymode("hotseat")'>hotseat<br>
-								<input class='radio' id='c_b_mm_passplay' type="radio" name="playmode" value="passplay" onclick='onClickPlaymode("passplay")'>P & P<br>
-								<!-- <input class='radio' id='c_b_mm_multiplayer' type="radio" name="playmode" value="multiplayer" onclick='onClickPlaymode("multiplayer")'>multiplayer<br> -->
+								<input class='radio' id='c_b_mm_hotseat' type="radio" name="playmode" value="hotseat" onclick='onClickPlaymode("hotseat")'><span id='span_hotseat'></span>hotseat</span><br>
+								<input class='radio' id='c_b_mm_passplay' type="radio" name="playmode" value="passplay" onclick='onClickPlaymode("passplay")'><span id='span_passplay'>P & P</span><br>
+								<input class='radio' id='c_b_mm_multiplayer' type="radio" name="playmode" value="multiplayer" onclick='onClickPlaymode("multiplayer")'><span id='span_multiplayer'>multiplayer</span><br>
 							</fieldset>
 							<fieldset id='fChooseSeed'>
 								<legend>seed</legend>
@@ -162,14 +162,14 @@
 							</fieldset>
 							<fieldset id='fChoosePlayerTypes' style='height:220px'>
 								<legend>type</legend>
-								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt1'></select>
-								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt2'></select>
-								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt3'></select>
-								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt4'></select>
-								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt5'></select>
-								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt6'></select>
-								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt7'></select>
-								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt8'></select>
+								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt1'></select><br>
+								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt2'></select><br>
+								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt3'></select><br>
+								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt4'></select><br>
+								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt5'></select><br>
+								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt6'></select><br>
+								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt7'></select><br>
+								<select list='allPlayerTypes' class='inputPlayerType' id='c_b_mm_plt8'></select><br>
 							</fieldset>
 
 						</div>
@@ -237,7 +237,7 @@
 			<div id='a_d_divPlayerNames' style='float:left;margin:4px 10px;color:dimgray'>
 				Players:&nbsp;
 			</div>
-			<div id="c_d_statusInHeaderText" style='color:black'>status</div>
+			<div id="c_d_statusInHeaderText" style='color:black;margin:10px'>status</div>
 		</div>
 
 		<div id="a_d_action_header" class="area">

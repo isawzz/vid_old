@@ -27,6 +27,7 @@ function restartHost(callback) { let route = '/restart'; _sendRouteJS(route, cal
 
 //#region misc helpers
 function openTabTesting(cityName) {
+	//console.log('opening',cityName)
 	var i, tabcontent, tablinks;
 
 	tabcontent = document.getElementsByClassName('tabcontent');

@@ -37,7 +37,7 @@ function setDefaultRSGSettings() {
 	S.settings.onlySimpleValues = true;
 	S.settings.player.optin = null;
 	S.settings.player.optout = ['id', 'color', 'altName', 'index'];
-	S.settings.extendedOptout = { color: 0, altName: 0, index: 0, username: 0, playerType: 0, player: 0, agentType: 0, obj_type: 0, id: 0, visible: 0, neighbors: 0, fields: 0, edges: 0, corners: 0, row: 0, col: 0 };
+	S.settings.extendedOptout = { color: 1, altName: 1, index: 1, username: 1, playerType: 1, player: 1, agentType: 1, obj_type: 1, id: 1, visible: 1, neighbors: 1, fields: 1, edges: 1, corners: 1, row: 1, col: 1 };
 	S.settings.useExtendedOptout = true;
 
 	S.settings.color.theme = '#6B7A8F';

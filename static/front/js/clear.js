@@ -13,7 +13,7 @@ function checkCleanup_II() {
 
 		pageHeaderClearAll();
 		restoreBehaviors();
-		openTabTesting('London');
+		openTabTesting('London'); //console.log('cleanup2')
 		UIS['a_d_status'].clear({ innerHTML: '<div id="c_d_statusText">status</div>' });
 		UIS['a_d_actions'].clear({ innerHTML: '<div id="a_d_divSelect" class="sidenav1"></div>' });
 		let areaPlayer = isdef(UIS['a_d_player']) ? 'a_d_player' : isdef(UIS['a_d_players']) ? 'a_d_players' : 'a_d_options';

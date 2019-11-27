@@ -16,13 +16,13 @@ TABLE_UPDATE = {
 };
 
 FUNCS = {
-	setup_field: (oid, o, hallo1) => {
-		if (nundef(o.res)) { hallo1.setBg(V.colors.desert); }
+	setup_field: (oid, o, field) => {
+		if (nundef(o.res)) { field.setBg(V.colors.desert); }
 		else {
 			let color = V.colors[o.res];
-			hallo1.setBg(color);
+			field.setBg(color);
 			let num = Number(o.num);
-			hallo1.text({ txt: '' + o.num, fill: num == 6 || num == 8 ? 'red' : 'white' });
+			field.text({ txt: '' + o.num, fill: num == 6 || num == 8 ? 'red' : 'white' });
 		}
 		return true;
 	}

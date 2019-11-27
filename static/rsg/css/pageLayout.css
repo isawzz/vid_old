@@ -255,11 +255,14 @@ fieldset{
 	border: none;
 	margin-top:2%;
 	height:96%;
-	width:120px;
+	width:auto;
 	float:left;
 	position:relative;
 	text-align: left;
 	color:dimgray;
+}
+#a_d_settings >fieldset{
+	width:130px;
 }
 .radio {
   -webkit-appearance: none;
