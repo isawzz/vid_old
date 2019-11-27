@@ -1,6 +1,8 @@
 function checkCleanup_I() {
 	if (isdef(UIS)) {
 		stopBlinking('a_d_status');
+		hideElem('passToNextPlayerUI');
+		hideElem('freezer');
 		stopInteraction();
 		clearLog();
 		delete G.end;
