@@ -383,8 +383,11 @@
 	<div id="tooltip" class="tooltip" style='position:fixed;'>
 	</div>
 	<div id='freezer' style='display:none;'>
-		<h1>NOT YOUR TURN!!!</h1>
-
+		<button id='c_b_nextPlayerReady' class='button' onclick='onClickNextPlayerReady()'>PLAY!</button>
+		<!-- <h1 id='freezerPassTo'></h1> -->
+	</div>
+	<div id='passToNextPlayerUI' style='display:none;text-align:center;color:green;background-color:red;'>
+		<button id='c_b_passToNextPlayer' class='button' style='margin:10px;' onclick='totalFreeze()'>PASS TO NEXT PLAYER</button>
 	</div>
 	<!-- #endregion HTML -->
 

@@ -116,11 +116,16 @@ function processPlayers(data) {
 				//if (G.previousPlayer) console.log(G.previousPlayer,'isMyPlayer?',isMyPlayer(G.previousPlayer))
 				//console.log(id,'isFrontAIPlayer?',isFrontAIPlayer(id))
 
-				if (isMyPlayer(id) || G.player == id || isMyPlayer(G.previousPlayer) && isFrontAIPlayer(id)) {
+				console.log('G.player is',G.player)
+				if (nundef(G.player) || isMyPlayer(id) || G.player == id || isMyPlayer(G.previousPlayer) && isFrontAIPlayer(id)) {
 					G.player = id;
 					G.playerIndex = S.players[id].index;
 					canProceed = true;
 				} else {
+					console.log('this must be multiplayer mode!!! OR i will never get here hopefully!!!!!!!!!!!!!!!!')
+					console.log('playmode:',PLAYMODE,S.settings.playmode);
+					console.log('I am',G.player,'player changed:',G.playerChanged)
+					console.log('processPlayers: waiting for',G.serverData.waiting_for);
 					console.log('NOT MY TURN!!! HAVE TO WAIT!!!');
 				}
 

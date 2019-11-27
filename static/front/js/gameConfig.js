@@ -322,7 +322,7 @@ function updateGamename(gamename) {
 function updatePlaymode(mode) {
 	currentPlaymode = mode;
 	makePlayermodeReadOnly('multiplayer');
-	makePlayermodeReadOnly('passplay');
+	//makePlayermodeReadOnly('passplay');
 	//console.log('current playmode:', currentPlaymode)
 }
 function getidPlayermode(mode){return 'c_b_mm_'+mode;}

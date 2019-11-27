@@ -323,8 +323,9 @@ function presentWaitingFor() {
 		G.previousWaitingFor = pl;
 		updatePageHeader(pl);
 	}
-	if (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player)) {
+	if (S.settings.playmode != 'passplay' && (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player))) {
 		let user = G.playersAugmented[pl].username;
+		console.log('just switching username to',user)
 		_sendRoute('/status/' + user, d => {
 			//console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
 			//console.log('reply to status request for',user,d);
@@ -332,11 +333,51 @@ function presentWaitingFor() {
 			processData(d); gameStep();
 			//else console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
+	}else if (S.settings.playmode == 'passplay'){
+		//this is where I have to output message: NOT YOU TURN ANYMORE!!!!! please click pass!!!
+		showPassToNextPlayer(pl);
 	} else {
 		//console.log('presentWaitingFor:',G.playersAugmented[G.player].username,'emits poll',pl);
 		socketEmitMessage({type:'poll',data:pl});
 	}
 
+}
+function showPassToNextPlayer(plWaitingFor){
+	unfreezeUI();
+	let d = document.getElementById('passToNextPlayerUI');
+	let color = getPlayerColor(plWaitingFor);
+	d.style.backgroundColor = color;
+	let button = document.getElementById('c_b_passToNextPlayer');
+	button.textContent = 'PASS TO '+plWaitingFor;
+	showElem('passToNextPlayerUI');
+
+	WAITINGFORPLAYER = plWaitingFor;
+
+	console.log('waiting for player',WAITINGFORPLAYER);
+
+}
+var WAITINGFORPLAYER = null;
+function totalFreeze(){
+	//player clicked the passToNextPlayer button
+	//hide entire ui until the nextPlayerReady button is clicked!
+	hideElem('passToNextPlayerUI')
+	showElem('freezer');
+}
+function onClickNextPlayerReady(){
+	if (WAITINGFORPLAYER !== null){
+		let user = getUsernameForPlayer(WAITINGFORPLAYER);
+		console.log('username of new player:',user)
+		WAITINGFORPLAYER = null;
+		_sendRoute('/status/' + user, d => {
+			//console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
+			//console.log('reply to status request for',user,d);
+			hideElem('freezer');
+			d = JSON.parse(d);
+			processData(d); 
+			gameStep();
+			//else console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
+		});
+	}
 }
 
 //presentation of objects

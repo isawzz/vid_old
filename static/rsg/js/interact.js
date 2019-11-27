@@ -224,14 +224,14 @@ function onClickStop() {
 }
 
 
-function onClickTTT(){
+function onClickTTT() {
 	GAME = S.settings.game = 'ttt';
 	PLAYMODE = S.settings.playmode = 'hotseat'; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
 	S.gameConfig = gcs[GAME];
 	_startNewGame('starter');
 
 }
-function onClickCatan(){
+function onClickCatan() {
 	GAME = S.settings.game = 'catan';
 	PLAYMODE = S.settings.playmode = 'hotseat'; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
 	S.gameConfig = gcs[GAME];
@@ -361,19 +361,19 @@ function unhighlightMsAndRelatives(ev, ms, partName) {
 function freezeUI() {
 	if (frozen) return;
 	frozen = true;
-	if (S_autoplay && S_playMode == 'solo') {
-		hide(document.getElementById('tempFreezer'));
-		show(document.getElementById('freezer'));
-	} else {
-		hide(document.getElementById('freezer'));
-		show(document.getElementById('tempFreezer'));
-	}
+	// if (S_autoplay && S_playMode != 'hotseat') {
+	// 	hide(document.getElementById('tempFreezer'));
+	// 	show(document.getElementById('freezer'));
+	// } else {
+	// hide(document.getElementById('freezer'));
+	show(document.getElementById('tempFreezer'));
+	// }
 }
 function unfreezeUI() {
 	if (!frozen) return;
 	frozen = false;
 	hide(document.getElementById('tempFreezer'));
-	if (!S_autoplay) hide(document.getElementById('freezer'));
+	// if (!S_autoplay) hide(document.getElementById('freezer'));
 }
 
 

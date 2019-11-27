@@ -221,6 +221,28 @@ textarea {
 	margin-right: -50%; 
 	transform: translate(-50%, -50%)
 }
+#c_b_nextPlayerReady{
+	width:auto;
+	height:auto;
+	font-size: 80px;
+	position:absolute;
+	top: 40%; 
+	left: 50%; 
+	margin-right: -50%; 
+	transform: translate(-50%, -50%)
+}
+/* #c_b_passToNextPlayer{
+	width:auto;
+	height:auto;
+	font-size: 32px;
+	position:absolute;
+	background-color: rgba(0,0,0,.9);
+	color:white;
+	top: 20px; 
+	left: 50%; 
+	margin-right: -50%; 
+	transform: translate(-50%, 0%);
+} */
 #tempFreezer{
 	position:absolute;
 	width:100%;
