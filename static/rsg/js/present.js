@@ -8,7 +8,7 @@ function presentTable() {
 		let o = G.table[oid];
 		//console.log('NEWLY CREATE:','oid',oid,'def',defaultVisualExists(oid),'createDef:',S.settings.table.createDefault)
 
-		if (!defaultVisualExists(oid) && S.settings.table.createDefault==true) {
+		if (!defaultVisualExists(oid) && S.settings.table.createDefault == true) {
 			//console.log('>>>>>>>>>>>>>>>>>should create default object for',oid)
 			makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 		}
@@ -26,7 +26,7 @@ function presentTable() {
 		//console.log('updatedVisuals',updatedVisuals)
 		if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
 			let ms = makeMainVisual(oid, G.table[oid]);
-			if (ms === null && !defaultVisualExists(oid) && S.settings.table.createDefault != false){
+			if (ms === null && !defaultVisualExists(oid) && S.settings.table.createDefault != false) {
 				makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 			}
 		}
@@ -55,7 +55,7 @@ function presentTable() {
 				//console.log('oid',oid,'has NOT been updated!!!!!')
 				if (changedProps.includes('loc')) presentLocationChange(oid, ms);
 				presentMain(oid, ms, G.table);
-			}else{
+			} else {
 				//console.log('oid',oid,'has been updated!!!!!')
 			}
 		}
@@ -84,7 +84,7 @@ function presentPlayers() {
 	//creation of new players
 	for (const pid of G.playersCreated) {
 
-		if (!defaultVisualExists(pid) && S.settings.player.createDefault) 
+		if (!defaultVisualExists(pid) && S.settings.player.createDefault)
 			makeDefaultPlayer(pid, G.playersAugmented[pid], S.settings.player.defaultArea);
 
 		if (mainVisualExists(pid)) continue;
@@ -96,7 +96,7 @@ function presentPlayers() {
 		//console.log('updatedVisuals',updatedVisuals)
 		if (isPlain() && (nundef(updatedVisuals) || !updatedVisuals.includes(pid))) {
 			let ms = makeMainPlayer(pid, G.playersAugmented[pid], S.settings.player.defaultMainArea);
-			if (ms === null && !defaultVisualExists(pid) && S.settings.table.createDefault != false){
+			if (ms === null && !defaultVisualExists(pid) && S.settings.table.createDefault != false) {
 				makeDefaultObject(pid, G.playersAugmented[pid], S.settings.table.defaultArea);
 			}
 		}
@@ -114,7 +114,7 @@ function presentPlayers() {
 			let updatedVisuals = {};
 			if (S.settings.userBehaviors) updatedVisuals = runBEHAVIOR_new(pid, G.playersAugmented, PLAYER_UPDATE);
 			if (!updatedVisuals[pid]) {
-				presentMainPlayer(pid, ms, G.playersAugmented,false);
+				presentMainPlayer(pid, ms, G.playersAugmented, false);
 			}
 			//if (!updatedVisuals[pid]) o.table(G.playersAugmented[pid]);
 		}
@@ -128,6 +128,7 @@ function presentPlayers() {
 		// if (S.vars.switchedGame)  measureDefaultPlayerElement(plms);
 	}
 }
+
 function onPlayerChange(pid) {
 	if (isPlain()) return;
 	if (!G.playerChanged || pid != G.player) return;
@@ -135,6 +136,7 @@ function onPlayerChange(pid) {
 	let o = G.playersAugmented[pid];
 	//console.log(pid, o);
 	updatePageHeader(pid);
+	if (G.previousPlayer) updateLogArea(G.previousPlayer, pid);
 	let ms = getVisual(pid);
 	if (ms) {
 		//console.log(ms.id);
@@ -149,15 +151,20 @@ function onPlayerChange(pid) {
 		//msDef.elem.scrollIntoView(false);
 	}
 }
-function updatePageHeader(pid){
+function updatePageHeader(pid) {
 	//console.log('Turn:',pid)
 	let ms;
-	for (const pl of S.gameConfig.players){
-		ms=getPageHeaderDivForPlayer(pl.id);
+	for (const pl of S.gameConfig.players) {
+		ms = getPageHeaderDivForPlayer(pl.id);
 		ms.classList.remove('gamePlayer');
 	}
 	ms = getPageHeaderDivForPlayer(pid);
 	ms.classList.add('gamePlayer');
+}
+function updateLogArea(prevPlid, plid) {
+	if (prevPlid) hideElem('a_d_log_' + prevPlid);
+	let id = 'a_d_log_' + plid;
+	if (UIS[id]) showElem(id);
 }
 function adjustPlayerAreaWise() {
 	//do UI updates that have to do with measuring elements from server
@@ -188,7 +195,7 @@ function measureDefaultPlayerElement(plms) {
 function presentStatus() {
 	if (isdef(G.serverData.status)) {
 		let lineArr = G.serverData.status.line;
-		let areaName = isPlain()? 'c_d_statusInHeaderText':'c_d_statusText';
+		let areaName = isPlain() ? 'c_d_statusInHeaderText' : 'c_d_statusText';
 		let d = document.getElementById(areaName);
 		let ms = UIS[areaName];
 		ms.clear(); clearElement(d);
@@ -231,17 +238,17 @@ function setStatus(s) {
 }
 function presentLog() {
 	//add new logEntries to div
-	let d = document.getElementById('a_d_log');
+	let pl = G.player;
+	let logId = 'a_d_log' +'_'+ pl;
+	if (!UIS[logId]) makeLogArea(pl);
+	let d = document.getElementById(logId);
+	console.log('.......',logId,UIS[logId],d)
 	let BASEMARGIN = 16;
 	for (const k of G.logUpdated) {
-		let logEntry = G.log[k];
-		//let level = logEntry.level ? logEntry.level : 1; //TODO: use level!
-		//level=Math.max(1,level);
-		//d.appendChild(document.createTextNode('-'.repeat(level-1)));
+		let logEntry = G.log[pl][k];
 		let lineArr = logEntry.line;
 		let lineDiv = document.createElement('div');
 		lineDiv.style.marginLeft = '' + (BASEMARGIN * (logEntry.level)) + 'px';
-		//lineDiv.appendChild(document.createTextNode(''+logEntry.level))
 		for (const item of lineArr) {
 			if (isSimple(item)) {
 				let s = trim(item.toString());
@@ -266,12 +273,8 @@ function presentLog() {
 			}
 		}
 		d.appendChild(lineDiv);
-		d.scrollTop = d.scrollHeight; //lineDiv.scrollIntoView(false);
-		//d.appendChild(document.createElement('br'));
+		d.scrollTop = d.scrollHeight;
 	}
-
-
-
 }
 function presentEnd() {
 	if (nundef(G.end)) return false;
@@ -317,7 +320,7 @@ function presentWaitingFor() {
 	//hier komm ich nur her wenn es mein turn war
 	//also kann switchen wenn entweder der pl me ist oder eine FrontAI
 	let pl = G.serverData.waiting_for[0];
-	if (nundef(G.previousWaitingFor) || G.previousWaitingFor != pl){
+	if (nundef(G.previousWaitingFor) || G.previousWaitingFor != pl) {
 		//now waiting for a new player!!!
 		//update page header with that player and set G.previousWaitingFor
 		G.previousWaitingFor = pl;
@@ -325,7 +328,7 @@ function presentWaitingFor() {
 	}
 	if (S.settings.playmode != 'passplay' && (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player))) {
 		let user = G.playersAugmented[pl].username;
-		console.log('just switching username to',user)
+		console.log('just switching username to', user)
 		_sendRoute('/status/' + user, d => {
 			//console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
 			//console.log('reply to status request for',user,d);
@@ -333,47 +336,47 @@ function presentWaitingFor() {
 			processData(d); gameStep();
 			//else console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
-	}else if (S.settings.playmode == 'passplay'){
+	} else if (S.settings.playmode == 'passplay') {
 		//this is where I have to output message: NOT YOU TURN ANYMORE!!!!! please click pass!!!
 		showPassToNextPlayer(pl);
 	} else {
 		//console.log('presentWaitingFor:',G.playersAugmented[G.player].username,'emits poll',pl);
-		socketEmitMessage({type:'poll',data:pl});
+		socketEmitMessage({ type: 'poll', data: pl });
 	}
 
 }
-function showPassToNextPlayer(plWaitingFor){
+function showPassToNextPlayer(plWaitingFor) {
 	unfreezeUI();
 	let d = document.getElementById('passToNextPlayerUI');
 	let color = getPlayerColor(plWaitingFor);
 	d.style.backgroundColor = color;
 	let button = document.getElementById('c_b_passToNextPlayer');
-	button.textContent = 'PASS TO '+plWaitingFor;
+	button.textContent = 'PASS TO ' + plWaitingFor;
 	showElem('passToNextPlayerUI');
 
 	WAITINGFORPLAYER = plWaitingFor;
 
-	console.log('waiting for player',WAITINGFORPLAYER);
+	console.log('waiting for player', WAITINGFORPLAYER);
 
 }
 var WAITINGFORPLAYER = null;
-function totalFreeze(){
+function totalFreeze() {
 	//player clicked the passToNextPlayer button
 	//hide entire ui until the nextPlayerReady button is clicked!
 	hideElem('passToNextPlayerUI')
 	showElem('freezer');
 }
-function onClickNextPlayerReady(){
-	if (WAITINGFORPLAYER !== null){
+function onClickNextPlayerReady() {
+	if (WAITINGFORPLAYER !== null) {
 		let user = getUsernameForPlayer(WAITINGFORPLAYER);
-		console.log('username of new player:',user)
+		console.log('username of new player:', user)
 		WAITINGFORPLAYER = null;
 		_sendRoute('/status/' + user, d => {
 			//console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
 			//console.log('reply to status request for',user,d);
 			hideElem('freezer');
 			d = JSON.parse(d);
-			processData(d); 
+			processData(d);
 			gameStep();
 			//else console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
@@ -384,28 +387,28 @@ function onClickNextPlayerReady(){
 function getUser(idPlayer) { return G.playersAugmented[idPlayer].username; }
 function getPlayerColor(id) { return G.playersAugmented[id].color }
 function getPlayerColorString(id) { return G.playersAugmented[id].altName }
-function computePresentedKeys(o,isTableObject){
-	let optin = isTableObject? S.settings.table.optin:S.settings.player.optin;
+function computePresentedKeys(o, isTableObject) {
+	let optin = isTableObject ? S.settings.table.optin : S.settings.player.optin;
 	//console.log(optin)
 
-	if (optin) return intersection(Object.keys(o),optin);
+	if (optin) return intersection(Object.keys(o), optin);
 
 	let optout;
-	if (S.settings.useExtendedOptout){
+	if (S.settings.useExtendedOptout) {
 		//console.log('using extended optout')
 		let keys = [];
 		optout = S.settings.extendedOptout;
 		//console.log('extendedOptout')
-		for (const k in o){ 
-			if (optout[k]) continue; 
+		for (const k in o) {
+			if (optout[k]) continue;
 			//console.log(k,'not in',optout)
-			keys.push(k); 
+			keys.push(k);
 		}
 		return keys;
 	}
 
-	optout = isTableObject? S.settings.table.optout : S.settings.player.optout;
-	for (const k in o){ if (optout[k]) continue; keys.push(k); }
+	optout = isTableObject ? S.settings.table.optout : S.settings.player.optout;
+	for (const k in o) { if (optout[k]) continue; keys.push(k); }
 	return keys;
 
 }
@@ -417,7 +420,7 @@ function presentMain(oid, ms, pool, isTableObject = true) {
 	let validKeys = computePresentedKeys(o, isTableObject);
 	//console.log(validKeys);
 
-	let color = S.settings.useColorHintForProperties? getColorHint(o):ms.fg;
+	let color = S.settings.useColorHintForProperties ? getColorHint(o) : ms.fg;
 	// console.log(o,color)
 	let akku = [];//isField(o)?[''+oid]:[];
 	// let bg, fg;
@@ -430,7 +433,7 @@ function presentMain(oid, ms, pool, isTableObject = true) {
 function presentDefault(oid, o, isTableObject = true) {
 	let ms = getDefVisual(oid);
 	if (!ms) return;
-	if (isPlain() && !isTableObject && G.player == oid) {ms.hide(); return null;}
+	if (isPlain() && !isTableObject && G.player == oid) { ms.hide(); return null; }
 	if (isPlain() && !isTableObject) ms.show();
 
 	//filter keys using optin and optout lists
@@ -438,14 +441,14 @@ function presentDefault(oid, o, isTableObject = true) {
 	let optout = isTableObject ? S.settings.table.optout : S.settings.player.optout;
 
 	//console.log('optin',optin,'optout',optout)
-	keys = optout ? arrMinus(getKeys(o), optout) : optin ? optin  : getKeys(o);
+	keys = optout ? arrMinus(getKeys(o), optout) : optin ? optin : getKeys(o);
 
 	let x = ms.tableX(o, keys); //adds or replaces table w/ prop values
-	
-	if (!isPlain() && !isTableObject){
+
+	if (!isPlain() && !isTableObject) {
 		growIfDefaultMainAreaWidth(ms);
 	}
-	
+
 	return x;
 
 
@@ -456,14 +459,14 @@ function presentMainPlayer(oid, ms, pool, isTableObject) {
 	//console.log(oid,o,G.player)
 	//let ms = getVisual(oid);
 	if (!ms) return;
-	if (oid != G.player) {ms.hide(); return;} else ms.show();
+	if (oid != G.player) { ms.hide(); return; } else ms.show();
 
 	//filter keys using optin and optout lists
 	let optin = S.settings.player.optin;
 	let optout = S.settings.player.optout;
 
 	//console.log('optin',optin,'optout',optout)
-	keys = optout ? arrMinus(getKeys(o), optout) : optin ? optin  : getKeys(o);
+	keys = optout ? arrMinus(getKeys(o), optout) : optin ? optin : getKeys(o);
 
 	let x = ms.tableX(o, keys); //adds or replaces table w/ prop values
 
@@ -477,21 +480,21 @@ function presentMainPlayer(oid, ms, pool, isTableObject) {
 
 
 
-function computePresentedKeysDefault(o,pool){
-	let optin = pool == G.table? S.settings.table.optin:S.settings.player.optin;
+function computePresentedKeysDefault(o, pool) {
+	let optin = pool == G.table ? S.settings.table.optin : S.settings.player.optin;
 
-	if (optin) return intersection(Object.keys(o),optin);
+	if (optin) return intersection(Object.keys(o), optin);
 
 	let optout;
-	if (S.settings.useExtendedOptout){
+	if (S.settings.useExtendedOptout) {
 		let keys = [];
 		optout = S.settings.extendedOptout;
-		for (const k in o){ if (optout[k]) continue; keys.push(k); }
+		for (const k in o) { if (optout[k]) continue; keys.push(k); }
 		return keys;
 	}
 
-	optout = pool == G.table? S.settings.table.optout : S.settings.player.optout;
-	for (const k in o){ if (optout[k]) continue; keys.push(k); }
+	optout = pool == G.table ? S.settings.table.optout : S.settings.player.optout;
+	for (const k in o) { if (optout[k]) continue; keys.push(k); }
 	return keys;
 
 }

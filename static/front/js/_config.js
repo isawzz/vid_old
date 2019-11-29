@@ -1,9 +1,9 @@
-var USERNAME='dwight';
-var GAME='catan'; // catan | ttt
-var PLAYMODE = 'passplay'; // multiplayer | hotseat | solo | passplay
+var USERNAME = 'dwight';
+var GAME = 'catan'; // catan | ttt
+var PLAYMODE = 'hotseat'; // multiplayer | hotseat | solo | passplay
 var SEED = 1;
 //var AI_TYPE = 'random';
-const PLAYER_CONFIG_FOR_MULTIPLAYER = ['me','human','human'];
+const PLAYER_CONFIG_FOR_MULTIPLAYER = ['me', 'human', 'human'];
 
 const USE_SOCKETIO = false;
 const USE_BACKEND_AI = true;
@@ -11,7 +11,7 @@ const IS_MIRROR = false;
 const FLASK = true;
 const PORT = '5000';
 const NGROK = null;// 'http://ee91c9fa.ngrok.io/'; // null;//'http://f3629de0.ngrok.io/'; //null; //'http://b29082d5.ngrok.io/' //null; //'http://2d97cdbd.ngrok.io/';// MUSS / am ende!!! 
-const SERVER_URL = IS_MIRROR ? 'http://localhost:5555/' : FLASK ? (NGROK ? NGROK : 'http://localhost:'+PORT+'/') : 'http://localhost:5005/';
+const SERVER_URL = IS_MIRROR ? 'http://localhost:5555/' : FLASK ? (NGROK ? NGROK : 'http://localhost:' + PORT + '/') : 'http://localhost:5005/';
 
 //general settings: 
 var S_tooltips = 'OFF';
@@ -39,21 +39,21 @@ var view = null;
 var isPlaying = false; //initially
 var isReallyMultiplayer = false;
 
-var gcs={
-	ttt:{
+var gcs = {
+	ttt: {
 		numPlayers: 2,
 		players: [
 			{ id: 'Player1', playerType: 'me', agentType: null, username: USERNAME },
-			{ id: 'Player2', playerType: 'me', agentType: null, username: USERNAME+'1' },
+			{ id: 'Player2', playerType: 'me', agentType: null, username: USERNAME + '1' },
 		]
 	},
-	catan:{
-		numPlayers: 4,
+	catan: {
+		numPlayers: 3,
 		players: [
 			{ id: 'White', playerType: 'me', agentType: null, username: USERNAME },
-			{ id: 'Red', playerType: 'me', agentType: null, username: USERNAME+'1' },
-			{ id: 'Blue', playerType: 'me', agentType: null, username: USERNAME+'2' },
-			{ id: 'Orange', playerType: 'me', agentType: null, username: USERNAME+'3' },
+			{ id: 'Red', playerType: 'me', agentType: null, username: USERNAME + '1' },
+			// { id: 'Red', playerType: 'AI', agentType: 'random', username: 'bot0' },
+			{ id: 'Blue', playerType: 'me', agentType: null, username: USERNAME + '2' },
 		]
 	}
 }

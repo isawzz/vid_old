@@ -150,14 +150,17 @@ function processPlayers(data) {
 	return canProceed;
 }
 function processLog(data) {
-	if (!G.log) G.log = {}; //S.log contains all logs for game!
+	if (!G.log) G.log = {}; 
+	let pl = G.player;
+	if (!G.log[pl]) G.log[pl]={};
+	let dict = G.log[pl];
 	G.logUpdated = []; //keys to new logs
 	if (isdef(data.log)) {
 		for (const logEntry of data.log) {
 			//save this log so it isnt created multiple times!!!
 			let key = logEntry.line.map(x => isSimple(x) ? x : x.val).join(' ');
-			if (G.log[key]) continue;
-			G.log[key] = logEntry;
+			if (dict[key]) continue;
+			dict[key] = logEntry;
 			G.logUpdated.push(key);
 		}
 	}

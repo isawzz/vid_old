@@ -56,6 +56,25 @@ def _ex_wrap(cmd, *args, **kwargs):
 
 H = None
 
+def put(self, obj, block=True, timeout=None):
+	assert not self._closed
+	if not self._sem.acquire(block, timeout):
+		raise Full
+
+	self._notempty.acquire()
+	self._sem.acquire()
+	try:
+		if self._thread is None:
+			self._start_thread()
+		self._buffer.append(obj)
+		#self._unfinished_tasks.release()
+		self._notempty.notify()
+	except Exception as e:
+		print(e)
+	finally:
+		self._sem.release()
+		self._notempty.release()
+
 @app.route('/restart')
 @app.route('/restart/<int:debug>')
 def _hard_restart(address=None, debug=False, **settings):

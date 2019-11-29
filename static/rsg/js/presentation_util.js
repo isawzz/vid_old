@@ -1,209 +1,258 @@
-function atleastOneElementOfXIsDictWithKey(lst, k) {
-	for (const x of lst) { if (!x) continue; if (isDict(x) && k in x) return true; }
-	return false;
+//#region create MS 
+function makeRoot() {
+	let ms = new RSG();
+	let id = 'R_d_root';
+	ms.id = id;
+	ms.elem = domId(id);
+	ms.domType = getTypeOf(ms.elem);
+	ms.IdParent = null;
+	ms.isAttached = true;
+	UIS[id] = ms;
+	return ms;
 }
-function isListOf(x, key = '_obj') {
-	return isList(x) && !empty(x) && atleastOneElementOfXIsDictWithKey(x, key); //isDict(x[0]) && '_obj' in x[0];
+function makeDomArea(domel) {
+	if (nundef(domel.id)) return;
+	let ms = new RSG();
+	let id = domel.id;
+	ms.id = id;
+	ms.elem = domel;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(domel);
+	ms.cat = DOMCATS[ms.domType];
+	let idParent = domel.parentNode.id;
+	ms.idParent = idParent;
+	let parent = UIS[idParent];
+	parent.children.push(id);
+	ms.isAttached = true;
+	UIS[id] = ms;
+	listKey(IdOwner, id[2], id);
+	return ms;
 }
-function makeRefLinkDiv(val, refs, prop, prefix) {
-	let cl = prefix + '_r_' + getUID(); let ref = { oids: [val[prop]], id: cl }; refs.push(ref);
-	let sval = `<div id=${cl} class='up10 hallo'>${val[prop].toString()}</div>`;
-	return sval;
+function makeArea(areaName, idParent) {
+	let ms = new RSG();
+	let id = 'm_A_' + areaName;
+	ms.id = id;
+	let el = document.createElement('div');
+	//el.innerHTML='hallo!';
+	// el.style.backgroundColor = randomColor();
+	el.style.position = 'absolute';
+	// el.style.left='0px';
+	// el.style.top=''+testPosY+'px'; testPosY+=100;
+	// el.style.width='100%';
+	// el.style.height='50%';
+	ms.elem = el;
+	ms.elem.id = id;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(ms.elem);
+	ms.cat = DOMCATS[ms.domType];
+	ms.idParent = idParent;
+	let parent = UIS[idParent];
+	parent.children.push(id);
+	ms.attach();
+	UIS[id] = ms;
+	linkObjects(id, areaName);
+	//console.log(oid2ids[areaName]);
+	listKey(IdOwner, id[2], id);
+	return ms;
 }
-function makeRefLinkDiv4_obj(val, refs) { return makeRefLinkDiv(val, refs, '_obj', 't'); }
-function makeRefLinkDiv4_player(val, refs) { return makeRefLinkDiv(val, refs, '_player', 'p'); }
-function makeRefLinkDivList(val, refs, prop, prefix, className = 'up10 hallo') {
-	let cl = prefix + '_r_' + getUID(); let ref = { oids: val.filter(x => isdef(x)).map(x => x[prop]), id: cl }; refs.push(ref);
-	let sval = `<div id=${cl} class='${className}'>${val.map(x => !x ? '_' : x[prop]).toString()}</div>`;
-	return sval;
+function makeLogArea(plid) {
+	let ms = new RSG();
+	let idParent = 'a_d_log';
+	let id = idParent + '_' + plid;
+	ms.id = id;
+	let el = document.createElement('div');
+	el.style.position = 'absolute';
+	el.style.left='0px';
+	el.style.top='0px';
+	el.style.width='100%';
+	el.style.height='100%';
+	el.style.overflowY = 'auto';
+	ms.elem = el;
+	ms.elem.id = id;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(ms.elem);
+	ms.cat = DOMCATS[ms.domType];
+	ms.idParent = idParent;
+	let parent = UIS[idParent];
+	parent.children.push(id);
+	ms.attach();
+	UIS[id] = ms;
+	listKey(IdOwner, id[2], id);
+	return ms;
 }
-function makeRefLinkDiv4ListOf_obj(val, refs, className = 'up10 hallo') {
-	return makeRefLinkDivList(val, refs, '_obj', 't', className);
-}
-function makeRefLinkDiv4ListOf_player(val, refs, className = 'up10 hallo') {
-	return makeRefLinkDivList(val, refs, '_player', 'p', className);
-}
-function makeRefLinkDiv4MatrixOf_obj(val, refs) {
-	let rows = val._ndarray;
-	let sval = `<div>`;
-	let rowClass = 'up2 hallo';
-	for (const row of rows) {
-		sval += makeRefLinkDiv4ListOf_obj(row, refs, rowClass) + '<br>';
-		rowClass = 'hallo';
+
+function makeBoardElement(oid, o, idBoard, elType) {
+	let id = 'm_t_' + oid;
+	if (isdef(UIS[id])) {
+		error('CANNOT create ' + id + ' TWICE!!!!!!!!!');
+		return;
 	}
-	sval += '</div>';
-	return sval;
+	let ms = new RSG();
+	ms.id = id;
+	let domel = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+	ms.elem = domel;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(domel);
+	ms.cat = DOMCATS[ms.domType];
+	let idParent = idBoard;
+	ms.idParent = idParent;
+	let parent = UIS[idParent];
+	parent.children.push(id);
+
+	ms.o = o;
+	ms.isa[elType] = true;
+
+	linkObjects(id, oid);
+	listKey(IdOwner, id[2], id);
+	UIS[id] = ms;
+	//ms.attach();
+	return ms;
+
 }
-function transformToString(k,val, refs){
-	if (val && isDict(val) && '_set' in val) { val = val._set; }
-	if (k == 'visible' && !empty(val) && !isDict(val[0])) { val = val.map(x => { return { _player: x } }); }
+function makeBoard(idBoard, o, areaName) {
+	let id = 'm_s_' + idBoard;
+	if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+	let ms = new RSG();
+	ms.id = id;
+	let domel = addSvgg(UIS[areaName].elem, id, { originInCenter: true });
+	ms.elem = domel;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(domel);
+	ms.cat = DOMCATS[ms.domType];
+	let idParent = areaName;
+	ms.idParent = areaName;
+	let parent = UIS[idParent];
+	parent.children.push(id);
 
-	let sval = null;
-	if (isList(val) && empty(val)) { sval = '{ }'; }
-	else if (isList(val) && isString(val[0])) {sval = '{'+val.join(',')+'}'}
-	else if (isListOf(val, '_obj')) { sval = makeRefLinkDiv4ListOf_obj(val, refs); }
-	else if (isListOf(val, '_player')) { sval = makeRefLinkDiv4ListOf_player(val, refs); }
-	else if (val && isDict(val) && '_obj' in val) { sval = makeRefLinkDiv4_obj(val, refs); }
-	else if (val && isDict(val) && '_ndarray' in val) { sval = makeRefLinkDiv4MatrixOf_obj(val, refs) }
-	else if (val && isDict(val) && '_player' in val) { sval = makeRefLinkDiv4_player(val, refs); }
-	else if (isDict(val)) { sval = tableHTMLX(val, refs); }
-	else sval = simpleRep(val);
+	ms.o = o;
+	ms.isa.board = true;
 
-	// if (k == 'ports'){
-	// 	console.log('ports:',k,val,sval)
-	// }
+	linkObjects(id, idBoard);
+	listKey(IdOwner, id[2], id);
+	UIS[id] = ms;
+	ms.isAttached = true;
+	return ms;
 
-	return sval;
 }
-function tableElemX(o, keys) {
-	//console.log(o,keys)
-	let t = document.createElement('table');
-	t.classList.add('tttable');
-	let refs = [];//collect references to objects and players inside of table {oids:[oids],clid:clid,type:'p'|'t'} => parts
-	let s = '';
-	for (const k in o) {
-		if (isdef(keys) && !keys.includes(k)) continue;
-		s += '<tr><th>' + k + '</th><td>';
-		let sval = transformToString(k,o[k],refs);
-		s += sval + '</td>';
+
+function makeRefs(idParent, refs) {
+	for (const ref of refs) {
+		let id = ref.id;
+		let oids = ref.oids;
+		if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+		let ms = new RSG();
+		ms.id = id;
+		let domel = document.getElementById(id);
+		//console.log('ref elem:',domel)
+		ms.elem = domel;
+		ms.parts.elem = ms.elem;
+		ms.domType = getTypeOf(domel);
+		ms.cat = DOMCATS[ms.domType];
+		ms.idParent = idParent;
+		let parent = UIS[idParent];
+		parent.children.push(id);
+		ms.isAttached = true;
+
+		ms.isa.ref = true;
+		ms.o = ref.oids;
+
+		for (const oid of ref.oids) linkObjects(id, oid);
+		listKey(IdOwner, id[2], id);
+		UIS[id] = ms;
 	}
-	t.innerHTML = s;
-	return { table: t, refs: refs };
 }
-function tableHTMLX(o, refs) {
-	let s = '<table class="tttable up10">';
-	for (const k in o) {
-		s += '<tr><th>' + k + '</th><td>';
-		let sval = transformToString(k,o[k],refs);
-		s += sval + '</td>';
-	}
-	s += '</table>';
-	return s;
+function makeAux(s, oid, areaName, directParent) {
+	let id = 'x_l_' + getUID() + '@' + oid;
+	if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+	let ms = new RSG();
+	ms.id = id;
+	let domel = document.createElement('div');
+	domel.classList.add('hallo');
+	domel.innerHTML = s;
+	ms.elem = domel;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(domel);
+	ms.cat = DOMCATS[ms.domType];
+	let idParent = areaName;
+	ms.idParent = idParent;
+	let parent = UIS[idParent];
+	parent.children.push(id);
+
+	ms.isa.aux = true;
+
+	linkObjects(id, oid);
+	listKey(IdOwner, id[2], id);
+	UIS[id] = ms;
+	//ms.attach();
+	if (isdef(directParent)) { ms.isAttached = true; directParent.appendChild(ms.elem) } else ms.attach();
+	return ms;
+
 }
 
+function makeDefaultObject(oid, o, areaName) { return _makeDefault(makeIdDefaultObject(oid), oid, o, areaName, oid + ': ' + o.obj_type); }
+function makeDefaultPlayer(oid, o, areaName) { return _makeDefault(makeIdDefaultPlayer(oid), oid, o, areaName, 'player: ' + oid + '(' + getPlayerColorString(oid) + ', ' + getUser(oid) + ')'); }
+function _makeDefault(id, oid, o, areaName, title) {
+	if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+	let ms = new RSG();
+	ms.id = id;
+	let domel = document.createElement('div');
+	domel.style.cursor = 'default';
+	ms.elem = domel;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(domel);
+	ms.cat = DOMCATS[ms.domType];
+	let idParent = areaName;
+	ms.idParent = idParent;
+	let parent = UIS[idParent];
+	parent.children.push(id);
 
+	let sTitle = title;
+	ms.title(sTitle);
 
+	ms.o = o;
+	ms.isa[o.obj_type] = true;
 
+	linkObjects(id, oid);
+	listKey(IdOwner, id[2], id);
+	UIS[id] = ms;
+	ms.attach();
+	return ms;
 
+}
+function makeDefaultAction(boat, areaName) {
+	let ms = new RSG();
+	let id = 'd_a_' + boat.iTuple;
+	if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return null; }
+	ms.id = id;
+	let domel = document.createElement('div');
+	domel.textContent = boat.text;
+	domel.style.cursor = 'pointer';
+	ms.elem = domel;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(domel);
+	ms.cat = DOMCATS[ms.domType];
+	let idParent = areaName;
+	ms.idParent = idParent;
+	let parent = UIS[idParent];
+	parent.children.push(id);
 
+	ms.o = boat;
+	ms.isa.boat = true;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function tableElemY(o, keys) {
-	let t = document.createElement('table');
-	t.classList.add('tttable');
-	let refs = [];//collect references to objects and players inside of table {oids:[oids],clid:clid,type:'p'|'t'} => parts
-	let s = '';
-	for (const k in o) {
-		if (isdef(keys) && !keys.includes(k)) continue;
-		s += '<tr><th>' + k + '</th><td>';
-		let val = o[k];
-		let sval = null;
-		if (isListOf(val, '_obj')) {
-			//if (is_Set(val)) val=val._set;
-			//console.log(val)
-			let cl = 't_r_' + getUID(); let ref = { oids: val.filter(x => isdef(x)).map(x => x._obj), id: cl }; refs.push(ref);
-			sval = `<div id=${cl} class='up10 hallo'>${val.map(x => !x ? '_' : x._obj).toString()}</div>`;
-		} else if (val && isDict(val) && '_obj' in val) {
-			let cl = 't_r_' + getUID(); let ref = { oids: [val._obj], id: cl }; refs.push(ref);
-			sval = `<div id=${cl} class='up10 hallo'>${val._obj.toString()}</div>`;
-		} else if (val && isDict(val) && '_ndarray' in val) {
-			let rows = val._ndarray;
-			sval = `<div>`;
-			let rowClass = 'up2 hallo';
-			for (const row of rows) {
-				let cl = 't_r_' + getUID(); let ref = { oids: row.filter(x => isdef(x)).map(x => x._obj), id: cl }; refs.push(ref);
-				sval += `<div id=${cl} class='${rowClass}'>${row.map(x => !x ? '_' : x._obj).toString()}</div><br>`;
-				rowClass = 'hallo';
-			}
-			sval += '</div>';
-		} else if (val && isDict(val) && '_player' in val) {
-			let cl = 'p_r_' + getUID(); let ref = { oids: [val._player], id: cl }; refs.push(ref);
-			sval = `<div id=${cl} class='up10 hallo'>${val._player.toString()}</div>`;
+	for (const tupleEl of boat.tuple) {
+		if (tupleEl.type == 'obj' && isdef(tupleEl.ID)) {
+			let oid = tupleEl.ID;
+			boat.oids.push(oid);
+			linkObjects(id, oid);
 		}
-		if (!sval) {
-			//console.log(val);
-			sval = isSet(val) ? empty(val._set) ? '{ }' : simpleRep(val) : isDict(val) ? tableHTMLY(val, refs) : simpleRep(val);
-		}
-		//if (!sval) sval = isDict(val) ? tableHTMLY(val, refs) : simpleRep(val);
-		s += sval + '</td>';
 	}
-	t.innerHTML = s;
-	return { table: t, refs: refs };
+
+	listKey(IdOwner, id[2], id);
+	UIS[id] = ms;
+	ms.attach();
+	return ms;
+
 }
-function tableHTMLY(o, refs) {
-	let s = '<table class="tttable up10">';
-	for (const k in o) {
-		s += '<tr><th>' + k + '</th><td>';
-		let val = o[k];
-
-		let sval = null;
-		if (isListOf_Obj(val)) {
-			let cl = 't_r_' + getUID(); let ref = { oids: val.filter(x => isdef(x)).map(x => x._obj), id: cl }; refs.push(ref);
-			sval = `<div class='up10 hallo'>${val.map(x => !x ? '_' : x._obj).toString()}</div>`;
-		} else if (val && isDict(val) && '_obj' in val) {
-			let cl = 't_r_' + getUID(); let ref = { oids: [val._obj], id: cl }; refs.push(ref);
-			sval = `<div class='up10 hallo'>${val._obj.toString()}</div>`;
-		}
-
-		if (!sval) sval = isSet(val) ? empty(val._set) ? '{ }' : simpleRep(val) : isDict(val) ? tableHTMLY(val, refs) : simpleRep(val);
-		s += sval + '</td>';
-	}
-	s += '</table>';
-	return s;
-}
-
-
-function tableElem(o, keys) {
-	let t = document.createElement('table');
-	t.classList.add('tttable');
-	let s = '';
-	for (const k in o) {
-		if (isdef(keys) && !keys.includes(k)) continue;
-		s += '<tr><th>' + k + '</th><td>';
-		let val = o[k];
-		let sval = null;
-		if (isListOf_Obj(val)) {
-			sval = `<div class='up10 hallo'>${val.map(x => !x ? '_' : x._obj).toString()}</div>`;
-		} else if (val && isDict(val) && '_obj' in val) {
-			sval = `<div class='up10 hallo'>${val._obj.toString()}</div>`;
-		}
-		if (!sval) sval = isSet(val) ? empty(val._set) ? '{ }' : simpleRep(val) : isDict(val) ? tableHTML(val, 4) : simpleRep(val);
-		s += sval + '</td>';
-	}
-	t.innerHTML = s;
-	return t;
-}
-function tableHTML(o) {
-	let s = '<table class="tttable up10">';
-	for (const k in o) {
-		s += '<tr><th>' + k + '</th><td>';
-		let val = o[k];
-
-		let sval = null;
-		if (isListOf_Obj(val)) sval = `<div class='up10 hallo'>${val.map(x => !x ? '_' : x._obj).toString()}</div>`;
-		else if (val && isDict(val) && '_obj' in val) sval = `<div class='up10 hallo'>${val._obj.toString()}</div>`;
-
-		if (!sval) sval = isSet(val) ? empty(val._set) ? '{ }' : simpleRep(val) : isDict(val) ? tableHTML(val) : simpleRep(val);
-		s += sval + '</td>';
-	}
-	s += '</table>';
-	return s;
-}
-
 function makeMainVisual(oid, o) {
 	//examples are: building(road,settlement), robber
 	//main objects are only made if loc on board element!
@@ -280,113 +329,176 @@ function makeMainPlayer(oid, o, areaName) {
 	return ms;
 
 }
-function decorateVisual(ms, { draw = true, rings = 3, bg = 'darkslategray', fg = 'lime', label, shape = 'circle', palette, ipal, fill, x = 0, y = 0, w = 25, h = 25, sPoints, border = 'green', thickness = 1, rounding, path, txt, fz = 12, sz, overlay = true } = {}) {
-	console.log('decorate', ms)
-	let options = {};
-	let labelOptions = {};
-	if (palette && ipal) fill = palette[ipal];
-	else if (ipal) fill = S.pal[ipal];
-	if (bg) ms.setBg(bg);
-	if (fg) { ms.setFg(fg); }
-	if (fill) options.fill = fill;
-	if (x) options.x = x;
-	if (y) options.y = y;
-	if (h) { options.h = h; options.sz = h; }
-	if (w) { options.w = w; options.sz = w; }
-	if (sz) options.sz = sz;
-	if (txt) { options.txt = txt; labelOptions.txt = txt; }
-	if (label) { labelOptions.txt = label; }
-	if (fz) { options.fz = fz; labelOptions.fz = fz; }
-	if (sPoints) options.sPoints = sPoints;
-	if (border) options.border = border;
-	if (thickness) options.thickness = thickness;
-	if (rounding) options.rounding = rounding;
-	if (path) options.path = './assets/images/transpng/' + path + '.png';
-	if (rings) {
-		//console.log('rings',rings);
-	} else rings = 1;
-	dSize = Math.max(w / 6, 5);
-	for (let i = 0; i < rings; i++) {
-		switch (shape) {
-			case 'circle':
-				ms.circle(options);
-				break;
-			case 'hex':
-				ms.hex(options);
-				break;
-			case 'rect':
-				ms.rect(options);
-				break;
-			case 'poly':
-				ms.poly(options);
-				break;
-			case 'image':
-				ms.image(options);
-				break;
-			case 'text':
-				ms.text(options);
-				break;
-			default:
-				return null;
-		}
-		options.w -= dSize;
-		options.sz -= dSize;
-		options.h -= dSize;
-		//console.log(options);
-		//options.fill=colorLighter(options.fill);
+
+//#region tableElemX
+function tableElemX(o, keys) {
+	//console.log(o,keys)
+	let t = document.createElement('table');
+	t.classList.add('tttable');
+	let refs = [];//collect references to objects and players inside of table {oids:[oids],clid:clid,type:'p'|'t'} => parts
+	let s = '';
+	for (const k in o) {
+		if (isdef(keys) && !keys.includes(k)) continue;
+		s += '<tr><th>' + k + '</th><td>';
+		let sval = transformToString(k,o[k],refs);
+		s += sval + '</td>';
 	}
-	if (label) {
-		ms.text(labelOptions);
-	}
-	if (h) { options.h = h; options.sz = h; }
-	if (w) { options.w = w; options.sz = w; }
-	if (sz) options.sz = sz;
-	if (overlay) {
-		overlayOptions = jsCopy(options);
-		overlayOptions.className = 'overlay';
-		delete overlayOptions.fill;
-		delete overlayOptions.path;
-		switch (shape) {
-			case 'circle':
-				ms.circle(overlayOptions);
-				break;
-			case 'hex':
-				ms.hex(overlayOptions);
-				break;
-			case 'rect':
-				ms.rect(overlayOptions);
-				break;
-			case 'poly':
-				ms.poly(overlayOptions);
-				break;
-			case 'image':
-				ms.rect(overlayOptions);
-				break;
-			case 'text':
-				ms.text(overlayOptions);
-				break;
-			default:
-				return null;
-		}
-	}
-	if (draw) ms.attach();
-	return ms;
+	t.innerHTML = s;
+	return { table: t, refs: refs };
 }
-// function getPos(el) {
-// 	var rect=el.getBoundingClientRect();
-// 	return {x:rect.left,y:rect.top};
-// }
-// var TTTT=null;var TTMS=null;
-// function delayShowTT(ms){
-// 	console.log('delayShowTT');
-// 	TTTT=setTimeout(()=>attachMouseoverHandler(ms,showTT),400);
-// }
-// function attachMouseoverHandler(ms,handler){
-// 	if(ms.isa.board)return;
-// 	console.log('attachMouseoverHandler',ms.id)
-// 	TTMS=ms;
-// 	$(ms.elem).mouseover(handler);
-// }
+function tableHTMLX(o, refs) {
+	let s = '<table class="tttable up10">';
+	for (const k in o) {
+		s += '<tr><th>' + k + '</th><td>';
+		let sval = transformToString(k,o[k],refs);
+		s += sval + '</td>';
+	}
+	s += '</table>';
+	return s;
+}
+
+function atleastOneElementOfXIsDictWithKey(lst, k) {
+	for (const x of lst) { if (!x) continue; if (isDict(x) && k in x) return true; }
+	return false;
+}
+function isListOf(x, key = '_obj') {
+	return isList(x) && !empty(x) && atleastOneElementOfXIsDictWithKey(x, key); //isDict(x[0]) && '_obj' in x[0];
+}
+function makeRefLinkDiv(val, refs, prop, prefix) {
+	let cl = prefix + '_r_' + getUID(); let ref = { oids: [val[prop]], id: cl }; refs.push(ref);
+	let sval = `<div id=${cl} class='up10 hallo'>${val[prop].toString()}</div>`;
+	return sval;
+}
+function makeRefLinkDiv4_obj(val, refs) { return makeRefLinkDiv(val, refs, '_obj', 't'); }
+function makeRefLinkDiv4_player(val, refs) { return makeRefLinkDiv(val, refs, '_player', 'p'); }
+function makeRefLinkDivList(val, refs, prop, prefix, className = 'up10 hallo') {
+	let cl = prefix + '_r_' + getUID(); let ref = { oids: val.filter(x => isdef(x)).map(x => x[prop]), id: cl }; refs.push(ref);
+	let sval = `<div id=${cl} class='${className}'>${val.map(x => !x ? '_' : x[prop]).toString()}</div>`;
+	return sval;
+}
+function makeRefLinkDiv4ListOf_obj(val, refs, className = 'up10 hallo') {
+	return makeRefLinkDivList(val, refs, '_obj', 't', className);
+}
+function makeRefLinkDiv4ListOf_player(val, refs, className = 'up10 hallo') {
+	return makeRefLinkDivList(val, refs, '_player', 'p', className);
+}
+function makeRefLinkDiv4MatrixOf_obj(val, refs) {
+	let rows = val._ndarray;
+	let sval = `<div>`;
+	let rowClass = 'up2 hallo';
+	for (const row of rows) {
+		sval += makeRefLinkDiv4ListOf_obj(row, refs, rowClass) + '<br>';
+		rowClass = 'hallo';
+	}
+	sval += '</div>';
+	return sval;
+}
+function transformToString(k,val, refs){
+	if (val && isDict(val) && '_set' in val) { val = val._set; }
+	if (k == 'visible' && !empty(val) && !isDict(val[0])) { val = val.map(x => { return { _player: x } }); }
+
+	let sval = null;
+	if (isList(val) && empty(val)) { sval = '{ }'; }
+	else if (isList(val) && isString(val[0])) {sval = '{'+val.join(',')+'}'}
+	else if (isListOf(val, '_obj')) { sval = makeRefLinkDiv4ListOf_obj(val, refs); }
+	else if (isListOf(val, '_player')) { sval = makeRefLinkDiv4ListOf_player(val, refs); }
+	else if (val && isDict(val) && '_obj' in val) { sval = makeRefLinkDiv4_obj(val, refs); }
+	else if (val && isDict(val) && '_ndarray' in val) { sval = makeRefLinkDiv4MatrixOf_obj(val, refs) }
+	else if (val && isDict(val) && '_player' in val) { sval = makeRefLinkDiv4_player(val, refs); }
+	else if (isDict(val)) { sval = tableHTMLX(val, refs); }
+	else sval = simpleRep(val);
+
+	// if (k == 'ports'){
+	// 	console.log('ports:',k,val,sval)
+	// }
+
+	return sval;
+}
+//#endregion
+
+//#region delete MS 
+function _deleteFromOwnerList(id) { let owner = IdOwner[id[2]]; if (isdef(owner)) removeInPlace(owner, id); }
+function deleteRSG(id) {
+	//console.log('deleting',id)
+	let ms = UIS[id];
+	if (nundef(ms)) {
+		error('object that should be deleted does NOT exist!!!! ' + id);
+		//console.log(DELETED_IDS);
+		//console.log(DELETED_THIS_ROUND);
+		//return;
+	}
+	unhighlightMsAndRelatives(null, ms)
+	unlink(id);
+	_deleteFromOwnerList(id);
+	ms.destroy();
+	DELETED_IDS.push(id);
+	DELETED_THIS_ROUND.push(id);
+	delete UIS[id];
+}
+function deleteAll(rsgType, idoType) {
+	let ids = IdOwner[idoType];
+	//console.log(ids);
+	ids = isdef(IdOwner[idoType]) ? IdOwner[idoType].filter(x => x[0] == rsgType) : []; for (const id of ids) deleteRSG(id);
+}
+function deleteDefaultObjects() { deleteAll('d', 't'); }
+function deleteDefaultPlayers() { deleteAll('d', 'p'); }
+function deleteActions() { deleteAll('d', 'a'); }
+function deleteOid(oid) {
+	let uids = jsCopy(oid2ids[oid]);
+
+	//console.log('related to', oid, 'are', uids)
+	//of these only have to delete main object and default object
+	//no need to delete auxes?
+	//no need to delete because these will be updated in all objects that have changed via table update!
+	for (const uid of uids) {
+		if (uid[2] == 'r' || uid[2] == 'l') continue;
+		//console.log('deleting', uid);
+		if (UIS[uid]) deleteRSG(uid);
+	}
+}
+//#endregion
+
+//#region helpers: linking UIS ...
+function addRelatives(id, oid) {
+	// if (isdef(oid2ids[oid])) oid2ids[oid].map(x => listKey(id2uids, id, x)); //all other already existing uis are linked to newly created element!
+	if (isdef(oid2ids[oid])) {
+		for (const idOther of oid2ids[oid]) {
+			if (idOther == id) {
+				//console.log('object',id,'already exists in oid2ids[',oid,']'); 
+				continue;
+			}
+			listKey(id2uids, id, idOther);
+			listKey(id2uids, idOther, id);
+		}
+	}
+}
+function getColorHint(o) {
+	for (const k in o) {
+		if (k.toLowerCase() == 'color') return o[k];
+		if (isDict(o[k]) && isdef(o[k]._player)) return getPlayerColor(o[k]._player);
+	}
+	return null;
+}
+function getRandomShape() { return chooseRandom('ellipse', 'roundedRect', 'rect', 'hex'); }
+function linkObjects(id, oid) {
+	if (isdef(UIS[id])) {
+		//console.log('linkObjects: ui', id, 'exists and CANNOT be overriden!!!!!');
+	}
+	//console.log('*** created ***',id)
+	addRelatives(id, oid);
+	listKey(id2oids, id, oid);
+	listKey(oid2ids, oid, id);
+}
+function unlink(id) {
+	let oids = id2oids[id];
+	let uids = id2uids[id];
+	//console.log('unlink', 'oids', oids)
+	//console.log('unlink', 'uids', uids)
+	if (isdef(uids)) for (const uid of uids) removeInPlace(id2uids[uid], id);
+	if (isdef(oids)) for (const oid of oids) removeInPlace(oid2ids[oid], id);
+	delete id2uids[id];
+	delete id2oids[id];
+}
 function showTT(ev) {
 	if (TTMS) {
 
@@ -406,4 +518,52 @@ function showTT(ev) {
 		TTMS = null;
 	}
 }
-function hideTT() { clearTimeout(TTTT); $('div#tooltip').css({ display: 'none' }); }
+
+
+//get or set attributes of a dom elem
+(function ($) {
+	$.fn.attrs = function (attrs) {
+		var t = $(this);
+		if (attrs) {
+			// Set attributes
+			t.each(function (i, e) {
+				var j = $(e);
+				for (var attr in attrs) {
+					j.attr(attr, attrs[attr]);
+				}
+			});
+			return t;
+		} else {
+			// Get attributes
+			var a = {},
+				r = t.get(0);
+			if (r) {
+				r = r.attributes;
+				for (var i in r) {
+					var p = r[i];
+					if (typeof p.nodeValue !== 'undefined') a[p.nodeName] = p.nodeValue;
+				}
+			}
+			return a;
+		}
+	};
+})(jQuery);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
