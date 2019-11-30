@@ -5,10 +5,9 @@ function _start() {
 
 	//_startLogin(); login(chooseRandom(names)); openGameConfig();
 
-	S.gameConfig = gcs[GAME];
+	//S.gameConfig = gcs[GAME];	_startNewGame('starter');
 
-	_startNewGame('starter');
-
+	testCards();
 }
 function _startLogin() { loginView(); }
 
@@ -43,7 +42,7 @@ function _startNewGame(role) {
 }
 function _startRestartSame() {
 	checkCleanup_I();
-	_sendRoute('/begin/'+SEED, d6 => {
+	_sendRoute('/begin/' + SEED, d6 => {
 		let user = USERNAME;
 		timit.showTime('sending status');
 		_sendRoute('/status/' + user, d7 => {
@@ -122,7 +121,7 @@ function isMyPlayer(id) {
 }
 function isFrontAIPlayer(id) {
 	if (USE_BACKEND_AI) return false;
-	console.log('!!!!!!!!!isFrontAIPlayer: should NOT get here if USE_BACKEND_AI=='+USE_BACKEND_AI);
+	console.log('!!!!!!!!!isFrontAIPlayer: should NOT get here if USE_BACKEND_AI==' + USE_BACKEND_AI);
 	let players = S.gameConfig.players;
 	let pl = firstCond(players, x => x.id == id);
 	let playerType = pl.playerType;

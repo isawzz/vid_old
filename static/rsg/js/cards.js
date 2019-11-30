@@ -9,12 +9,21 @@ var cards1 = {
 };
 var card1 = cards1['147-2c93ddaf'];
 
+function testCards(){
+	_initGameGlobals();
+//	initPageHeader();
+	//initTABLES();
+	hideLobby(); hideLogin(); showGame(); 
+	initDom();
+
+	makeCard('c01','a_d_game');
+
+
+}
+
 class Card{
 
 }
 class Hand{
 
-}
-class Deck{
-	
 }
