@@ -5,9 +5,9 @@ function _start() {
 
 	//_startLogin(); login(chooseRandom(names)); openGameConfig();
 
-	//S.gameConfig = gcs[GAME];	_startNewGame('starter');
+	S.gameConfig = gcs[GAME];	_startNewGame('starter');
 
-	testCards();
+	//testCards();
 }
 function _startLogin() { loginView(); }
 
