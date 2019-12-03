@@ -1,0 +1,76 @@
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.card {
+  float: left;
+  background: white;
+	height: 320px;
+	width: 225px;
+  padding-bottom: 50px;
+  margin: 2px;
+  text-align: center;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+	border-radius: 15px;
+	border: 1px solid silver;
+	color:black;
+}
+
+.card:hover {
+	box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}
+
+p {
+  font-family: "Arial", Helvetica, sans-serif;
+}
+
+.circular {
+	box-sizing:border-box;
+	text-align:center;
+	padding-top:10px;
+	width: 100px;
+	height: 100px;
+	border-radius: 150px;
+	-webkit-border-radius: 150px;
+	-moz-border-radius: 150px;
+	/* background: red; */
+	/* color:white; */
+	/* background: url(http://orig01.deviantart.net/bc86/f/2007/227/5/1/black_hole_iii_by_hmn.jpg) no-repeat; */
+}
+
+.cardCenter {
+  width: 45%;
+  margin: 0 auto; 
+}
+
+hr { 
+	
+  border: 0; 
+	height: 2px; 
+	width:70%;
+  background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+  background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+  background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+  background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0); 
+}
+
+.fas {
+	/* position: relative; */
+	color: #EEE;
+	font-size: 80px;
+}
+/* .fas:before {
+	position: absolute;
+	left: calc(50% - .50em);
+	top: calc(50% - .10em);
+}
+.fas.fa-icon {
+	width: 80%;
+	height: 80%;
+	color: white;
+	background-color: black;
+} */

@@ -62,10 +62,10 @@ function makeLogArea(plid) {
 	ms.id = id;
 	let el = document.createElement('div');
 	el.style.position = 'absolute';
-	el.style.left='0px';
-	el.style.top='0px';
-	el.style.width='100%';
-	el.style.height='100%';
+	el.style.left = '0px';
+	el.style.top = '0px';
+	el.style.width = '100%';
+	el.style.height = '100%';
 	el.style.overflowY = 'auto';
 	ms.elem = el;
 	ms.elem.id = id;
@@ -131,6 +131,36 @@ function makeBoard(idBoard, o, areaName) {
 	listKey(IdOwner, id[2], id);
 	UIS[id] = ms;
 	ms.isAttached = true;
+	return ms;
+
+}
+
+function makeCard(oid, o, areaName) {
+	let id = 'm_t_' + oid;
+	if (isdef(UIS[id])) { console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+	let ms = new RSG();
+	ms.id = id;
+	let domel = _makeCardDiv(oid,o);
+	domel.id = id;
+	ms.elem = domel;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(domel);
+	ms.cat = DOMCATS[ms.domType];
+	let parent = UIS[areaName]; //hand area
+	let idParent = parent.id;
+	ms.idParent = idParent;
+	parent.children.push(id);
+
+	ms.o = o;
+	ms.isa = 'card'; //pieces have location! if location changes a piece must change its parent!!! 
+
+	linkObjects(id, oid);
+	listKey(IdOwner, id[2], id);
+	UIS[id] = ms;
+
+	ms.attach();
+	addCardToHand(id, idParent);
+	
 	return ms;
 
 }
@@ -285,8 +315,8 @@ function makeMainVisual(oid, o) {
 	listKey(IdOwner, id[2], id);
 	UIS[id] = ms;
 
-	let color = S.settings.useColorHintForObjects? getColorHint(o): randomColor();
-	if (nundef(color)) color=randomColor();
+	let color = S.settings.useColorHintForObjects ? getColorHint(o) : randomColor();
+	if (nundef(color)) color = randomColor();
 	//console.log('isEdge',locElem.isa.edge)
 	//if (locElem.isa.edge) console.log(locElem.w,locElem.h,locElem)
 	let [w, h] = locElem.isa.corner ? [locElem.w / 2, locElem.h / 2]
@@ -317,7 +347,7 @@ function makeMainPlayer(oid, o, areaName) {
 
 	let sTitle = title;
 	let color = G.playersAugmented[oid].color;
-	ms.title(sTitle,'title',color);
+	ms.title(sTitle, 'title', color);
 
 	ms.o = o;
 	ms.isa.player = true;
@@ -340,7 +370,7 @@ function tableElemX(o, keys) {
 	for (const k in o) {
 		if (isdef(keys) && !keys.includes(k)) continue;
 		s += '<tr><th>' + k + '</th><td>';
-		let sval = transformToString(k,o[k],refs);
+		let sval = transformToString(k, o[k], refs);
 		s += sval + '</td>';
 	}
 	t.innerHTML = s;
@@ -350,7 +380,7 @@ function tableHTMLX(o, refs) {
 	let s = '<table class="tttable up10">';
 	for (const k in o) {
 		s += '<tr><th>' + k + '</th><td>';
-		let sval = transformToString(k,o[k],refs);
+		let sval = transformToString(k, o[k], refs);
 		s += sval + '</td>';
 	}
 	s += '</table>';
@@ -393,13 +423,13 @@ function makeRefLinkDiv4MatrixOf_obj(val, refs) {
 	sval += '</div>';
 	return sval;
 }
-function transformToString(k,val, refs){
+function transformToString(k, val, refs) {
 	if (val && isDict(val) && '_set' in val) { val = val._set; }
 	if (k == 'visible' && !empty(val) && !isDict(val[0])) { val = val.map(x => { return { _player: x } }); }
 
 	let sval = null;
 	if (isList(val) && empty(val)) { sval = '{ }'; }
-	else if (isList(val) && isString(val[0])) {sval = '{'+val.join(',')+'}'}
+	else if (isList(val) && isString(val[0])) { sval = '{' + val.join(',') + '}' }
 	else if (isListOf(val, '_obj')) { sval = makeRefLinkDiv4ListOf_obj(val, refs); }
 	else if (isListOf(val, '_player')) { sval = makeRefLinkDiv4ListOf_player(val, refs); }
 	else if (val && isDict(val) && '_obj' in val) { sval = makeRefLinkDiv4_obj(val, refs); }
