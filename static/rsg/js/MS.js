@@ -771,13 +771,13 @@ class RSG {
 		if (isdef(handler)) { counters[eventName] += 1; counters.events += 1; handler(ev, this, partName); }
 	}
 	addHandler(evName, partName = 'elem', handler = null, autoEnable = true) {
-		//console.log('ccccccc  addHandler!!!!','autoEnable',autoEnable,evName, this.parts, partName,this.parts[partName])
 		let part = this.parts[partName];
-		//console.log(part)
-		if (nundef(part)) { part = this.elem; partName = 'elem'; } //return;
-		//console.log(part,partName);
+		if (nundef(part)) { part = this.elem; partName = 'elem'; } 
+
 		if (isdef(handler)) { this.handlers[evName][partName] = handler; }
-		$(part).off(evName).on(evName, this._handler.bind(this));
+
+		$(part).off(evName).on(evName, this._handler.bind(this)); //only this handler is on!!!
+
 		if (autoEnable) this.enable();
 	}
 	addClickHandler(partName = 'elem', handler = null, autoEnable = true) { this.addHandler('click', partName, handler, autoEnable); }

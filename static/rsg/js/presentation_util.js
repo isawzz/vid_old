@@ -136,6 +136,8 @@ function makeBoard(idBoard, o, areaName) {
 }
 
 function makeCard(oid, o, areaName) {
+	let idArea = getIdArea(areaName);
+	console.log('makeCard',oid,areaName);
 	let id = 'm_t_' + oid;
 	if (isdef(UIS[id])) { console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
 	let ms = new RSG();
@@ -146,7 +148,7 @@ function makeCard(oid, o, areaName) {
 	ms.parts.elem = ms.elem;
 	ms.domType = getTypeOf(domel);
 	ms.cat = DOMCATS[ms.domType];
-	let parent = UIS[areaName]; //hand area
+	let parent = UIS[idArea]; //hand area
 	let idParent = parent.id;
 	ms.idParent = idParent;
 	parent.children.push(id);
@@ -158,9 +160,6 @@ function makeCard(oid, o, areaName) {
 	listKey(IdOwner, id[2], id);
 	UIS[id] = ms;
 
-	ms.attach();
-	addCardToHand(id, idParent);
-	
 	return ms;
 
 }

@@ -99,7 +99,7 @@ function growIfDefaultMainAreaWidth(ms) {
 	if (isdef(wElem) && isdef(AREAS[areaName])) {
 		let wNeeded = wElem + 40;
 		let wArea = UIS[areaName].w;
-		console.log('wNeeded',wNeeded,'wArea',wArea);
+		//console.log('wNeeded',wNeeded,'wArea',wArea);
 		if (wArea < wNeeded || wArea > wNeeded+100) {
 			setAreaWidth(areaName, wNeeded);
 			//console.log('---> w of', areaName, 'from', wArea, 'to', wNeeded);

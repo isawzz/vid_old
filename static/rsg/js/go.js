@@ -4,14 +4,14 @@ const DOMCATS = { rect: 'g', g: 'g', circle: 'g', text: 'g', polygon: 'g', line:
 //owner types = { a: 'actions',  b: 'button', c: 'chrome', d: 'dom', g: 'g_area', i:'infobox', l: 'log', m: 'messages', p: 'players', s: 'struct', t: 'table', u:'user_area' };
 //id: rsgType_IdOwnerType_oidOrCounterOrName
 // >>>> UIS IdOwner id2oids oid2ids id2uids
-function makeIdInfobox(oid){return 'i_i_'+oid;}
-function getIdsInfobox(){return IdOwner.i?IdOwner.i:[];}
-function makeIdDefaultObject(oid){return 'd_t_'+oid;}
-function makeIdDefaultPlayer(oid){return 'd_p_'+oid;}
+function makeIdInfobox(oid) { return 'i_i_' + oid; }
+function getIdsInfobox() { return IdOwner.i ? IdOwner.i : []; }
+function makeIdDefaultObject(oid) { return 'd_t_' + oid; }
+function makeIdDefaultPlayer(oid) { return 'd_p_' + oid; }
 
 
 //get ids for oid as list
-function isStructuralElement(oid){ if (nundef(G.table) || !(oid in G.table)) return false; return 'fields' in G.table[oid];}
+function isStructuralElement(oid) { if (nundef(G.table) || !(oid in G.table)) return false; return 'fields' in G.table[oid]; }
 function defaultVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'd'); }
 function someVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'd' || x[0] == 'm'); }
 function mainVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'm'); }
@@ -19,13 +19,25 @@ function isBoardElement(oid) { let o = getVisual(oid); return o.idParent[2] == '
 function isBoardObject(o) { return o.map && o.fields; }
 function isField(o) { return o.neighbors; }
 
-function getOidForMainId(id) { return id[0]=='m'? id.substring(4):null; }
+function getOidForMainId(id) { return id[0] == 'm' ? id.substring(4) : null; }
+function getAreaName(id) { return startsWith(id,'m_A')? id.substring(4):id;}// getOidForMainId(id); }
+function getIdArea(areaName) {
+	//name could be 'DevCards' or 'M' or 'a_d_game'
+	if (startsWith(areaName, 'a_d_')) {
+		//this is a built-in area
+		return areaName;
+	} else if (startsWith(areaName, 'm_A_')) {
+		return areaName;
+	} else {
+		return 'm_A_' + areaName;
+	}
+}
 function getMainId(oid) { return firstCond(oid2ids[oid], x => x[0] == 'm'); }
 function getVisual(oid) { return UIS[getMainId(oid)]; }
 
 function getDefId(oid) { return firstCond(oid2ids[oid], x => x[0] == 'd'); }
 function getDefVisual(oid) { return UIS[getDefId(oid)]; }
-function getPageHeaderDivForPlayer(oid){ return document.getElementById('c_c_'+G.playersAugmented[oid].username);}
+function getPageHeaderDivForPlayer(oid) { return document.getElementById('c_c_' + G.playersAugmented[oid].username); }
 function getFirstVisual(oid) { let res = getVisual(oid); return res ? res : getDefVisual(oid); }
 
 function _getChildrenOf(id) { let ui = UIS[id]; return ui.children; }
@@ -40,16 +52,15 @@ function getDefaultPlayers() { return getDefaultPlayerIds(x => UIS[x]); }
 function getAuxIds() { return getList(IdOwner.l); }
 function getAux() { return getAuxIds.map(x => UIS[x]); }
 
-function getBoatIdByIdx(idx)
-{
-	if (!IdOwner.a || empty(IdOwner.a)) return null; 
-	if (idx<0)idx+=IdOwner.a.length; 
-	idx = idx %IdOwner.a.length; 
+function getBoatIdByIdx(idx) {
+	if (!IdOwner.a || empty(IdOwner.a)) return null;
+	if (idx < 0) idx += IdOwner.a.length;
+	idx = idx % IdOwner.a.length;
 	return IdOwner.a[idx];
 }
-function getFirstBoatId(){if (!IdOwner.a || empty(IdOwner.a)) return null; return IdOwner.a[0];}
-function getLastBoatId(){if (!IdOwner.a || empty(IdOwner.a)) return null; return IdOwner.a[IdOwner.a.length-1];}
-function getFirstBoat(){if (!IdOwner.a || empty(IdOwner.a)) return null; return UIS[getFirstBoatId()];}
+function getFirstBoatId() { if (!IdOwner.a || empty(IdOwner.a)) return null; return IdOwner.a[0]; }
+function getLastBoatId() { if (!IdOwner.a || empty(IdOwner.a)) return null; return IdOwner.a[IdOwner.a.length - 1]; }
+function getFirstBoat() { if (!IdOwner.a || empty(IdOwner.a)) return null; return UIS[getFirstBoatId()]; }
 function getBoatIds() { return getList(IdOwner.a); }
 function getBoats() { return getBoatIds().map(x => UIS[x]); }
 function getRandomBoat() { return UIS[chooseRandom(getBoatIds())]; }

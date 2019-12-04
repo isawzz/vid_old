@@ -388,6 +388,14 @@ function executeFunctionByName(functionName, context /*, args */) {
 //#endregion HACKS
 
 //#region array helpers
+function mapSafe(func,listFunc,oid){
+	let uis=listFunc(oid);
+	if (!isdef(uis))return;
+	if (!isList(uis)) uis=[uis];
+	uis.map(x=>x[func]());
+}
+
+
 function addAll(akku, other) {
 	for (const el of other) {
 		akku.push(el);

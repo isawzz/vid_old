@@ -116,7 +116,7 @@ function processPlayers(data) {
 				//if (G.previousPlayer) console.log(G.previousPlayer,'isMyPlayer?',isMyPlayer(G.previousPlayer))
 				//console.log(id,'isFrontAIPlayer?',isFrontAIPlayer(id))
 
-				console.log('G.player is',G.player)
+				//console.log('G.player is',G.player)
 				if (nundef(G.player) || isMyPlayer(id) || G.player == id || isMyPlayer(G.previousPlayer) && isFrontAIPlayer(id)) {
 					G.player = id;
 					G.playerIndex = S.players[id].index;

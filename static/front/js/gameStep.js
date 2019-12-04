@@ -32,17 +32,22 @@ function gameStep() {
 
 	// timit.showTime('...log presented!');
 	////console.log(	S.vars.switchedGame)
-	if (S.vars.switchedGame) {
-		//adjustPlayerAreaWise(); //does NOT work!!!!!
-		S.vars.switchedGame = false;
-	}
-
-
+	// if (S.vars.switchedGame) {
+	// 	//adjustPlayerAreaWise(); //does NOT work!!!!!
+	// 	S.vars.switchedGame = false;
+	// }
 
 	if (G.tupleGroups) {
 		presentActions();
 		timit.showTime('...presentation done!');
 		startInteraction();	
-	} else presentWaitingFor();
+
+		// if (!empty(commandChain)) {
+		// 	let nextCommand = commandChain.shift();
+		// 	//unitTestGameloop('____________COMMAND=0/' + execOptions.commandChain.length, nextCommand.name);
+		// 	nextCommand();
+		// } 
+	
+		} else presentWaitingFor();
 }
 

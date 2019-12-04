@@ -123,9 +123,10 @@ function onClickFilterTuples(ev, ms, part) {
 		}
 	}
 }
+
 function onClickCheat(code) {
 	_sendRoute('/cheat/' + code, d => {
-		console.log('response from cheatCode:', d);
+		//console.log('response from cheatCode:', d);
 	});
 }
 function onClickStep() {
@@ -247,21 +248,46 @@ function addStandardInteraction(id) {
 	//console.log(id)
 	let ms = UIS[id];
 	switch (id[2]) {
-		case 'a': ms.addClickHandler('elem', onClickSelectTuple); break;
-		case 'l': break;
-		case 'r': break;
+
+		case 'a':
+			ms.addClickHandler('elem', onClickSelectTuple);
+			ms.addMouseEnterHandler('title', highlightMsAndRelatives);
+			ms.addMouseLeaveHandler('title', unhighlightMsAndRelatives);
+			break;
+
+		case 'l':
+		case 'r':
+			ms.addMouseEnterHandler('title', highlightMsAndRelatives);
+			ms.addMouseLeaveHandler('title', unhighlightMsAndRelatives);
+			break;
+
 		case 't':
-			if (id[0] == 'm') { //main objects in game area
-				ms.addClickHandler('elem', onClickFilterOrInfobox)
+			if (id[0] == 'm') { //main table objects!!!!!
+				ms.addClickHandler('elem', onClickFilterOrInfobox);
+
+				if (ms.isa == 'card') {
+					//card should also be magnified or minified!
+					ms.addMouseEnterHandler('title', highlightAndMagnify);
+					ms.addMouseLeaveHandler('title', unhighlightAndMinify);
+				} else {
+					ms.addMouseEnterHandler('title', highlightMsAndRelatives);
+					ms.addMouseLeaveHandler('title', unhighlightMsAndRelatives);
+				}
+
+
 			} else {
 				ms.addClickHandler('elem', onClickFilterTuples);
+				ms.addMouseEnterHandler('title', highlightMsAndRelatives);
+				ms.addMouseLeaveHandler('title', unhighlightMsAndRelatives);
 			}
 			break;
-		default: ms.addClickHandler('elem', onClickFilterTuples); break;
+
+		default:
+			ms.addClickHandler('elem', onClickFilterTuples);
+			ms.addMouseEnterHandler('title', highlightMsAndRelatives);
+			ms.addMouseLeaveHandler('title', unhighlightMsAndRelatives);
+			break;
 	}
-	//if (id[0]=='m') return;
-	ms.addMouseEnterHandler('title', highlightMsAndRelatives);
-	ms.addMouseLeaveHandler('title', unhighlightMsAndRelatives);
 }
 function fullViewObjects() { let ids = getDefaultObjectIds(); ids.map(x => UIS[x].maximize()); }
 function minimizeObjects() { let ids = getDefaultObjectIds(); ids.map(x => UIS[x].minimize()); }
@@ -334,6 +360,11 @@ function unhighlightBoat() {
 		boatHighlighted = null;
 	}
 }
+function highlightAndMagnify(ev, ms, partName) {
+	//this is typical behavior for cards in a hand
+	magnifyFront(ms.id);
+	highlightMsAndRelatives(ev, ms, partName);
+}
 function highlightMsAndRelatives(ev, ms, partName) {
 	//console.log(ms.id,partName)
 	let id = ms.id;
@@ -346,6 +377,10 @@ function highlightMsAndRelatives(ev, ms, partName) {
 		let msRel = UIS[idRel];
 		msRel.high('title');
 	}
+}
+function unhighlightAndMinify(ev, ms, partName) {
+	minifyBack(ms.id);
+	unhighlightMsAndRelatives(ev, ms, partName);
 }
 function unhighlightMsAndRelatives(ev, ms, partName) {
 	let id = ms.id;

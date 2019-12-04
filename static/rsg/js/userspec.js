@@ -20,6 +20,7 @@ function initSTRUCTURES() {
 	let data = S.user.spec.STRUCTURES;
 	if (nundef(data)) return;
 
+	BINDINGS = {};
 	let hasStructure = false;
 	for (const areaName in data) {
 		reqs = data[areaName];
@@ -42,16 +43,8 @@ function initSTRUCTURES() {
 				let structObject = window[func](odict, areaId, boardInfo);
 
 				// unused im moment
-				// } else if (isDict(val) && 'binding' in val) {
-				// 	let info = val.binding;
-				// 	//hier muss ich jetzt registry einsetzen!!!
-				// 	/**
-				// 	 * wenn ich playerUpdate mache, muss ich 
-				// 	 * 
-				// 	 */
-				// 	let filterFunc = 0;//d
-				// 	let statement = `getVisual(${areaId}).set${prop.toUpperCase}(${info.object_pool}.)`
-				// 	let odict = parseDictionaryName(info.object_pool);
+			} else if (prop == 'binding') {
+				BINDINGS[areaId] = val;
 
 			} else {
 				// rsg tries to set this prop for areaName object! eg., visual props bg, fg, bounds
@@ -71,17 +64,17 @@ function presentSpecAndCode(callbacks = []) {
 	let d = document.getElementById('a_d_spec_content');
 	if (S.user.spec && S.settings.userSettings) {
 		d.innerHTML = S.user.specText;
-	}else{d.innerHTML = '';}
-	
+	} else { d.innerHTML = ''; }
+
 	d = document.getElementById('a_d_code_content');
-	if (S.user.script  && S.settings.userBehaviors) {
+	if (S.user.script && S.settings.userBehaviors) {
 		d.innerHTML = S.user.script;
-	}else{d.innerHTML = '';}
-	
+	} else { d.innerHTML = ''; }
+
 	$('pre').html(function () {
 		return this.innerHTML.replace(/\t/g, '&nbsp;&nbsp;');
 	});
-	
+
 	if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 }
 
@@ -113,7 +106,7 @@ function onClickUseNoBoardDetection() {
 	S.settings.userStructures = false;
 	S.settings.userSettings = false;
 	S.settings.boardDetection = S_boardDetection = false;
-	S.settings.openTab='London';
+	S.settings.openTab = 'London';
 	redrawScreen();
 }
 function onClickUseNoSpec() {
@@ -121,7 +114,7 @@ function onClickUseNoSpec() {
 	S.settings.userStructures = false;
 	S.settings.userSettings = false;
 	S.settings.boardDetection = S_boardDetection = true;
-	S.settings.openTab='London';
+	S.settings.openTab = 'London';
 	redrawScreen();
 }
 function onClickUseSettings() {
@@ -129,7 +122,7 @@ function onClickUseSettings() {
 	S.settings.userStructures = false;
 	S.settings.userSettings = true;
 	S.settings.boardDetection = S_boardDetection = true;
-	S.settings.openTab='Seattle';
+	S.settings.openTab = 'Seattle';
 	redrawScreen();
 }
 function onClickUseStructures() {
@@ -137,7 +130,7 @@ function onClickUseStructures() {
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;
 	S.settings.boardDetection = S_boardDetection = true;
-	S.settings.openTab='Paris';
+	S.settings.openTab = 'Paris';
 	redrawScreen();
 }
 function onClickUseBehaviors() {
@@ -145,7 +138,7 @@ function onClickUseBehaviors() {
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;
 	S.settings.boardDetection = S_boardDetection = true;
-	S.settings.openTab='Oslo';
+	S.settings.openTab = 'Oslo';
 	redrawScreen();
 }
 function onClickReloadSpec() {

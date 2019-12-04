@@ -1,3 +1,4 @@
+var commandChain=[];
 function _start() {
 	_initServer();
 
@@ -5,6 +6,7 @@ function _start() {
 
 	//_startLogin(); login(chooseRandom(names)); openGameConfig();
 
+	//commandChain=[onClickRunToNextPhase,()=>onClickCheat('devcard')];
 	S.gameConfig = gcs[GAME];	_startNewGame('starter');
 
 	//testCards();
@@ -18,7 +20,7 @@ function _startNewGame(role) {
 	//console.log('starting as',role,'multiplayer=',isReallyMultiplayer);
 
 	timit.start_of_cycle(getFunctionCallerName());
-	S.vars.switchedGame = true;
+	//S.vars.switchedGame = true;
 	S.settings.game = GAME;
 
 	checkCleanup_III();
@@ -98,7 +100,7 @@ function _initServer() {
 	counters = { msg: 0, click: 0, mouseenter: 0, mouseleave: 0, events: 0 };
 
 	setDefaultSettings();
-	S.vars.switchedGame = true;
+	//S.vars.switchedGame = true;
 
 	// _initGameGlobals();
 	// S.gameInProgress = false;

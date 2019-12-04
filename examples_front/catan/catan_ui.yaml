@@ -1,16 +1,36 @@
 SETTINGS:
-  gameAreaSize: [800, 600]
+  gameAreaSize: [800, 800]
   table:
     optin: [res, num, building, port]
   dev:
     run_to_buttons:
-      buy: "buy devcard"
+      devdeck: "buy devcard"
       hex: "place robber"
       Corner: "settlement or city"
       Edge: "road" 
     cheat_buttons: 
       robber: "cheat robber" 
       devcard: "cheat devcard"
+
+STRUCTURES:
+  M:
+    location: a_d_game
+    bounds: [0, 0, 800, 600, px]
+    structure: 
+      type: detectBoard
+  DevCards:
+    location: a_d_game
+    bounds: [0, 600, 800, 200, px]
+    color: '#00FF000D'
+    binding:
+      source:
+        pool: players
+        cond: 'obj_type == GamePlayer'
+        property: devcards
+      target:
+        type: cardHand
+      
+
 
 CODE: catan_ui
 

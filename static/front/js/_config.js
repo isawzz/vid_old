@@ -15,7 +15,7 @@ const SERVER_URL = IS_MIRROR ? 'http://localhost:5555/' : FLASK ? (NGROK ? NGROK
 
 //general settings: 
 var S_tooltips = 'OFF';
-var S_openTab = 'London';
+var S_openTab = 'Seattle';
 
 var S_userSettings = true;
 var S_userStructures = true;
@@ -24,7 +24,7 @@ var S_userBehaviors = true;
 var S_autoplay = false;
 var S_showEvents = false; //unused
 var S_AIThinkingTime = 30;
-var S_autoplayFunction = (_g) => false; //counters.msg < 25; //counters.msg < 13; // false; //G.player!='White' && G.player != 'Player1';
+var S_autoplayFunction = (_g) => _g.phase == 'setup';// false; //counters.msg < 25; //counters.msg < 13; // false; //G.player!='White' && G.player != 'Player1';
 
 //rsg settings
 var S_boardDetection = true; //if no spec per default use board detection

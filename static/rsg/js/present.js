@@ -21,7 +21,7 @@ function presentTable() {
 
 		let updatedVisuals;
 		if (S.settings.userBehaviors) {
-			updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_CREATE);
+			updatedVisuals = runBehaviors(oid, G.table, TABLE_CREATE);
 		}
 		//console.log('updatedVisuals',updatedVisuals)
 		if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
@@ -48,7 +48,7 @@ function presentTable() {
 		if (ms) {
 			let updatedVisuals;
 			if (S.settings.userBehaviors) {
-				updatedVisuals = runBEHAVIOR_new(oid, G.table, TABLE_UPDATE);
+				updatedVisuals = runBehaviors(oid, G.table, TABLE_UPDATE);
 			}
 			//console.log('updatedVisuals',updatedVisuals)
 			if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
@@ -91,7 +91,7 @@ function presentPlayers() {
 
 		let updatedVisuals;
 		if (S.settings.userBehaviors) {
-			updatedVisuals = runBEHAVIOR_new(pid, G.playersAugmented, PLAYER_CREATE);
+			updatedVisuals = runBehaviors(pid, G.playersAugmented, PLAYER_CREATE);
 		}
 		//console.log('updatedVisuals',updatedVisuals)
 		if (isPlain() && (nundef(updatedVisuals) || !updatedVisuals.includes(pid))) {
@@ -103,25 +103,27 @@ function presentPlayers() {
 	}
 	//presentation of existing changed players 
 	for (const pid in G.playersUpdated) {
-		let o = G.playersAugmented[pid];
+		let pl = G.playersAugmented[pid];
 		//if (G.playersCreated.includes(pid)) { continue; }
 
 		//if (S.settings.tooltips && TT_JUST_UPDATED == pid) updateTooltipContent(pid, G.playersAugmented);
 
 		//update main visual
+		let updatedVisuals = {};
+		if (S.settings.userBehaviors) {
+
+			updatedVisuals = runBehaviors(pid, G.playersAugmented, PLAYER_UPDATE);
+			runBindings(pid, G.playersAugmented)
+		}
+
 		let ms = getVisual(pid);
-		if (ms) {
-			let updatedVisuals = {};
-			if (S.settings.userBehaviors) updatedVisuals = runBEHAVIOR_new(pid, G.playersAugmented, PLAYER_UPDATE);
-			if (!updatedVisuals[pid]) {
-				presentMainPlayer(pid, ms, G.playersAugmented, false);
-			}
-			//if (!updatedVisuals[pid]) o.table(G.playersAugmented[pid]);
+		if (!updatedVisuals[pid] && isdef(ms)) {
+			presentMainPlayer(pid, ms, G.playersAugmented, false);
 		}
 
 		//update default visual
 		if (!S.settings.player.createDefault || ms && S.settings.player.createDefault != true) continue;
-		let plms = presentDefault(pid, G.playersAugmented[pid], false);
+		let plms = presentDefault(pid, pl, false);
 		onPlayerChange(pid);
 		//measure plms somehow
 		// //console.log('is new game:',S.vars.switchedGame);
@@ -239,10 +241,10 @@ function setStatus(s) {
 function presentLog() {
 	//add new logEntries to div
 	let pl = G.player;
-	let logId = 'a_d_log' +'_'+ pl;
+	let logId = 'a_d_log' + '_' + pl;
 	if (!UIS[logId]) makeLogArea(pl);
 	let d = document.getElementById(logId);
-	console.log('.......',logId,UIS[logId],d)
+	//console.log('.......',logId,UIS[logId],d)
 	let BASEMARGIN = 16;
 	for (const k of G.logUpdated) {
 		let logEntry = G.log[pl][k];
@@ -328,7 +330,7 @@ function presentWaitingFor() {
 	}
 	if (S.settings.playmode != 'passplay' && (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player))) {
 		let user = G.playersAugmented[pl].username;
-		console.log('just switching username to', user)
+		//console.log('just switching username to', user)
 		_sendRoute('/status/' + user, d => {
 			//console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
 			//console.log('reply to status request for',user,d);
