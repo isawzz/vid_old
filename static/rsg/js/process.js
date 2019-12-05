@@ -68,6 +68,7 @@ function processTable(data) {
 
 				} else if (nundef(o_new)) {
 					G.tableRemoved.push(id);
+					//console.log('removed:',id)
 				}
 			}
 		}

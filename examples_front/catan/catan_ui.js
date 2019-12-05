@@ -32,6 +32,7 @@ FUNCS = {
 		return true;
 	},
 	player_update_devcards: (oid, o, pl, cardArea) => {
+		//console.log(getFunctionCallerName())
 		//console.log('__________exec player_update_devcards:');//, oid, o, pl, cardArea)
 		//let current = cardArea.cards;
 		let areaName = 'DevCards';

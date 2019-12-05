@@ -13,9 +13,9 @@ function presentTable() {
 			makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 		}
 
-		//if (o.obj_type == 'robber') console.log('NEWLY CREATE:','main:'+mainVisualExists(oid));
+		//if (o.obj_type == 'robber') //console.log('NEWLY CREATE:','main:'+mainVisualExists(oid));
 		if (mainVisualExists(oid) || !S.settings.boardDetection && !S.settings.userStructures) {
-			//if (o.obj_type == 'robber') console.log(o,getVisual(oid));
+			//if (o.obj_type == 'robber') //console.log(o,getVisual(oid));
 			continue;
 		}
 
@@ -164,6 +164,7 @@ function updatePageHeader(pid) {
 	ms.classList.add('gamePlayer');
 }
 function updateLogArea(prevPlid, plid) {
+	//console.log(prevPlid)
 	if (prevPlid) hideElem('a_d_log_' + prevPlid);
 	let id = 'a_d_log_' + plid;
 	if (UIS[id]) showElem(id);
@@ -336,7 +337,7 @@ function presentWaitingFor() {
 			//console.log('reply to status request for',user,d);
 			d = JSON.parse(d);
 			processData(d); gameStep();
-			//else console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
+			//else //console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
 	} else if (S.settings.playmode == 'passplay') {
 		//this is where I have to output message: NOT YOU TURN ANYMORE!!!!! please click pass!!!
@@ -358,7 +359,7 @@ function showPassToNextPlayer(plWaitingFor) {
 
 	WAITINGFORPLAYER = plWaitingFor;
 
-	console.log('waiting for player', WAITINGFORPLAYER);
+	//console.log('waiting for player', WAITINGFORPLAYER);
 
 }
 var WAITINGFORPLAYER = null;
@@ -371,7 +372,7 @@ function totalFreeze() {
 function onClickNextPlayerReady() {
 	if (WAITINGFORPLAYER !== null) {
 		let user = getUsernameForPlayer(WAITINGFORPLAYER);
-		console.log('username of new player:', user)
+		//console.log('username of new player:', user)
 		WAITINGFORPLAYER = null;
 		_sendRoute('/status/' + user, d => {
 			//console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
@@ -380,7 +381,7 @@ function onClickNextPlayerReady() {
 			d = JSON.parse(d);
 			processData(d);
 			gameStep();
-			//else console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
+			//else //console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
 		});
 	}
 }
@@ -423,7 +424,7 @@ function presentMain(oid, ms, pool, isTableObject = true) {
 	//console.log(validKeys);
 
 	let color = S.settings.useColorHintForProperties ? getColorHint(o) : ms.fg;
-	// console.log(o,color)
+	// //console.log(o,color)
 	let akku = [];//isField(o)?[''+oid]:[];
 	// let bg, fg;
 	for (const k of validKeys) {

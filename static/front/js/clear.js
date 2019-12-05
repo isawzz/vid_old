@@ -7,6 +7,9 @@ function checkCleanup_I() {
 		clearLog();
 		delete G.end;
 		delete G.signals.receivedEndMessage;
+		delete G.previousPlayer;
+		delete G.player;
+		//console.log('checkCleanup_I done!',G.previousPlayer, G.player);
 	}
 }
 function checkCleanup_II() {
