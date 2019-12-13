@@ -32,15 +32,15 @@ function makeArea(areaName, idParent) {
 	let ms = new RSG();
 	let id = 'm_A_' + areaName;
 	ms.id = id;
-	let el = document.createElement('div');
+	let domel = document.createElement('div');
 	//el.innerHTML='hallo!';
 	// el.style.backgroundColor = randomColor();
-	el.style.position = 'absolute';
+	domel.style.position = 'absolute';
 	// el.style.left='0px';
 	// el.style.top=''+testPosY+'px'; testPosY+=100;
 	// el.style.width='100%';
 	// el.style.height='50%';
-	ms.elem = el;
+	ms.elem = domel;
 	ms.elem.id = id;
 	ms.parts.elem = ms.elem;
 	ms.domType = getTypeOf(ms.elem);
@@ -81,6 +81,64 @@ function makeLogArea(plid) {
 	return ms;
 }
 
+function makeDrawingArea(id, idArea, addToUIS = false) {
+
+	if (addToUIS && isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+	let ms = new RSG();
+	ms.id = id;
+
+	let idParent = idArea;
+	ms.idParent = idArea;
+	let parent = UIS[idParent];
+	if (parent) parent.children.push(id);
+	let parentElem = parent ? parent.elem : document.getElementById(idArea);
+
+	let domel = addSvgg(parentElem, id, { originInCenter: true }); //attaches drawing area!
+	ms.w=parent.w;
+	ms.h=parent.h;
+	//console.log(domel.offsetWidth,domel.offsetHeight,parent.w,parent.h)
+	ms.isAttached = true;
+
+	ms.elem = domel;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(domel);
+	ms.cat = DOMCATS[ms.domType];
+
+	ms.isa.drawingArea = true;
+
+	if (addToUIS) {
+		listKey(IdOwner, id[2], id);
+		UIS[id] = ms;
+	}
+	return ms;
+
+
+}
+function makeDrawingElement(id, idDrawingArea, addToUIS = false) {
+
+	if (isdef(UIS[id])) {
+		error('CANNOT create ' + id + ' TWICE!!!!!!!!!');
+		return;
+	}
+	let ms = new RSG();
+	ms.id = id;
+	let domel = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+	ms.elem = domel;
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(domel);
+	ms.cat = DOMCATS[ms.domType];
+
+	let idParent = idDrawingArea;
+	ms.idParent = idParent;
+	let parent = UIS[idParent];
+	if (parent) parent.children.push(id);
+
+	if (addToUIS) {
+		listKey(IdOwner, id[2], id);
+		UIS[id] = ms;
+	}
+	return ms;
+}
 function makeBoardElement(oid, o, idBoard, elType) {
 	let id = 'm_t_' + oid;
 	if (isdef(UIS[id])) {
@@ -91,6 +149,7 @@ function makeBoardElement(oid, o, idBoard, elType) {
 	ms.id = id;
 	let domel = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 	ms.elem = domel;
+	ms.elem.id = id;
 	ms.parts.elem = ms.elem;
 	ms.domType = getTypeOf(domel);
 	ms.cat = DOMCATS[ms.domType];
@@ -137,12 +196,12 @@ function makeBoard(idBoard, o, areaName) {
 
 function makeCard(oid, o, areaName) {
 	let idArea = getIdArea(areaName);
-	console.log('makeCard',oid,areaName);
+	//console.log('makeCard', oid, areaName);
 	let id = 'm_t_' + oid;
 	if (isdef(UIS[id])) { console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
 	let ms = new RSG();
 	ms.id = id;
-	let domel = _makeCardDiv(oid,o);
+	let domel = _makeCardDiv(oid, o);
 	domel.id = id;
 	ms.elem = domel;
 	ms.parts.elem = ms.elem;
@@ -154,7 +213,7 @@ function makeCard(oid, o, areaName) {
 	parent.children.push(id);
 
 	ms.o = o;
-	ms.isa = 'card'; //pieces have location! if location changes a piece must change its parent!!! 
+	ms.isa.card = true; //pieces have location! if location changes a piece must change its parent!!! 
 
 	linkObjects(id, oid);
 	listKey(IdOwner, id[2], id);
@@ -282,6 +341,10 @@ function makeDefaultAction(boat, areaName) {
 	return ms;
 
 }
+
+function getBoardElementStandardType(ms){
+	return ms.isa.corner?'corner':ms.isa.field?'field':'edge';
+}
 function makeMainVisual(oid, o) {
 	//examples are: building(road,settlement), robber
 	//main objects are only made if loc on board element!
@@ -315,16 +378,47 @@ function makeMainVisual(oid, o) {
 	UIS[id] = ms;
 
 	let color = S.settings.useColorHintForObjects ? getColorHint(o) : randomColor();
-	if (nundef(color)) color = randomColor();
+	if (nundef(color)) color = 'black';// randomColor();
 	//console.log('isEdge',locElem.isa.edge)
 	//if (locElem.isa.edge) console.log(locElem.w,locElem.h,locElem)
-	let [w, h] = locElem.isa.corner ? [locElem.w / 2, locElem.h / 2]
-		: locElem.isa.field ? [locElem.w / 4, locElem.h / 4] : [locElem.thickness + 2, locElem.thickness + 2];
-	let [x, y] = [locElem.x, locElem.y];
-	ms.ellipse({ w: w, h: h, fill: color }); ms.setPos(x, y); ms.attach();//.text('hallo').attach();
+	//console.log('........locElem.isa',locElem.isa);
+	let boardElemType = getBoardElementStandardType(locElem);
+	let sizeInfo=S.settings.pieceSizeRelativeToLoc[boardElemType];
+	
+	let baseValue = locElem[sizeInfo[0]];
+	let percent = Number(sizeInfo[1]);
+	let sz = (baseValue*percent)/100;
 
+	//default piece for field,node is circle of size sz w/ symbol in middle
+	if (boardElemType != 'edge'){
+		makePictoPiece(ms,o,sz,color)
+		ms.setPos(locElem.x, locElem.y); 
+	}else{
+	//default piece for edge is lineSegment along edge of length sz (w/ symbol only if addSymbolToEdges==true)
+		makeLineSegment(ms,o,locElem,sz,color);
+	}
+	ms.attach();
 	return ms;
+}
+function makeLineSegment(ms,o,msLoc,sz,color){
+	//TODO: S.settings.addSymbolsToEdges
+	let [x1,y1,x2,y2]=msLoc.getEndPointsOfLineSegmentOfLength(sz);
+	//let ms2=makeDrawingElement('el2', 'board');
+	ms.line({cap:'round',thickness:msLoc.thickness,x1:x1,y1:y1,x2:x2,y2:y2}).setBg(color).attach();
+	ms.line({className:'overlay',cap:'round',thickness:msLoc.thickness,x1:x1,y1:y1,x2:x2,y2:y2});
 
+}
+function makePictoPiece(ms,o,sz,color){
+
+	//console.log('unit',unit,'percent',percent,'sz',sz);
+	let [w, h] = [sz,sz]; 
+
+	let sym = o.obj_type;
+	if (sym in S.settings.symbols){sym = S.settings.symbols[sym];}
+	if (!(sym in iconChars)) sym = randomNumber(5,120); //abstract symbols
+	ms.ellipse({ w: w, h: h, fill: color, alpha:.3 });
+	let pictoColor = color == 'black'?randomColor():color;
+	ms.pictoImage(sym,pictoColor, sz*2/3); //colorDarker(color),sz*2/3);
 }
 function makeMainPlayer(oid, o, areaName) {
 	let id = 'm_p_' + oid;
@@ -488,7 +582,7 @@ function deleteOid(oid) {
 //#endregion
 
 //#region helpers: linking UIS ...
-function addRelatives(id, oid) {
+function _addRelatives(id, oid) {
 	// if (isdef(oid2ids[oid])) oid2ids[oid].map(x => listKey(id2uids, id, x)); //all other already existing uis are linked to newly created element!
 	if (isdef(oid2ids[oid])) {
 		for (const idOther of oid2ids[oid]) {
@@ -501,6 +595,10 @@ function addRelatives(id, oid) {
 		}
 	}
 }
+function getUser(idPlayer) { return G.playersAugmented[idPlayer].username; }
+function getPlayerColor(id) { return G.playersAugmented[id].color }
+function getPlayerColorString(id) { return G.playersAugmented[id].altName }
+
 function getColorHint(o) {
 	for (const k in o) {
 		if (k.toLowerCase() == 'color') return o[k];
@@ -514,7 +612,7 @@ function linkObjects(id, oid) {
 		//console.log('linkObjects: ui', id, 'exists and CANNOT be overriden!!!!!');
 	}
 	//console.log('*** created ***',id)
-	addRelatives(id, oid);
+	_addRelatives(id, oid);
 	listKey(id2oids, id, oid);
 	listKey(oid2ids, oid, id);
 }

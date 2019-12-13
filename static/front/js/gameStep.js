@@ -22,7 +22,6 @@ function gameStep() {
 
 	presentTable();
 
-	//timit.showTime('...objects presented!');
 	presentPlayers();
 
 	presentStatus();
@@ -30,17 +29,12 @@ function gameStep() {
 	presentLog();
 	if (G.end) { presentEnd(); return; }
 
-	// timit.showTime('...log presented!');
-	////console.log(	S.vars.switchedGame)
-	// if (S.vars.switchedGame) {
-	// 	//adjustPlayerAreaWise(); //does NOT work!!!!!
-	// 	S.vars.switchedGame = false;
-	// }
-
 	if (G.tupleGroups) {
 		presentActions();
 		timit.showTime('...presentation done!');
 		startInteraction();	
+
+		//testingMS();
 
 		// if (!empty(commandChain)) {
 		// 	let nextCommand = commandChain.shift();

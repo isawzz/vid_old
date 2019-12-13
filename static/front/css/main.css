@@ -227,6 +227,14 @@ input {
   font-size: var(--fzLobby);
 	/* font-size:14px; */
 }
+@font-face{
+	font-family: 'pictoFa';
+	src: url('Font Awesome 5 Free-Solid-900.otf') format("truetype");
+}
+@font-face {
+	font-family: 'pictoGame';
+	src: url('game-icons.ttf') format("truetype");
+}
 @font-face {
 	font-family: 'AlgerianRegular';
 	src: url('ALGER.ttf') format("truetype");

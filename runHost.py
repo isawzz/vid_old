@@ -349,7 +349,7 @@ def _rootsimPathSpec(game):
 	path = userSpecPath(game,'yaml',None)
 	f=open(path, "r")
 	txt = f.read()
-	print(txt)
+	#print(txt)
 	return txt
 
 @app.route('/behaviors/<game>')
@@ -382,6 +382,12 @@ def _get_UI_spec(game,v=None):
 	res = ymlFile_jString(path) #ymlText(path) 
 	return res
 
+@app.route('/loadYML/<fname>')
+def _loadYML(fname):
+	rootPath = os.path.dirname(os.path.abspath(__file__))  #path of this file app_interface.py
+	path = os.path.join(rootPath, 'static/rsg/assets/' + fname + '.yml')
+	res = ymlFile_jString(path) #ymlText(path) 
+	return res
 # @app.route('/get_UI_code/<game>')
 # @app.route('/get_UI_code/<game>/<v>')
 # def _get_UI_code(game,v=None):
@@ -396,6 +402,14 @@ def _save_UI_spec(game,code,v=None):
 	f = open(path,"w+")
 	f.write(code)
 	return path
+
+# @app.route('/saveYML/<fname>/<code>')
+# @app.route('/save_UI_spec/<game>/<code>/<v>')
+# def _save_UI_spec(game,code,v=None):
+# 	path = userSpecPath(game,'yaml',v)
+# 	f = open(path,"w+")
+# 	f.write(code)
+# 	return path
 
 @app.route('/save_UI_code/<game>/<code>')
 @app.route('/save_UI_code/<game>/<code>/<v>')

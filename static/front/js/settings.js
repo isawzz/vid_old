@@ -39,6 +39,17 @@ function setDefaultRSGSettings() {
 	S.settings.player.optout = ['id', 'color', 'altName', 'index'];
 	S.settings.extendedOptout = { color: 1, altName: 1, index: 1, username: 1, playerType: 1, player: 1, agentType: 1, obj_type: 1, id: 1, visible: 1, neighbors: 1, fields: 1, edges: 1, corners: 1, row: 1, col: 1 };
 	S.settings.useExtendedOptout = true;
+	S.settings.table.ignoreTypes = []; //these obj_types will be skipped 
+
+	S.settings.pieceSizeRelativeToLoc = {};
+	S.settings.pieceSizeRelativeToLoc.corner = ['w',100]; //[propertyName,percentage_of_propValue]
+	S.settings.pieceSizeRelativeToLoc.field = ['w', 30];
+	S.settings.pieceSizeRelativeToLoc.edge = ['length',100];
+	S.settings.addSymbolToEdges = false;
+	S.settings.symbols = {};
+	//TODO add symbol keys to yml files!!!!
+	S.settings.symbols.city='castle';
+	S.settings.symbols.settlement='house';
 
 	S.settings.color.theme = '#6B7A8F';
 	S.settings.gap = 4;
@@ -72,13 +83,15 @@ function initSETTINGS() {
 	//game specific settings have to be reset here!!!
 	S.settings.dev = {};
 
-	if (S.settings.userSettings) mergeOptions();
+	if (S.settings.userSettings) _mergeOptions();
 
 	//add game specific test buttons (run to...) if specified in user spec / SETTINGS
-	initAutoplayToActionButtons();
-	initCheatButtons();
+	_initAutoplayToActionButtons();
+	_initCheatButtons();
 }
-function mergeOptions() {
+
+//#region local helpers
+function _mergeOptions() {
 	if (isdef(S.user.spec) && isdef(S.user.spec.SETTINGS)) {
 		for (const k in S.user.spec.SETTINGS) {
 			if (isdef(S.settings[k])) {
@@ -89,7 +102,7 @@ function mergeOptions() {
 		}
 	}
 }
-function initAutoplayToActionButtons() {
+function _initAutoplayToActionButtons() {
 	let d = document.getElementById('a_d_autoplay_buttons');
 	let buttons = [...d.children];
 	let defaultIds = ['c_b_NextPlayer', 'c_b_NextTurn', 'c_b_NextPhase'];
@@ -110,7 +123,7 @@ function initAutoplayToActionButtons() {
 		d.appendChild(b);
 	}
 }
-function initCheatButtons() {
+function _initCheatButtons() {
 	let areaName = 'a_d_cheat_buttons';
 	let kws = lookup(S.settings, ['dev', 'cheat_buttons']);
 	if (!kws) { hideElem(areaName); return; }

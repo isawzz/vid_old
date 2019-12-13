@@ -12,9 +12,9 @@ function addVisuals(board, { f2nRatio = 4, opt = 'fitRatio', gap = 4, margin = 2
 	w = area.w;
 	h = area.h;
 	//console.log(w,h);
-	let isPalField, isPalCorner, isPalEdge=[false,false,false];
-	let pal=S.settings.palette;
-	[fieldColor, nodeColor, edgeColor] = [pal[2],pal[3],pal[4]];
+	let isPalField, isPalCorner, isPalEdge = [false, false, false];
+	let pal = S.settings.palette;
+	[fieldColor, nodeColor, edgeColor] = [pal[2], pal[3], pal[4]];
 	let [fw, fh, nw, nh, ew] = getBoardScaleFactors(board, { factors: factors, opt: opt, f2nRatio: f2nRatio, w: w, h: h, margin: margin });
 
 	//console.log('---------------',w,h,fieldColor,fw,fh)
@@ -28,17 +28,27 @@ function addVisuals(board, { f2nRatio = 4, opt = 'fitRatio', gap = 4, margin = 2
 	}
 	if (isdef(board.strInfo.corners)) {
 		for (const id of board.strInfo.corners) {
-			let o = getVisual(id);
-			o.memInfo.isPal = isPalCorner;
-			makeVisual(o, o.memInfo.x * fw, o.memInfo.y * fh, Math.max(board.strInfo.wdef * nw, ew), Math.max(board.strInfo.hdef * nh, ew), nodeColor, nodeShape);
+			let ms = getVisual(id);
+			ms.memInfo.isPal = isPalCorner;
+			makeVisual(ms, ms.memInfo.x * fw, ms.memInfo.y * fh, Math.max(board.strInfo.wdef * nw, ew), Math.max(board.strInfo.hdef * nh, ew), nodeColor, nodeShape);
+			
 		}
 	}
 	if (isdef(board.strInfo.edges)) {
+
+		//get reference val for nodesize to compute edge length
+		//TODO: what if irregular node shape? 
+		let nodeSize = getVisual(board.strInfo.corners[0]).w;
+
 		for (const id of board.strInfo.edges) {
-			let o = getVisual(id);
-			o.memInfo.isPal = isPalEdge;
-			makeVisual(o, o.memInfo.x * fw, o.memInfo.y * fh, o.memInfo.thickness * ew, 0, edgeColor, 'line', { x1: o.memInfo.x1 * fw, y1: o.memInfo.y1 * fh, x2: o.memInfo.x2 * fw, y2: o.memInfo.y2 * fh });
-			o.attach();
+			let ms = getVisual(id);
+			ms.memInfo.isPal = isPalEdge;
+			//edgeColor = 'green'
+			//console.log('edge thickness',o.memInfo.thickness * ew)
+			makeVisual(ms, ms.memInfo.x * fw, ms.memInfo.y * fh, ms.memInfo.thickness * ew, 0, edgeColor, 'line', { x1: ms.memInfo.x1 * fw, y1: ms.memInfo.y1 * fh, x2: ms.memInfo.x2 * fw, y2: ms.memInfo.y2 * fh });
+			//set length of line!
+			ms.length = ms.h = ms.distance-nodeSize;
+			ms.attach();
 		}
 	}
 	if (isdef(board.strInfo.corners)) {
@@ -261,7 +271,7 @@ function makeFields(pool, board, serverBoard, shape) {
 		let sField = pool[fid];
 		let r = sField.row;
 		let c = sField.col;
-		let field = makeBoardElement(fid,sField,board.id,'field');
+		let field = makeBoardElement(fid, sField, board.id, 'field');
 		field.memInfo = shape == 'hex' ? getHexFieldInfo(board.strInfo, r, c) : getQuadFieldInfo(board.strInfo, r, c);
 	}
 	//console.log(board,board.strInfo,board.strInfo.fields);
@@ -288,7 +298,7 @@ function makeCorners(pool, board, serverBoard) {
 				continue;
 			} else {
 				//create a new corner object
-				let corner = makeBoardElement(cid,pool[cid],board.id,'corner');//createMainG(cid, board.id);
+				let corner = makeBoardElement(cid, pool[cid], board.id, 'corner');//createMainG(cid, board.id);
 				let poly = ffield.memInfo.poly[iPoly];
 				corner.memInfo = { shape: 'circle', memType: 'corner', x: poly.x, y: poly.y, w: 1, h: 1 };
 				dhelp[cid] = corner;
@@ -312,7 +322,7 @@ function makeEdges(pool, board, serverBoard) {
 				continue;
 			} else {
 				//create an edge object
-				let edge = makeBoardElement(eid,pool[eid],board.id,'edge');
+				let edge = makeBoardElement(eid, pool[eid], board.id, 'edge');
 
 				//find end corners (server objects):
 				let el = G.table[eid];
@@ -351,21 +361,25 @@ function makeVisual(ms, x, y, w, h, color, shape, { x1, y1, x2, y2 } = {}) {
 		ms.setPos(x, y);
 	} else if (shape == 'triangle') {
 		//TODO!!!!
-		ms.rect({ w: w, h: h }).hex({ className: 'overlay', w: w, h: h });
+		ms.triangle({ w: w, h: h }).triangle({ className: 'overlay', w: w, h: h });
 		ms.setPos(x, y);
 	} else if (shape == 'line') {
 		let thickness = w;
 		let fill = color;
-		ms.line({ className: 'ground', x1: x1, y1: y1, x2: x2, y2: y2, fill: fill, thickness: thickness }).line({
-			className: 'overlay',
-			x1: x1,
-			y1: y1,
-			x2: x2,
-			y2: y2,
-			thickness: thickness,
-		});
+		ms.line({ className: 'ground', x1: x1, y1: y1, x2: x2, y2: y2, fill: fill, thickness: thickness })
+			.line({ className: 'overlay', x1: x1, y1: y1, x2: x2, y2: y2, thickness: thickness, });
+	} else {
+		ms[shape]({ className:'ground',w: w, h: h});//,fill:color });
+		ms[shape]({ className: 'overlay', w: w, h: h });
+		ms.setPos(x, y);
 	}
 	ms.setBg(color, shape != 'line');
+	ms.orig.bg = color;
+	ms.originalBg = color;
+	ms.orig.shape = shape;
+	ms.originalSize = {w:w,h:h};
+	ms.orig.w=w;
+	ms.orig.h=h;
 	return ms;
 }
 //#endregion

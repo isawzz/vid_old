@@ -5,8 +5,8 @@ function isMergeableObject(val) {
 	var nonNullObject = val && typeof val === 'object'
 
 	return nonNullObject
-			&& Object.prototype.toString.call(val) !== '[object RegExp]'
-			&& Object.prototype.toString.call(val) !== '[object Date]'
+		&& Object.prototype.toString.call(val) !== '[object RegExp]'
+		&& Object.prototype.toString.call(val) !== '[object Date]'
 }
 
 function emptyTarget(val) {
@@ -20,14 +20,14 @@ function cloneIfNecessary(value, optionsArgument) {
 
 function defaultArrayMerge(target, source, optionsArgument) {
 	var destination = target.slice()
-	source.forEach(function(e, i) {
-			if (typeof destination[i] === 'undefined') {
-					destination[i] = cloneIfNecessary(e, optionsArgument)
-			} else if (isMergeableObject(e)) {
-					destination[i] = deepmerge(target[i], e, optionsArgument)
-			} else if (target.indexOf(e) === -1) {
-					destination.push(cloneIfNecessary(e, optionsArgument))
-			}
+	source.forEach(function (e, i) {
+		if (typeof destination[i] === 'undefined') {
+			destination[i] = cloneIfNecessary(e, optionsArgument)
+		} else if (isMergeableObject(e)) {
+			destination[i] = deepmerge(target[i], e, optionsArgument)
+		} else if (target.indexOf(e) === -1) {
+			destination.push(cloneIfNecessary(e, optionsArgument))
+		}
 	})
 	return destination
 }
@@ -35,16 +35,16 @@ function defaultArrayMerge(target, source, optionsArgument) {
 function mergeObject(target, source, optionsArgument) {
 	var destination = {}
 	if (isMergeableObject(target)) {
-			Object.keys(target).forEach(function (key) {
-					destination[key] = cloneIfNecessary(target[key], optionsArgument)
-			})
+		Object.keys(target).forEach(function (key) {
+			destination[key] = cloneIfNecessary(target[key], optionsArgument)
+		})
 	}
 	Object.keys(source).forEach(function (key) {
-			if (!isMergeableObject(source[key]) || !target[key]) {
-					destination[key] = cloneIfNecessary(source[key], optionsArgument)
-			} else {
-					destination[key] = deepmerge(target[key], source[key], optionsArgument)
-			}
+		if (!isMergeableObject(source[key]) || !target[key]) {
+			destination[key] = cloneIfNecessary(source[key], optionsArgument)
+		} else {
+			destination[key] = deepmerge(target[key], source[key], optionsArgument)
+		}
 	})
 	return destination
 }
@@ -55,20 +55,20 @@ function deepmerge(target, source, optionsArgument) {
 	var arrayMerge = options.arrayMerge || defaultArrayMerge
 
 	if (array) {
-			return Array.isArray(target) ? arrayMerge(target, source, optionsArgument) : cloneIfNecessary(source, optionsArgument)
+		return Array.isArray(target) ? arrayMerge(target, source, optionsArgument) : cloneIfNecessary(source, optionsArgument)
 	} else {
-			return mergeObject(target, source, optionsArgument)
+		return mergeObject(target, source, optionsArgument)
 	}
 }
 
 deepmerge.all = function deepmergeAll(array, optionsArgument) {
 	if (!Array.isArray(array) || array.length < 2) {
-			throw new Error('first argument should be an array with at least two elements')
+		throw new Error('first argument should be an array with at least two elements')
 	}
 
 	// we are sure there are at least 2 values, so it is safe to have no initial value
-	return array.reduce(function(prev, next) {
-			return deepmerge(prev, next, optionsArgument)
+	return array.reduce(function (prev, next) {
+		return deepmerge(prev, next, optionsArgument)
 	})
 }
 //#endregion
@@ -185,7 +185,7 @@ function colorPalShade(color) {
 }
 function getPalette(color, type = 'shade') {
 	color = anyColorToStandardString(color);
-	return  colorPalShade(color);
+	return colorPalShade(color);
 }
 //#endregion
 
@@ -197,18 +197,18 @@ function setCSSVariable(varName, val) {
 //#endregion
 
 //#region DOM helpers
-function enableStyle(id){
-	if (isString(id)) id=document.getElementById(id);
-		id.style.pointerEvents = null;
-		id.style.opacity = 1;
-		id.style.cursor = 'pointer';
+function enableStyle(id) {
+	if (isString(id)) id = document.getElementById(id);
+	id.style.pointerEvents = null;
+	id.style.opacity = 1;
+	id.style.cursor = 'pointer';
 }
 
-function disableStyle(id){
-	if (isString(id)) id=document.getElementById(id);
-		id.style.pointerEvents = 'none';
-		id.style.opacity = .5;
-		id.style.cursor = 'none';
+function disableStyle(id) {
+	if (isString(id)) id = document.getElementById(id);
+	id.style.pointerEvents = 'none';
+	id.style.opacity = .5;
+	id.style.cursor = 'none';
 }
 
 
@@ -281,8 +281,10 @@ class TimeIt {
 		this.t = tNew;
 		this.namedTimestamps[name] = tNew;
 	}
+	reset() { this.init('timing start') }
 	init(msg) {
 		this.t = new Date(); //new Date().getTime();
+		this.showOutput = true;
 		if (this.showOutput) console.log('___', msg);
 		this.namedTimestamps = { start: this.t };
 	}
@@ -388,11 +390,11 @@ function executeFunctionByName(functionName, context /*, args */) {
 //#endregion HACKS
 
 //#region array helpers
-function mapSafe(func,listFunc,oid){
-	let uis=listFunc(oid);
-	if (!isdef(uis))return;
-	if (!isList(uis)) uis=[uis];
-	uis.map(x=>x[func]());
+function mapSafe(func, listFunc, oid) {
+	let uis = listFunc(oid);
+	if (!isdef(uis)) return;
+	if (!isList(uis)) uis = [uis];
+	uis.map(x => x[func]());
 }
 
 
@@ -445,15 +447,15 @@ function arrMin(arr) {
 }
 //much faster:
 function arrMinMax(arr) {
-  let min = arr[0].y, max = arr[0].y;
+	let min = arr[0].y, max = arr[0].y;
 
-  for (let i = 1, len=arr.length; i < len; i++) {
-    let v = arr[i].y;
-    min = (v < min) ? v : min;
-    max = (v > max) ? v : max;
-  }
+	for (let i = 1, len = arr.length; i < len; i++) {
+		let v = arr[i].y;
+		min = (v < min) ? v : min;
+		max = (v > max) ? v : max;
+	}
 
-  return [min, max];
+	return [min, max];
 }
 function arrReplace(arr, oldval, newval) {
 	let i = arr.indexOf(oldval);
@@ -730,7 +732,7 @@ function isllPlus(ll) {
 function keepOnlyElements(func, lst) {
 	return lst.filter(func);
 }
-function dropLast(s){return s.substring(0,s.length-1);}
+function dropLast(s) { return s.substring(0, s.length - 1); }
 function last(arr) {
 	return arr.length > 0 ? arr[arr.length - 1] : null;
 }
@@ -903,7 +905,7 @@ function colorLighter(c, zero1 = .2, log = true) {
 	c = anyColorToStandardString(c);
 	return pSBC(zero1, c, undefined, !log);
 } //ok
-function colorDarker(c, zero1 = 2, log = true) {
+function colorDarker(c, zero1 = .8, log = true) {
 	//1 is darkest,0 is orig color
 	c = anyColorToStandardString(c);
 	return pSBC(-zero1, c, undefined, !log);
@@ -2545,7 +2547,7 @@ function arrChildren(elem) {
 function getChildren(elem) { return [...elem.children]; }
 function clearInit(elem, startProps = {}) {
 	clearElement(elem);
-	for (const k in startProps) {		elem[k] = startProps[k];	}
+	for (const k in startProps) { elem[k] = startProps[k]; }
 }
 
 function clearElement(elem) { //, eventHandlerDictByEvent = {}) {
@@ -2719,9 +2721,9 @@ function insertHere() {
 function isSvg(elem) {
 	return startsWith(elem.constructor.name, 'SVG');
 }
-function hideElem(id){document.getElementById(id).style.display = 'none';}
-function showElem(id){document.getElementById(id).style.display = null;}
-function isVisibleElem(id){return isVisible(document.getElementById(id));}
+function hideElem(id) { document.getElementById(id).style.display = 'none'; }
+function showElem(id) { document.getElementById(id).style.display = null; }
+function isVisibleElem(id) { return isVisible(document.getElementById(id)); }
 
 
 function isVisible(elem) { // Where el is the DOM element you'd like to test for visibility
@@ -2947,6 +2949,10 @@ function TESTING_foo() {
 //#endregion
 
 //#region geo helpers
+function composeTransform(x, y, scaleX, scaleY, rot) {
+
+}
+function toRadian(deg) { return deg * 2 * Math.PI / 360; }
 function correctPolys(polys, approx = 10) {
 	//console.log('citySize', citySize, 'approx', approx);
 	let clusters = [];
@@ -3026,6 +3032,7 @@ function dSquare(pos1, pos2) {
 	dy *= dy;
 	return dx + dy;
 }
+function distance(x1, y1, x2, y2) { return Math.sqrt(dSquare({ x: x1, y: y1 }, { x: x2, y: y2 })); }
 function size2hex(w = 100, h = 0, x = 0, y = 0) {
 	//returns sPoints for polygon svg
 	//from center of poly and w (possibly h), calculate hex poly points and return as string!
@@ -3037,10 +3044,56 @@ function size2hex(w = 100, h = 0, x = 0, y = 0) {
 	if (h == 0) {
 		h = (2 * w) / 1.73;
 	}
+	return polyPointsFrom(w, h, x, y, hexPoints);
+	// x -= w / 2;
+	// y -= h / 2;
+
+	// let pts = hexPoints.map(p => [p.X * w + x, p.Y * h + y]);
+	// let newpts = [];
+	// for (const p of pts) {
+	// 	newp = { X: p[0], Y: Math.round(p[1]) };
+	// 	newpts.push(newp);
+	// }
+	// pts = newpts;
+	// let sPoints = pts.map(p => '' + p.X + ',' + p.Y).join(' '); //'0,0 100,0 50,80',
+	// //testHexgrid(x, y, pts, sPoints);
+	// return sPoints;
+}
+function size2triup(w = 100, h = 0, x = 0, y = 0) {
+	//returns sPoints for polygon svg starting from N:
+	let triPoints = [{ X: 0.5, Y: 0 }, { X: 1, Y: 1 }, { X: 0, Y: 1 }];
+	if (h == 0) { h = w; }
+	return polyPointsFrom(w, h, x, y, triPoints);
+
+}
+function size2tridown(w = 100, h = 0, x = 0, y = 0) {
+	//returns sPoints for polygon svg starting from N:
+	let triPoints = [{ X: 1, Y: 0 }, { X: 0.5, Y: 1 }, { X: 0, Y: 0 }];
+	if (h == 0) { h = w; }
+	return polyPointsFrom(w, h, x, y, triPoints);
+
+}
+function getCirclePoints(rad, n, disp = 0) {
+	let pts = [];
+	let i = 0;
+	let da = 360 / n;
+	let angle = disp;
+	while (i < n) {
+		let px = rad * Math.cos(toRadian(angle));
+		let py = rad * Math.sin(toRadian(angle));
+		pts.push({ X: px, Y: py });
+		angle += da;
+		i++;
+	}
+	return pts;
+}
+
+function polyPointsFrom(w, h, x, y, pointArr) {
+
 	x -= w / 2;
 	y -= h / 2;
 
-	let pts = hexPoints.map(p => [p.X * w + x, p.Y * h + y]);
+	let pts = pointArr.map(p => [p.X * w + x, p.Y * h + y]);
 	let newpts = [];
 	for (const p of pts) {
 		newp = { X: p[0], Y: Math.round(p[1]) };
@@ -3048,7 +3101,7 @@ function size2hex(w = 100, h = 0, x = 0, y = 0) {
 	}
 	pts = newpts;
 	let sPoints = pts.map(p => '' + p.X + ',' + p.Y).join(' '); //'0,0 100,0 50,80',
-	testHexgrid(x, y, pts, sPoints);
+	//testHexgrid(x, y, pts, sPoints);
 	return sPoints;
 }
 function getPoly(offsets, x, y, w, h) {
@@ -4030,10 +4083,10 @@ function color_areas(nHues = 2, iButtonHue = 0, areaClass = 'area', gridDiv = 'r
 
 //#region set and tuple helpers
 function expandX(e) {
-	console.log('e',e)
+	console.log('e', e)
 	let res = [];
 	let e2 = expandX1(e);
-	console.log('e2',e2)
+	console.log('e2', e2)
 
 	for (const el of e2) {
 		if (isll(el)) el.map(x => res.push(x));
@@ -4079,14 +4132,14 @@ function cartesi(l1, l2) {
 	}
 	return res;
 }
-var cnt=0;
+var cnt = 0;
 function expandX1(x) {
-	console.log('expand1',cnt, x);cnt+=1;
+	console.log('expand1', cnt, x); cnt += 1;
 	if (is_Set(x) && x._set.length == 1) return x._set.map(el => expandX1(el));
 
 	if (isDict(x) || isActionElement(x) || isLiteral(x)) return [x];
 
-	if ( is_Tuple(x)) x=x._tuple;
+	if (is_Tuple(x)) x = x._tuple;
 
 	if (Array.isArray(x)) {
 		if (isEmpty(x)) return [];
@@ -4099,15 +4152,15 @@ function expandX1(x) {
 		console.log('b=', fj(b));
 		console.log('c=', fj(c));
 		console.log('d=', fj(d));
-		return flat(cartesi(a,d));
+		return flat(cartesi(a, d));
 	}
 }
 
 function expand(e) {
-	console.log('e',e)
+	console.log('e', e)
 	let res = [];
 	let e2 = expand1(e);
-	console.log('e2',e2)
+	console.log('e2', e2)
 
 	for (const el of e2) {
 		if (isll(el)) el.map(x => res.push(x));
@@ -4164,11 +4217,11 @@ function isTuple(x) {
 	return Array.isArray(x);
 }
 function isSingleton(x) {
-	return (isSet(x) && 
-	 ('set' in x && x.set.length == 1 || '_set' in x && x._set.length == 1)) 
-	 || 
-	 (isTuple(x) && 
-	 ('tuple' in x && x.tuple.length == 1 || '_tuple' in x && x._tuple.length == 1));
+	return (isSet(x) &&
+		('set' in x && x.set.length == 1 || '_set' in x && x._set.length == 1))
+		||
+		(isTuple(x) &&
+			('tuple' in x && x.tuple.length == 1 || '_tuple' in x && x._tuple.length == 1));
 }
 function firstElement(x) {
 	if (isSet(x)) return x.set[0];
@@ -4268,11 +4321,11 @@ function getLines(s) {
 
 function firstNumber(s) {
 	// returns first number in string s
-	if (s){
+	if (s) {
 		let m = s.match(/-?\d+/);
-		if (m){
+		if (m) {
 			let sh = m.shift();
-			if (sh){ return Number(sh); }
+			if (sh) { return Number(sh); }
 		}
 	}
 	return null;
@@ -4460,7 +4513,7 @@ function decomposeMatrix(matrix) {
 	};
 }
 function getTransformInfo(gElement) {
-	testHelpers(gElement);
+	//testHelpers(gElement);
 	var matrix = gElement.getCTM();
 	let info = decomposeMatrix(matrix);
 	return info;

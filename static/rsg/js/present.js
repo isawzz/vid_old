@@ -1,21 +1,29 @@
+var WAITINGFORPLAYER = null;
+
 function presentTable() {
-	//let i = 2;
+	_tableRemove();
+	_tableCreateNew();
+	_tableUpdate();
+}
+function _tableRemove(){
 	for (const oid of G.tableRemoved) {
 		//console.log('deleting all related to', oid)
 		deleteOid(oid);
 	}
+}
+function _tableCreateNew(){
 	for (const oid of G.tableCreated) {
 		let o = G.table[oid];
-		//console.log('NEWLY CREATE:','oid',oid,'def',defaultVisualExists(oid),'createDef:',S.settings.table.createDefault)
 
 		if (!defaultVisualExists(oid) && S.settings.table.createDefault == true) {
 			//console.log('>>>>>>>>>>>>>>>>>should create default object for',oid)
 			makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 		}
 
-		//if (o.obj_type == 'robber') //console.log('NEWLY CREATE:','main:'+mainVisualExists(oid));
-		if (mainVisualExists(oid) || !S.settings.boardDetection && !S.settings.userStructures) {
-			//if (o.obj_type == 'robber') //console.log(o,getVisual(oid));
+		if (S.settings.table.ignoreTypes.includes(o.obj_type)
+			|| mainVisualExists(oid)
+			|| !S.settings.boardDetection && !S.settings.userStructures) {
+			//console.log('NOT creating main visual!!!',oid,o.obj_type)
 			continue;
 		}
 
@@ -25,6 +33,7 @@ function presentTable() {
 		}
 		//console.log('updatedVisuals',updatedVisuals)
 		if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
+			//console.log('trying to make main visual for',oid,o.obj_type )
 			let ms = makeMainVisual(oid, G.table[oid]);
 			if (ms === null && !defaultVisualExists(oid) && S.settings.table.createDefault != false) {
 				makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
@@ -32,55 +41,49 @@ function presentTable() {
 		}
 
 	}
+}
+function _tableUpdate(){
 	for (const oid in G.tableUpdated) {
+		let o = G.table[oid];
 
-		//structures are invisible? or should this be an options?!?!?
-		if (isStructuralElement(oid)) continue;
+		if (isStructuralElement(oid)) continue; //eg., boards not updated!
 
 		let changedProps = G.tableUpdated[oid].summary;
-		//console.log('update:',oid,changedProps);
-		//if (G.tableCreated.includes(oid)) { continue; }
-
-		//if (S.settings.tooltips && TT_JUST_UPDATED == oid) updateTooltipContent(oid, G.table);
 
 		//update main visual
 		let ms = getVisual(oid);
 		if (ms) {
+			//console.log('update:',oid,'is line',ms.isLine)
 			let updatedVisuals;
 			if (S.settings.userBehaviors) {
 				updatedVisuals = runBehaviors(oid, G.table, TABLE_UPDATE);
 			}
-			//console.log('updatedVisuals',updatedVisuals)
+			//if (ms.isLine) console.log('updatedVisuals',updatedVisuals)
 			if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
 				//console.log('oid',oid,'has NOT been updated!!!!!')
-				if (changedProps.includes('loc')) presentLocationChange(oid, ms);
+				if (changedProps.includes('loc')) _presentLocationChange(oid, ms);
+				//console.log('presenting main!',oid)
 				presentMain(oid, ms, G.table);
-			} else {
-				//console.log('oid',oid,'has been updated!!!!!')
+				// } else {
+				// 	console.log('oid',oid,'has been updated!!!!!')
 			}
 		}
 
 		//update default visual
 		if (!S.settings.table.createDefault || ms && S.settings.table.createDefault == 'miss') continue;
+
 		presentDefault(oid, G.table[oid]);
 	}
 }
-function presentLocationChange(oid, ms) {
-	//TODO: cleanup code!
-	if (G.table[oid].obj_type == 'robber') {
-		let o = G.table[oid];
-		let changedProps = G.tableUpdated[oid];
-		//		//console.log(changedProps)
-		if (changedProps.summary.includes('loc')) {
-			//alert('hallo! robber loc change!');
-			//			//console.log(ms);
-			let oidLoc = o.loc._obj;
-			let visLoc = getVisual(oidLoc);
-			ms.setPos(visLoc.x, visLoc.y);
-		}
-	}
-}
+
+
+
 function presentPlayers() {
+	//TODO: players remove
+	_playersCreateNew();
+	_playersUpdate();
+}
+function _playersCreateNew(){
 	//creation of new players
 	for (const pid of G.playersCreated) {
 
@@ -101,12 +104,11 @@ function presentPlayers() {
 			}
 		}
 	}
+}
+function _playersUpdate(){
 	//presentation of existing changed players 
 	for (const pid in G.playersUpdated) {
 		let pl = G.playersAugmented[pid];
-		//if (G.playersCreated.includes(pid)) { continue; }
-
-		//if (S.settings.tooltips && TT_JUST_UPDATED == pid) updateTooltipContent(pid, G.playersAugmented);
 
 		//update main visual
 		let updatedVisuals = {};
@@ -124,80 +126,19 @@ function presentPlayers() {
 		//update default visual
 		if (!S.settings.player.createDefault || ms && S.settings.player.createDefault != true) continue;
 		let plms = presentDefault(pid, pl, false);
-		onPlayerChange(pid);
-		//measure plms somehow
-		// //console.log('is new game:',S.vars.switchedGame);
-		// if (S.vars.switchedGame)  measureDefaultPlayerElement(plms);
+		_onPlayerChange(pid);
 	}
 }
 
-function onPlayerChange(pid) {
-	if (isPlain()) return;
-	if (!G.playerChanged || pid != G.player) return;
-	//console.log('player has changed!!!!!!!!!!!!!!!!!!!!!!!!!')
-	let o = G.playersAugmented[pid];
-	//console.log(pid, o);
-	updatePageHeader(pid);
-	if (G.previousPlayer) updateLogArea(G.previousPlayer, pid);
-	let ms = getVisual(pid);
-	if (ms) {
-		//console.log(ms.id);
-	}
-	let msDef = getDefVisual(pid);
-	if (msDef) {
-		//console.log('default player id', msDef.id);
-		let msParentId = msDef.parentId;
-		let msParent = UIS[msParentId];
-		var target = msDef.elem;
-		target.parentNode.scrollTop = target.offsetTop;
-		//msDef.elem.scrollIntoView(false);
-	}
-}
-function updatePageHeader(pid) {
-	//console.log('Turn:',pid)
-	let ms;
-	for (const pl of S.gameConfig.players) {
-		ms = getPageHeaderDivForPlayer(pl.id);
-		ms.classList.remove('gamePlayer');
-	}
-	ms = getPageHeaderDivForPlayer(pid);
-	ms.classList.add('gamePlayer');
-}
-function updateLogArea(prevPlid, plid) {
-	//console.log(prevPlid)
-	if (prevPlid) hideElem('a_d_log_' + prevPlid);
-	let id = 'a_d_log_' + plid;
-	if (UIS[id]) showElem(id);
-}
-function adjustPlayerAreaWise() {
-	//do UI updates that have to do with measuring elements from server
-	//players: S.vars.wDefaultPlayer
-	let areaName = S.settings.player.defaultArea;
-	let msArea = UIS[areaName];
-	let wArea = msArea.w;
-	let minWidth = S.vars.wDefaultPlayer + 10;
-	//console.log('minWidth for player', minWidth, 'wArea', wArea)
-	if (wArea < minWidth) {
-		let diff = S.vars.wDefaultPlayer + 10 - wArea;
-		//console.log('should resize player area')
-		setCSSVariable('--wPlayers', minWidth)
-
-	}
-
-}
-function measureDefaultPlayerElement(plms) {
-	//console.log('defaultPlayer', plms);
-	let elem = plms.elem;
-	let w = $(elem).width();
-	if (nundef(S.vars.wDefaultPlayer)) S.vars.wDefaultPlayer = w;
-	else if (w > S.vars.wDefaultPlayer) S.vars.wDefaultPlayer = w;
-	//console.log('w of player', w);
 
 
-}
+
+
+
 function presentStatus() {
 	if (isdef(G.serverData.status)) {
 		let lineArr = G.serverData.status.line;
+
 		let areaName = isPlain() ? 'c_d_statusInHeaderText' : 'c_d_statusText';
 		let d = document.getElementById(areaName);
 		let ms = UIS[areaName];
@@ -233,7 +174,7 @@ function presentStatus() {
 	}
 }
 function setStatus(s) {
-	let areaName = 'c_d_statusText';
+	let areaName = isPlain() ? 'c_d_statusInHeaderText' : 'c_d_statusText';
 	let d = document.getElementById(areaName);
 	let ms = UIS[areaName];
 	ms.clear(); clearElement(d);
@@ -327,7 +268,7 @@ function presentWaitingFor() {
 		//now waiting for a new player!!!
 		//update page header with that player and set G.previousWaitingFor
 		G.previousWaitingFor = pl;
-		updatePageHeader(pl);
+		_updatePageHeader(pl);
 	}
 	if (S.settings.playmode != 'passplay' && (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player))) {
 		let user = G.playersAugmented[pl].username;
@@ -341,14 +282,70 @@ function presentWaitingFor() {
 		});
 	} else if (S.settings.playmode == 'passplay') {
 		//this is where I have to output message: NOT YOU TURN ANYMORE!!!!! please click pass!!!
-		showPassToNextPlayer(pl);
+		_showPassToNextPlayer(pl);
 	} else {
 		//console.log('presentWaitingFor:',G.playersAugmented[G.player].username,'emits poll',pl);
 		socketEmitMessage({ type: 'poll', data: pl });
 	}
 
 }
-function showPassToNextPlayer(plWaitingFor) {
+
+
+//#region local helpers
+function _presentLocationChange(oid, ms) {
+	//TODO: cleanup code!
+	if (G.table[oid].obj_type == 'robber') {
+		let o = G.table[oid];
+		let changedProps = G.tableUpdated[oid];
+		//		//console.log(changedProps)
+		if (changedProps.summary.includes('loc')) {
+			//alert('hallo! robber loc change!');
+			//			//console.log(ms);
+			let oidLoc = o.loc._obj;
+			let visLoc = getVisual(oidLoc);
+			ms.setPos(visLoc.x, visLoc.y);
+		}
+	}
+}
+function _onPlayerChange(pid) {
+	if (isPlain()) return;
+	if (!G.playerChanged || pid != G.player) return;
+	//console.log('player has changed!!!!!!!!!!!!!!!!!!!!!!!!!')
+	let o = G.playersAugmented[pid];
+	//console.log(pid, o);
+	_updatePageHeader(pid);
+	if (G.previousPlayer) _updateLogArea(G.previousPlayer, pid);
+	let ms = getVisual(pid);
+	if (ms) {
+		//console.log(ms.id);
+	}
+	let msDef = getDefVisual(pid);
+	if (msDef) {
+		//console.log('default player id', msDef.id);
+		let msParentId = msDef.parentId;
+		let msParent = UIS[msParentId];
+		var target = msDef.elem;
+		target.parentNode.scrollTop = target.offsetTop;
+		//msDef.elem.scrollIntoView(false);
+	}
+}
+function _updatePageHeader(pid) {
+	//console.log('Turn:',pid)
+	let ms;
+	for (const pl of S.gameConfig.players) {
+		ms = getPageHeaderDivForPlayer(pl.id);
+		ms.classList.remove('gamePlayer');
+	}
+	ms = getPageHeaderDivForPlayer(pid);
+	ms.classList.add('gamePlayer');
+}
+function _updateLogArea(prevPlid, plid) {
+	//console.log(prevPlid)
+	if (prevPlid) hideElem('a_d_log_' + prevPlid);
+	let id = 'a_d_log_' + plid;
+	if (UIS[id]) showElem(id);
+}
+function _showPassToNextPlayer(plWaitingFor) {
 	unfreezeUI();
 	let d = document.getElementById('passToNextPlayerUI');
 	let color = getPlayerColor(plWaitingFor);
@@ -362,7 +359,6 @@ function showPassToNextPlayer(plWaitingFor) {
 	//console.log('waiting for player', WAITINGFORPLAYER);
 
 }
-var WAITINGFORPLAYER = null;
 function totalFreeze() {
 	//player clicked the passToNextPlayer button
 	//hide entire ui until the nextPlayerReady button is clicked!
@@ -387,9 +383,6 @@ function onClickNextPlayerReady() {
 }
 
 //presentation of objects
-function getUser(idPlayer) { return G.playersAugmented[idPlayer].username; }
-function getPlayerColor(id) { return G.playersAugmented[id].color }
-function getPlayerColorString(id) { return G.playersAugmented[id].altName }
 function computePresentedKeys(o, isTableObject) {
 	let optin = isTableObject ? S.settings.table.optin : S.settings.player.optin;
 	//console.log(optin)
@@ -398,15 +391,9 @@ function computePresentedKeys(o, isTableObject) {
 
 	let optout;
 	if (S.settings.useExtendedOptout) {
-		//console.log('using extended optout')
 		let keys = [];
 		optout = S.settings.extendedOptout;
-		//console.log('extendedOptout')
-		for (const k in o) {
-			if (optout[k]) continue;
-			//console.log(k,'not in',optout)
-			keys.push(k);
-		}
+		for (const k in o) {			if (optout[k]) continue;			keys.push(k);		}
 		return keys;
 	}
 
@@ -418,6 +405,10 @@ function computePresentedKeys(o, isTableObject) {
 function presentMain(oid, ms, pool, isTableObject = true) {
 	//let optin = isTableObject?S.settings.table.optin:S.settings.player.optin; //game == 'catan' ? ['res', 'num', 'building', 'port'] : ['symbol']; //cheat! keywords fuer catan vs ttt
 	//console.log(optin)
+	// if (ms.isLine){
+	// 	console.log('not presenting edge:',oid)
+	// 	return;
+	// }
 
 	let o = pool[oid];
 	let validKeys = computePresentedKeys(o, isTableObject);
@@ -432,30 +423,6 @@ function presentMain(oid, ms, pool, isTableObject = true) {
 		if (isSimple(val)) akku.push(val.toString());
 	}
 	if (!empty(akku)) { ms.multitext({ txt: akku, fill: color }); } else ms.clearText();
-}
-function presentDefault(oid, o, isTableObject = true) {
-	let ms = getDefVisual(oid);
-	if (!ms) return;
-	if (isPlain() && !isTableObject && G.player == oid) { ms.hide(); return null; }
-	if (isPlain() && !isTableObject) ms.show();
-
-	//filter keys using optin and optout lists
-	let optin = isTableObject ? S.settings.table.optin : S.settings.player.optin;
-	let optout = isTableObject ? S.settings.table.optout : S.settings.player.optout;
-
-	//console.log('optin',optin,'optout',optout)
-	keys = optout ? arrMinus(getKeys(o), optout) : optin ? optin : getKeys(o);
-
-	let x = ms.tableX(o, keys); //adds or replaces table w/ prop values
-
-	if (!isPlain() && !isTableObject) {
-		growIfDefaultMainAreaWidth(ms);
-	}
-
-	return x;
-
-
-
 }
 function presentMainPlayer(oid, ms, pool, isTableObject) {
 	let o = pool[oid];
@@ -476,31 +443,28 @@ function presentMainPlayer(oid, ms, pool, isTableObject) {
 	growIfDefaultMainAreaWidth(ms);
 
 	return x;
-
-
-
 }
+function presentDefault(oid, o, isTableObject = true) {
+	let ms = getDefVisual(oid);
+	if (!ms) return;
+	if (isPlain() && !isTableObject && G.player == oid) { ms.hide(); return null; }
+	if (isPlain() && !isTableObject) ms.show();
 
+	//filter keys using optin and optout lists
+	let optin = isTableObject ? S.settings.table.optin : S.settings.player.optin;
+	let optout = isTableObject ? S.settings.table.optout : S.settings.player.optout;
 
+	keys = optout ? arrMinus(getKeys(o), optout) : optin ? optin : getKeys(o);
 
-function computePresentedKeysDefault(o, pool) {
-	let optin = pool == G.table ? S.settings.table.optin : S.settings.player.optin;
+	let x = ms.tableX(o, keys); //adds or replaces table w/ prop values
 
-	if (optin) return intersection(Object.keys(o), optin);
-
-	let optout;
-	if (S.settings.useExtendedOptout) {
-		let keys = [];
-		optout = S.settings.extendedOptout;
-		for (const k in o) { if (optout[k]) continue; keys.push(k); }
-		return keys;
+	if (!isPlain() && !isTableObject) {
+		growIfDefaultMainAreaWidth(ms);
 	}
 
-	optout = pool == G.table ? S.settings.table.optout : S.settings.player.optout;
-	for (const k in o) { if (optout[k]) continue; keys.push(k); }
-	return keys;
-
+	return x;
 }
+
 
 
 

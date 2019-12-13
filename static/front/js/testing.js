@@ -1,15 +1,292 @@
-function 	testPageHeader(){
+//#region test Lines
+function testLines(){
+	_initGameGlobals(); showGame(); initDom();
+	let board = makeDrawingArea('board', 'a_d_game', true);
+
+	let ms = makeDrawingElement('el1', 'board');
+	ms.line({thickness:10, cap:'round'}).setBg('red').attach();
+
+	console.log(ms)
+	console.log(ms.elem)
+
+	let [x1,y1,x2,y2]=ms.getEndPointsOfLineSegmentOfLength(40);
+	let ms2=makeDrawingElement('el2', 'board');
+	ms2.line({thickness:15,x1:x1,y1:y1,x2:x2,y2:y2}).setBg('blue').attach();
+
+	[x1,y1,x2,y2]=ms.getEndPointsOfLineSegmentOfLength(120);
+	let ms3=makeDrawingElement('el3', 'board');
+	ms3.line({thickness:5,x1:x1,y1:y1,x2:x2,y2:y2}).setBg('green').attach();
+}
+
+//#region test picto
+function testAndSave2() {
+
+	let newDictFont = {};
+
+	for (const key in faIcons) {
+		newDictFont[key] = faIcons[key][3];
+
+	}
+	let json_str = JSON.stringify(newDictFont);
+	saveFile("yourfilename.json", "data:application/json", new Blob([json_str], { type: "" }));
+	console.log('DONE!')
+
+}
+function testAndSave() {
+	_sendRoute('/loadYML/icons', d => {
+		console.log(d);
+		let dictFont = JSON.parse(d);
+		console.log(dictFont);
+
+		let newDictFont = {};
+
+		for (const key in dictFont) {
+			newDictFont[key] = dictFont[key].unicode;
+
+		}
+		let json_str = JSON.stringify(newDictFont);
+		saveFile("yourfilename.json", "data:application/json", new Blob([json_str], { type: "" }));
+		console.log('DONE!')
+		//testPicto();
+	})
+
+}
+function addPicto(IdBoard, key, sz, x, y) {
+	if (!(key in iconChars)) key = 'crow';
+
+	console.log('found key:', key);
+	let ms = makeDrawingElement(getUID(), 'board');
+	ms._picto(key, x, y, sz, sz, randomColor());
+	ms.attach();
+}
+function testPicto() {
+	_initGameGlobals(); showGame(); initDom();
+	let board = makeDrawingArea('board', 'a_d_game', true);
+
+	// let ms = makeDrawingElement('el1', 'board');
+
+	let keys = ['achievement','wheat','criminal','police','cop','trophy','victory','plenty','fruit','bounty','house','castle','building', 'settlement', 'city', 'robber','thief', 'street', 'road'];
+	let y = -300;
+	let x=-300;
+	for (const k of keys) {
+		addPicto('board',k,50,x,y);
+		if (y>250) {y=-300;x+=60;} else y+=60;
+	}
+	// let key = chooseRandom(Object.keys(faChars));//'clock';
+	// ms._picto('crow', -100, -100, 100, 100, randomColor());
+
+	//ms.text({txt:fasym(key),family:'FontAwesome',fill:'white',fz:100});
+	//ms._picto('knight',0,0,50,100,'white','blue');
+	//_makeGroundShape(ms, 0, 0, 100, 100, 'blue', 'quad', { scaleY: 2, rot: 45 });
+	//ms.setScaleX(1);
+	//ms.text({txt:'hallo',fill:'white'})
+
+	// ms.attach();
+	// console.log(ms)
+}
+
+
+
+
+//#region older tests
+function testingMS() {
+	if (isdef(IdOwner.t)) IdOwner.t.map(x => addTestInteraction1(x));
+}
+function addTestInteraction1(id) {
+	let ms = UIS[id];
+	ms.addClickHandler('', onClick1);
+}
+function onClick1(ev, ms, part) {
+	console.log(ms)
+	if (ms.scaleValue == 2) { ms.setScale(1); delete ms.scaleValue; }
+	else { ms.setScale(2); ms.scaleValue = 2; }
+}
+//#endregion
+
+// #region testing new MS API
+function drawTest(board, num) {
+	clearElement(board.elem);
+	let d = 10;
+	let coll = [];
+	for (let row = 0; row < board.h; row += d) {
+		for (let col = 0; col < board.w; col += d) {
+			let y = row - board.h / 2 + d / 2;
+			let x = col - board.w / 2 + d / 2;
+			let ms = makeDrawingElement('el1', 'board');
+			ms.x = x; ms.y = y;
+			coll.push(ms);
+		}
+	}
+	timit.showTime('nach compute: number of elements=' + coll.length);
+	const colors = ['red', 'green', 'yellow', 'blue', 'orange', 'violet', 'skyblue', 'sienna'];
+	let keys = Object.keys(iconChars);
+	//console.log(keys)
+	let numPictos = Math.min(coll.length, keys.length);
+	for (let i = 0; i < numPictos; i++) {
+		let ms = coll[i];
+		let c = chooseRandom(colors); //colors[i%4];
+		let key = keys[i];
+		ms._picto(key, ms.x, ms.y, d, d, c);
+
+		//version 2:
+		// if (i>=keys.length) _makeGroundShape(ms, ms.x, ms.y, d, d, c, 'quad',{rounding:'4'});
+		// else {
+		// 	let key = keys[i];//chooseRandom(Object.keys(faIcons));//'clock';
+		// 	ms._picto(key,ms.x,ms.y,d,d,c);		
+		// 	}
+
+		//version 1:
+		// _makeGroundShape(ms, ms.x, ms.y, d, d, c, 'quad',{rounding:'4'});
+	}
+	timit.showTime('nach shape');
+	for (const ms of coll) {
+		ms.attach();
+	}
+	timit.showTime('nach attach');
+	if (num > 0) setTimeout(() => drawTest(board, num - 1), 0);
+	else return coll;
+}
+function change(arr, n) {
+	//randomly change n elements
+	for (let i = 0; i < n; i++) {
+		let ms = chooseRandom(arr);
+		//destr
+	}
+}
+function stressTest() {
+	_initGameGlobals(); showGame(); initDom();
+	timit.reset();
+	let board = makeDrawingArea('board', 'a_d_game', true);
+
+	//console.log(board)
+	coll = drawTest(board, 3);
+
+
+
+}
+function testNewMSAPI() {
+	_initGameGlobals(); showGame(); initDom();
+	let board = makeDrawingArea('board', 'a_d_game', true);
+
+
+	let ms = makeDrawingElement('el1', 'board');
+
+	_makeGroundShape(ms, 0, 25, 100, 100, 'blue', 'quad', { scaleY: 2, rot: 45 });
+	//ms.setScaleX(1);
+	//ms.text({txt:'hallo',fill:'white'})
+	ms.attach();
+	console.log(ms)
+}
+function testShapes() {
+	_initGameGlobals(); showGame(); initDom();
+
+	let board = makeDrawingArea('board', 'a_d_game', true);
+	//console.log('board:',board)
+	let ms = makeDrawingElement('el1', 'board');
+	//console.log('shape:',ms)
+	let sz=200;
+	let c='blue';
+	let c1=anyColorToStandardString('green',.1);
+	console.log(c1);
+
+
+
+	makeVisual(ms, 0, 0, sz, sz, c1, 'quad');
+	ms.text({ txt: 'hallo', fill: colorDarker(c), fz:30,y:-sz/3 });
+	//ms.rect({w:sz/2,h:sz/2,fill:'red'});
+
+
+
+	ms.ellipse({w:sz/2,h:sz/2,fill:'green',alpha:.5})
+	ms.attach();
+
+	//ms.setBg('transparent')
+	//console.log(ms.elem);
+	//console.log(ms.ground,ms.overlay)
+
+	ms.addClickHandler('', () => {
+		ms.setShape('star');
+		//console.log(ms.ground,ms.overlay);
+	});
+
+	let ms1 = makeDrawingElement('el2','board');
+	makeVisual(ms1,-sz,0,sz,sz,c1,'triangle');
+	ms1.attach();
+
+}
+// #endregion
+
+//#region test cards
+var cards1 = {
+	'c1':
+	{
+		desc: "Move the Robber. Steal 1 resource card from the owner of an adjacent settlement or city.",
+		name: "Knight",
+		obj_type: "devcard",
+		visible: { _set: ["White", "Red", "Blue", "Orange"] },
+	},
+	'c2':
+	{
+		desc: "1 Victory Point!",
+		name: "Victory Point",
+		obj_type: "devcard",
+		visible: { _set: ["White", "Red", "Blue", "Orange"] },
+	},
+	'c3':
+	{
+		desc: "Take any 2 resources from the bank. Add them to your hand. They can be 2 of the same or 2 different resources.",
+		name: "Year of Plenty",
+		obj_type: "devcard",
+		visible: { _set: ["White", "Red", "Blue", "Orange"] },
+	},
+	'c4':
+	{
+		desc: "Place 2 new roads as if you had just built them.",
+		name: "Road Building",
+		obj_type: "devcard",
+		visible: { _set: ["White", "Red", "Blue", "Orange"] },
+	},
+	'c5':
+	{
+		desc: "When you play this card, announce 1 type of resource. All other players must give you all their resource cards of that type.",
+		name: "Monopoly",
+		obj_type: "devcard",
+		visible: { _set: ["White", "Red", "Blue", "Orange"] },
+	},
+
+};
+var card1 = cards1['c1'];
+function testCards() {
+	_initGameGlobals(); hideLobby(); hideLogin(); showGame(); initDom();
+
+	//testShowCards1();
+	testPlayerHand1();
+}
+function testPlayerHand1() {
+	G.table = cards1;
+
+	G.playersAugmented = {
+		White: {
+			devcards: { _set: [{ _obj: 'c1' }, { _obj: 'c3' }] }
+		}
+	};
+	_showHand(['c1','c2', 'c3'], 'a_d_game');
+}
+//#endregion
+
+
+//#region test page header
+function testPageHeader() {
 	pageHeaderClearAll();
 	pageHeaderSetGame();
 	pageHeaderAddPlayer('username', 'playerId', 'green', true);
 
 }
+//#endregion
 
-
-//testing
+//#region testing table
 function _testTable() {
-	prelims();
-	initDom();
+	_initGameGlobals(); hideLobby(); hideLogin(); showGame(); initDom();
 	let gplayers = {
 		White: {
 			altName: "White",
@@ -259,7 +536,7 @@ function _test() {
 	console.log('output', exp(o) ? tsRec(exp(o)) : 'undefined');
 }
 
-
+//#endregion
 
 
 
@@ -291,9 +568,9 @@ function onClickRemoveActions() {
 	timit.showTime('...end ' + getFunctionCallerName());
 }
 function onClickAddActions() {
-	if (M.boats) { 
+	if (M.boats) {
 		//console.log('actions already presented!'); 
-		return; 
+		return;
 	}
 	timit.showTime('start ' + getFunctionCallerName());
 	presentActions();
@@ -309,7 +586,7 @@ function onClickRemoveDefaultObjects() {
 function onClickAddDefaultObjects() {
 	timit.showTime('start ' + getFunctionCallerName());
 
-	for(const oid in G.table){
+	for (const oid in G.table) {
 		let ms = makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 		presentDefault(oid, G.table[oid]);
 		//addTestInteraction(ms);
@@ -324,9 +601,9 @@ function onClickRemoveDefaultPlayers() {
 function onClickAddDefaultPlayers() {
 	timit.showTime('start ' + getFunctionCallerName());
 
-	for(const oid in G.players){
+	for (const oid in G.players) {
 		let ms = makeDefaultPlayer(oid, G.playersAugmented[oid], S.settings.player.defaultArea);
-		presentDefault(oid, G.playersAugmented[oid],false);
+		presentDefault(oid, G.playersAugmented[oid], false);
 		//addTestInteraction(ms);
 	}
 	timit.showTime('...end ' + getFunctionCallerName());

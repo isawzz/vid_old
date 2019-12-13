@@ -2,21 +2,20 @@ var choiceCompleted = false;
 var frozen = false;
 var boatFilters = [];
 var boatHighlighted = null;
-//var isControlKeyDown = false;
 
 function startInteraction() {
 	//window.scrollTo(0,0); //better: remove scrollIntoView bei log window
 	boatFilters = [];
-	if (isdef(IdOwner.a)) IdOwner.a.map(x => addStandardInteraction(x));
-	if (isdef(IdOwner.l)) IdOwner.l.map(x => addStandardInteraction(x)); //da muss click handler removen!!!!
-	if (isdef(IdOwner.p)) IdOwner.p.map(x => addStandardInteraction(x));
-	if (isdef(IdOwner.r)) IdOwner.r.map(x => addStandardInteraction(x));
+	if (isdef(IdOwner.a)) IdOwner.a.map(x => _addStandardInteraction(x));
+	if (isdef(IdOwner.l)) IdOwner.l.map(x => _addStandardInteraction(x)); //da muss click handler removen!!!!
+	if (isdef(IdOwner.p)) IdOwner.p.map(x => _addStandardInteraction(x));
+	if (isdef(IdOwner.r)) IdOwner.r.map(x => _addStandardInteraction(x));
 	//if (isdef(IdOwner.s)) IdOwner.s.map(x => addStandardInteraction(x)); //anderen clickHandler
-	if (isdef(IdOwner.t)) IdOwner.t.map(x => addStandardInteraction(x)); //anderen clickHandler
-	preselectFirstVisualsForBoats();
+	if (isdef(IdOwner.t)) IdOwner.t.map(x => _addStandardInteraction(x)); //anderen clickHandler
+	_preselectFirstVisualsForBoats();
 	choiceCompleted = false;
 	let nBoats = getBoatIds().length;
-	let autoplay = S_autoplayFunction(G) || nBoats < 2;
+	let autoplay = S_autoplayFunction(G) || nBoats < 2 || robbedDescInBoats();
 	if (autoplay) {
 		//console.log(nBoats<2?'autoplay:...only 1 option!!!':'different function....');
 		setTimeout(onClickStep, S_AIThinkingTime);
@@ -26,24 +25,35 @@ function startInteraction() {
 		unfreezeUI();
 	}
 }
-function stopInteractionH() {
+function robbedDescInBoats(){
+	for(const id of IdOwner.a){
+		let boat = UIS[id];
+		let desc = boat.desc;
+		if (desc == 'robbed'){
+			console.log('skip robbed!');
+			return true;
+		}
+	}
+	return false;
+}
+function stopAllHighlighting() {
 	//only unhighlight all, leave handlers on
-	if (isdef(IdOwner.a)) IdOwner.a.map(x => removeAllHighlighting(x));
-	if (isdef(IdOwner.l)) IdOwner.l.map(x => removeAllHighlighting(x)); //da muss click handler removen!!!!
-	if (isdef(IdOwner.p)) IdOwner.p.map(x => removeAllHighlighting(x));
-	if (isdef(IdOwner.r)) IdOwner.r.map(x => removeAllHighlighting(x));
-	if (isdef(IdOwner.s)) IdOwner.s.map(x => removeAllHighlighting(x)); //anderen clickHandler
-	if (isdef(IdOwner.t)) IdOwner.t.map(x => removeAllHighlighting(x)); //anderen clickHandler
+	if (isdef(IdOwner.a)) IdOwner.a.map(x => _removeAllHighlighting(x));
+	if (isdef(IdOwner.l)) IdOwner.l.map(x => _removeAllHighlighting(x)); //da muss click handler removen!!!!
+	if (isdef(IdOwner.p)) IdOwner.p.map(x => _removeAllHighlighting(x));
+	if (isdef(IdOwner.r)) IdOwner.r.map(x => _removeAllHighlighting(x));
+	if (isdef(IdOwner.s)) IdOwner.s.map(x => _removeAllHighlighting(x)); //anderen clickHandler
+	if (isdef(IdOwner.t)) IdOwner.t.map(x => _removeAllHighlighting(x)); //anderen clickHandler
 	setTimeout(hideTooltip, 500);
 }
 function stopInteraction() {
 	//remove all handlers
-	if (isdef(IdOwner.a)) IdOwner.a.map(x => removeInteraction(x));
-	if (isdef(IdOwner.l)) IdOwner.l.map(x => removeInteraction(x)); //da muss click handler removen!!!!
-	if (isdef(IdOwner.p)) IdOwner.p.map(x => removeInteraction(x));
-	if (isdef(IdOwner.r)) IdOwner.r.map(x => removeInteraction(x));
-	if (isdef(IdOwner.s)) IdOwner.s.map(x => removeInteraction(x)); //anderen clickHandler
-	if (isdef(IdOwner.t)) IdOwner.t.map(x => removeInteraction(x)); //anderen clickHandler
+	if (isdef(IdOwner.a)) IdOwner.a.map(x => _removeInteraction(x));
+	if (isdef(IdOwner.l)) IdOwner.l.map(x => _removeInteraction(x)); //da muss click handler removen!!!!
+	if (isdef(IdOwner.p)) IdOwner.p.map(x => _removeInteraction(x));
+	if (isdef(IdOwner.r)) IdOwner.r.map(x => _removeInteraction(x));
+	if (isdef(IdOwner.s)) IdOwner.s.map(x => _removeInteraction(x)); //anderen clickHandler
+	if (isdef(IdOwner.t)) IdOwner.t.map(x => _removeInteraction(x)); //anderen clickHandler
 	setTimeout(hideTooltip, 500);
 }
 
@@ -61,12 +71,13 @@ function checkArrowKeys(ev) {
 	//isControlKeyDown = true;
 
 	if (ev.keyCode == '13' && boatHighlighted) onClickSelectTuple(null, boatHighlighted);
-	else if (ev.keyCode == '38') highlightPrevBoat();
-	else if (ev.keyCode == '40') highlightNextBoat();
+	else if (ev.keyCode == '38') _highlightPrevBoat();
+	else if (ev.keyCode == '40') _highlightNextBoat();
 	else if (ev.keyCode == '37') { }	// left arrow
 	else if (ev.keyCode == '39') { }	// right arrow
 }
 
+//#region onClick...
 function onClickSelectTuple(ev, ms, part) {
 	//console.log(ev,ms,part)
 	if (choiceCompleted) return;
@@ -75,36 +86,19 @@ function onClickSelectTuple(ev, ms, part) {
 	iTuple = ms.o.iTuple;
 	//console.log(counters.msg + ': ' + G.player + ' :', iTuple, ms.o.desc, ms.o.text, ms.id);
 	freezeUI();
-	stopInteractionH();
+	stopAllHighlighting();
 	sendAction(ms.o, [gameStep]);
-}
-function onClickFilterOrInfobox(ev, ms, part) {
-	//hat auf irgendein object or player geclickt
-	if (!ev.ctrlKey) onClickFilterTuples(ev, ms, part);
-	else openInfobox(ev, ms, part);
-}
-function onClickFilterAndInfobox(ev, ms, part) {
-	//hat auf irgendein object or player geclickt
-	onClickFilterTuples(ev, ms, part);
-	onClickPlusControlInfobox(ev, ms, part);
-}
-function onClickPlusControlInfobox(ev, ms, part) {
-	//console.log('onClickPlusControlInfobox',ev)
-	if (ev.ctrlKey) {
-		openInfobox(ev, ms, part);
-		//console.log('YYYYYYYYYYYEEEEEEEEEEEAAAAAAAAAAAAHHHHHHHHHHH');
-	}
 }
 function onClickFilterTuples(ev, ms, part) {
 	//hat auf irgendein object or player geclickt
 	let id = ms.id;
 	if (boatFilters.includes(id)) {
-		removeFilterHighlight(ms);
+		_removeFilterHighlight(ms);
 		removeInPlace(boatFilters, id);
 		let relids = getList(id2uids[id]);
 		let boats = relids.filter(x => x[2] == 'a');
 		if (empty(boats)) { return; } // no effect!
-		for (const bid of boats) { if (!fi.includes(bid)) { showBoat(bid); } }//show boats that have been filtered out but do not contain any of the other filters
+		for (const bid of boats) { if (!fi.includes(bid)) { _showBoat(bid); } }//show boats that have been filtered out but do not contain any of the other filters
 	} else {
 		let relids = getList(id2uids[id]);
 		//console.log(relids)
@@ -117,18 +111,20 @@ function onClickFilterTuples(ev, ms, part) {
 			onClickSelectTuple(null, UIS[boats[0]]);
 		} else {
 			boatFilters.push(id);
-			addFilterHighlight(ms);
-			for (const bid of IdOwner.a) { if (!boats.includes(bid)) { hideBoat(bid) } } //soll von tuple liste nur die tuples anzeigen, wo diese id vorkommt
+			_addFilterHighlight(ms);
+			for (const bid of IdOwner.a) { if (!boats.includes(bid)) { _hideBoat(bid) } } //soll von tuple liste nur die tuples anzeigen, wo diese id vorkommt
 			//TODO!!! soll von objects nur die anzeigen, die in einem der visible tuples vorkommen
 		}
 	}
 }
+function onClickFilterOrInfobox(ev, ms, part) { if (!ev.ctrlKey) onClickFilterTuples(ev, ms, part); else openInfobox(ev, ms, part); }
 
-function onClickCheat(code) {
-	_sendRoute('/cheat/' + code, d => {
-		//console.log('response from cheatCode:', d);
-	});
-}
+function onClickFilterAndInfobox(ev, ms, part) { onClickFilterTuples(ev, ms, part); onClickPlusControlInfobox(ev, ms, part); }
+
+function onClickPlusControlInfobox(ev, ms, part) { if (ev.ctrlKey) { openInfobox(ev, ms, part); } }
+
+function onClickCheat(code) { _sendRoute('/cheat/' + code, null); }
+
 function onClickStep() {
 	if (!this.choiceCompleted) {
 		//let ms = getRandomBoat();
@@ -223,8 +219,6 @@ function onClickStop() {
 	//STOP = true;
 	//setTimeout(showStep,100);
 }
-
-
 function onClickTTT() {
 	GAME = S.settings.game = 'ttt';
 	PLAYMODE = S.settings.playmode = 'hotseat'; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
@@ -240,11 +234,49 @@ function onClickCatan() {
 
 }
 
+//#region utilities
+function highlightMsAndRelatives(ev, ms, partName) {
+	//console.log(ms.id,partName)
+	let id = ms.id;
+	//console.log('------------>id',id)
+	ms.high(partName);
+	if (ms.isa.infobox) bringInfoboxToFront(ms);
+	let relativeIds = id2uids[id];
+	if (nundef(relativeIds)) return;
+	for (const idRel of relativeIds) {
+		let msRel = UIS[idRel];
+		msRel.high('title');
+	}
 
+}
+function unhighlightMsAndRelatives(ev, ms, partName) {
+	let id = ms.id;
+	ms.unhigh(partName);
+	let relativeIds = id2uids[id];
+	if (nundef(relativeIds)) return;
+	for (const idRel of relativeIds) {
+		let msRel = UIS[idRel];
+		msRel.unhigh('title');
+	}
 
-//#region helpers
-function addFilterHighlight(ms) { ms.highC('green'); }
-function addStandardInteraction(id) {
+}
+function fullViewObjects() { let ids = getDefaultObjectIds(); ids.map(x => UIS[x].maximize()); }
+function minimizeObjects() { let ids = getDefaultObjectIds(); ids.map(x => UIS[x].minimize()); }
+function freezeUI() {
+	if (frozen) return;
+	frozen = true;
+	show(document.getElementById('tempFreezer'));
+}
+function unfreezeUI() {
+	if (!frozen) return;
+	frozen = false;
+	hide(document.getElementById('tempFreezer'));
+}
+function hideTooltip() { $('div#tooltip').css({ display: 'none' }); }
+
+//#region local helpers
+function _addFilterHighlight(ms) { ms.highC('green'); }
+function _addStandardInteraction(id) {
 	//console.log(id)
 	let ms = UIS[id];
 	switch (id[2]) {
@@ -265,10 +297,10 @@ function addStandardInteraction(id) {
 			if (id[0] == 'm') { //main table objects!!!!!
 				ms.addClickHandler('elem', onClickFilterOrInfobox);
 
-				if (ms.isa == 'card') {
+				if (ms.isa.card) {
 					//card should also be magnified or minified!
-					ms.addMouseEnterHandler('title', highlightAndMagnify);
-					ms.addMouseLeaveHandler('title', unhighlightAndMinify);
+					ms.addMouseEnterHandler('title', _highlightAndMagnify);
+					ms.addMouseLeaveHandler('title', _unhighlightAndMinify);
 				} else {
 					ms.addMouseEnterHandler('title', highlightMsAndRelatives);
 					ms.addMouseLeaveHandler('title', unhighlightMsAndRelatives);
@@ -289,9 +321,7 @@ function addStandardInteraction(id) {
 			break;
 	}
 }
-function fullViewObjects() { let ids = getDefaultObjectIds(); ids.map(x => UIS[x].maximize()); }
-function minimizeObjects() { let ids = getDefaultObjectIds(); ids.map(x => UIS[x].minimize()); }
-function preselectFirstVisualsForBoats() {
+function _preselectFirstVisualsForBoats() {
 	let oidlist = [];
 	for (const id of getBoatIds()) {
 		//select firstVisual for each oid in boat
@@ -307,41 +337,41 @@ function preselectFirstVisualsForBoats() {
 	//console.log(vislist);
 	vislist.map(id => UIS[id].highFrame());
 }
-function removeFilterHighlight(ms) { ms.unhighC(); }
-function removeAllHighlighting(id) { let ms = UIS[id]; ms.unhighAll(); }
-function removeClickHandler(id) { let ms = UIS[id]; ms.removeHandlers(); }
-function removeHoverHandlers(id) { let ms = UIS[id]; ms.removeHandlers(); }
-function removeInteraction(id) { let ms = UIS[id]; ms.removeHandlers(); ms.unhighAll(); }
+function _removeFilterHighlight(ms) { ms.unhighC(); }
+function _removeAllHighlighting(id) { let ms = UIS[id]; ms.unhighAll(); }
+function _removeClickHandler(id) { let ms = UIS[id]; ms.removeClickHandler(); }
+function _removeHoverHandlers(id) { let ms = UIS[id]; ms.removeHoverHandlers(); }
+function _removeInteraction(id) { let ms = UIS[id]; ms.removeHandlers(); ms.unhighAll(); }
 
-function hideBoat(id) { let ms = UIS[id]; ms.hide(); ms.o.weg = true; }
-function showBoat(id) { let ms = UIS[id]; ms.show(); ms.o.weg = false; }
-function highlightNextBoat() {
-	if (!boatHighlighted) highlightBoat(getFirstBoatId());
+function _hideBoat(id) { let ms = UIS[id]; ms.hide(); ms.o.weg = true; }
+function _showBoat(id) { let ms = UIS[id]; ms.show(); ms.o.weg = false; }
+function _highlightNextBoat() {
+	if (!boatHighlighted) _highlightBoat(getFirstBoatId());
 	else {
 		//console.log('boatHighlighted',boatHighlighted);
 		let idx = boatHighlighted.o.iTuple + 1;
 		//console.log('idx',idx);
 		//console.log(getBoatIdByIdx(idx));
-		highlightBoat(getBoatIdByIdx(boatHighlighted.o.iTuple + 1));
+		_highlightBoat(getBoatIdByIdx(boatHighlighted.o.iTuple + 1));
 	}
 }
-function highlightPrevBoat() {
-	if (!boatHighlighted) highlightBoat(getLastBoatId()); else highlightBoat(getBoatIdByIdx(boatHighlighted.o.iTuple - 1));
+function _highlightPrevBoat() {
+	if (!boatHighlighted) _highlightBoat(getLastBoatId()); else _highlightBoat(getBoatIdByIdx(boatHighlighted.o.iTuple - 1));
 }
-function highlightBoat(id) {
+function _highlightBoat(id) {
 	//console.log('...highlighBoat',id)
 	if (id === null) return;
 	if (boatHighlighted) {
 		if (boatHighlighted.id == id) return;
-		else unhighlightBoat();
+		else _unhighlightBoat();
 	}
 	boatHighlighted = UIS[id];
 	boatHighlighted.elem.scrollIntoView(false);
 	highlightMsAndRelatives(null, boatHighlighted);
-	openInfoboxesForBoatOids(boatHighlighted);
+	_openInfoboxesForBoatOids(boatHighlighted);
 
 }
-function openInfoboxesForBoatOids(boat) {
+function _openInfoboxesForBoatOids(boat) {
 	let oids = boat.o.oids;
 	let mainIds = oids.map(x => getMainId(x));
 	for (const id of mainIds) {
@@ -349,67 +379,26 @@ function openInfoboxesForBoatOids(boat) {
 		openInfobox(null, ms);
 	}
 }
-function closeInfoboxesForBoatOids(boat) {
+function _closeInfoboxesForBoatOids(boat) {
 	let oids = boat.o.oids;
 	for (const oid of oids) hideInfobox(oid);
 }
-function unhighlightBoat() {
+function _unhighlightBoat() {
 	if (boatHighlighted) {
 		unhighlightMsAndRelatives(null, boatHighlighted);
-		closeInfoboxesForBoatOids(boatHighlighted);
+		_closeInfoboxesForBoatOids(boatHighlighted);
 		boatHighlighted = null;
 	}
 }
-function highlightAndMagnify(ev, ms, partName) {
+function _highlightAndMagnify(ev, ms, partName) {
 	//this is typical behavior for cards in a hand
 	magnifyFront(ms.id);
 	highlightMsAndRelatives(ev, ms, partName);
 }
-function highlightMsAndRelatives(ev, ms, partName) {
-	//console.log(ms.id,partName)
-	let id = ms.id;
-	//console.log('------------>id',id)
-	ms.high(partName);
-	if (ms.isa.infobox) bringInfoboxToFront(ms);
-	let relativeIds = id2uids[id];
-	if (nundef(relativeIds)) return;
-	for (const idRel of relativeIds) {
-		let msRel = UIS[idRel];
-		msRel.high('title');
-	}
-}
-function unhighlightAndMinify(ev, ms, partName) {
+function _unhighlightAndMinify(ev, ms, partName) {
 	minifyBack(ms.id);
 	unhighlightMsAndRelatives(ev, ms, partName);
 }
-function unhighlightMsAndRelatives(ev, ms, partName) {
-	let id = ms.id;
-	ms.unhigh(partName);
-	let relativeIds = id2uids[id];
-	if (nundef(relativeIds)) return;
-	for (const idRel of relativeIds) {
-		let msRel = UIS[idRel];
-		msRel.unhigh('title');
-	}
-}
-
-function freezeUI() {
-	if (frozen) return;
-	frozen = true;
-	// if (S_autoplay && S_playMode != 'hotseat') {
-	// 	hide(document.getElementById('tempFreezer'));
-	// 	show(document.getElementById('freezer'));
-	// } else {
-	// hide(document.getElementById('freezer'));
-	show(document.getElementById('tempFreezer'));
-	// }
-}
-function unfreezeUI() {
-	if (!frozen) return;
-	frozen = false;
-	hide(document.getElementById('tempFreezer'));
-	// if (!S_autoplay) hide(document.getElementById('freezer'));
-}
 
 
 
@@ -427,6 +416,7 @@ function unfreezeUI() {
 
 
 
+//#region testing
 function addTestInteraction(id) {
 	let ms = UIS[id];
 	ms.addClickHandler('title', onClickGetUIS);

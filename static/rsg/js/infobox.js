@@ -1,4 +1,3 @@
-var maxZIndex=10;
 function bringInfoboxToFront(ms){
 	ms.elem.style.zIndex = maxZIndex;
 	maxZIndex += 1;
@@ -34,9 +33,67 @@ function openInfobox(ev, ms, part) {
 		//let pos = ms.calcCenterPos(ev); //mach hier ein posAtCenterOf(msOther)???
 		//msInfobox.setPos(pos.x, pos.y);
 		let area = UIS['a_d_game'];
-		msInfobox.setPos(ms.x+area.w/2, ms.y+area.h/2);
+
+		//ms parent could be someuser area inside but not fully covering a_d_game!
+		// //
+
+		// let parentOfMs = UIS[ms.idParent];
+		// let parentX=parentOfMs.x;
+		// let parentY = parentOfMs.y;
+		// let objX = ms.x;
+		// let objY = ms.y;
+		// let x=parentX+objX;
+		// let y=parentY+objY;
+
+		// console.log('idParent:',ms.idParent)
+		// console.log('ccord in a_d_game:',parentX,parentY,objX,objY,x,y)
+
+		// let defX=ms.x+area.w/2;
+		// let defY=ms.y+area.h/2;
+		// console.log('...using:',defX,defY);
+		let pos = calcMainVisualPosCenterInGameArea(ms)
+		msInfobox.setPos(pos.x,pos.y); //ms.x+area.w/2, ms.y+area.h/2);
 	}
 
+}
+function calcMainVisualPosCenterInGameArea(ms){
+	let area = UIS['a_d_game'];
+
+	//ms parent could be someuser area inside but not fully covering a_d_game!
+	let parent = UIS[ms.idParent];
+	//if this parent does not have coords, look at his parent
+	if (nundef(parent.x)) parent = UIS[parent.idParent];
+
+	console.log('parent:',parent)
+	//now should have an x,y,w,h
+	//if ms is a g elem, parent will be centered at origin and therefore must add
+	//parent.w/2 and parent.h/2 to coords!
+	//vielleicht muss ich noch fuer g els ms.w/2 abziehen??? oder fuer d els ms.w/2
+	//addieren?
+	let offX=0;
+	let offY=0;
+	if (ms.cat == 'g'){offX=parent.w/2;offY=parent.h/2;}
+	//else {offX = ms.w/2;offY=ms.h/2;}
+
+	let x=offX+parent.x+ms.x;
+	let y=offY+parent.y+ms.y;
+
+	return {x:x,y:y};
+
+	// let parentOfMs = UIS[ms.idParent];
+	// let parentX=parentOfMs.x;
+	// let parentY = parentOfMs.y;
+	// let objX = ms.x;
+	// let objY = ms.y;
+	// let x=parentX+objX;
+	// let y=parentY+objY;
+
+	// console.log('idParent:',ms.idParent)
+	// console.log('ccord in a_d_game:',parentX,parentY,objX,objY,x,y)
+
+	// let defX=ms.x+area.w/2;
+	// let defY=ms.y+area.h/2;
+	// console.log('...using:',defX,defY);
 }
 function hideInfobox(oid) { let id = makeIdInfobox(oid); if (UIS[id]) UIS[id].hide(); }
 function destroyInfoboxFor(oid) { let id = makeIdInfobox(oid); if (UIS[id]) deleteRSG(id); }

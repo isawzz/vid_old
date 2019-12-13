@@ -3,7 +3,9 @@
 
 <head>
 	<title>RSG</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">	 -->
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"> -->
+	<!-- <meta charset="utf-8"> -->
 	<link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/facebook/65/game-die_1f3b2.png">
 	<link rel="stylesheet" href="/static/front/css/main.css">
 	<!-- <script type="text/javascript" src="http://livejs.com/live.js"></script> -->
@@ -37,13 +39,16 @@
 
 		var JS_FILES = [
 			'areas',
+			'assetlib',
 			'behavior',//TODO
 			'cards',
 			'color',//TODO
+			// 'deck',
+			// 'faChars',
+			//'glyphs',
 			'go',//TODO
 			'infobox',
 			'interact',
-			'interaction_util',
 			'MS',
 			'present',
 			'presentation_util',
@@ -54,6 +59,7 @@
 
 		var CSS_FILES = [
 			// 'favicon',
+			'card52',
 			'cards',
 			'gsm',
 			'pageLayout',
@@ -95,6 +101,7 @@
 		for (const fname of CSS_FILES) styleLoader(fname, 'static/rsg/css', false, OFFLINE);
 		for (const fname of JS_LOBBY) scriptLoader(fname, 'static/front/js', false, OFFLINE);
 		for (const fname of JS_FILES) scriptLoader(fname, 'static/rsg/js', false, OFFLINE);
+
 		//#endregion
 
 	</script>

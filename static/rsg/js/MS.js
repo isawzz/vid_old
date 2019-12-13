@@ -2,14 +2,44 @@ class RSG {
 	constructor() {
 		this.children = [];
 		this.parts = {};
-		this.handlers = { click: {}, mouseenter: {}, mouseleave: {} }; 
+		this.handlers = { click: {}, mouseenter: {}, mouseleave: {} };
 		this.isAttached = false;
 		this.texts = []; //akku for text elems, each elem {w:textWidth,el:elem}
 		this.refs = {}; //by key same as parts
 		this.isa = {};
-		this.bgs = {};
-		this.fgs = {};
+		this.orig = {}; //at least remember bg,fg,x,y,w,h,shape,scale,rot when first assign (ground or elem)
+		this.bgs = {}; //TODO: eliminate!
+		this.fgs = {}; //TODO: eliminate!
 	}
+	//#region picto
+	pictoImage(key, fg, sz) {
+		this._picto(key, 0, 0, sz, sz, fg);
+		this.isPicto = true;
+		this.picto = this.elem.children[1];
+		this.texts = [];
+	}
+	_picto(key, x, y, w, h, fg, bg) {
+		//soll das ein g oder ein d sein?
+		//sollte eigentlich fuer beide gehen!
+		//zuerst als g
+		let ch = iconChars[key];
+		let family = (ch[0] == 'f' || ch[0] == 'F') ? 'pictoFa' : 'pictoGame';
+		let text = String.fromCharCode('0x' + ch);
+		//key="skiing-nordic";
+		if (this.cat == 'g') {
+			if (isdef(bg)) this.rect({ w: w, h: h, fill: bg, x: x, y: y });
+			// this.text({txt:'\uf520',family:'picto',x:x,y:y,fz:h,fill:fg});
+			this.text({ txt: text, family: family, weight: 900, x: x, y: y, fz: h, fill: fg });
+			this.orig.fg = fg;
+			//this.text({ className:'overlay', txt: text, family: family, weight: 900, x: x, y: y, fz: h, fill: fg });
+			return this;
+		} else {
+
+		}
+	}
+
+	//#endregion
+
 	//#region text
 	computeTextColors(fill, alpha = 1, textBg = null) {
 		fill = fill ? fill : this.fg ? this.fg : textBg ? colorIdealText(textBg) : this.bg ? colorIdealText(this.bg) : null;
@@ -97,35 +127,13 @@ class RSG {
 			if (nundef(this.body) || nundef(this.title)) {
 				this.addFlexTitleBody();
 			}
-			// if (nundef(this.title)) {
-			// 	this.title = document.createElement('div');
-			// 	this.title.style.textAlign = 'center';
-			// 	if (nundef(this.body)) {
-			// 		this.body = document.createElement('div');
-			// 		this.body.style = "margin:0px;height:100%;overflow:auto;padding:"
-			// 		let content = this.elem.innerHTML;
-			// 		this.body.innerHTML = content;
-			// 		clearElement(this.elem);
-			// 		this.elem.appendChild(this.title);
-			// 		this.elem.appendChild(this.body);
-			// 	}else{
-			// 		this.body.prepend(this.title);
-			// 	}
-			// 	// this.elem.prepend( this.title );
-			// 	// //console.log(this.elem)
-			// } else {
 			clearElement(this.title);
 			if (isdef(textBg)) this.title.style.backgroundColor = textBg;
 			if (isdef(fill)) this.title.style.color = fill;
 			this.title.innerHTML = txt;
 			return this;
 		}
-		// ms.text({txt: val, force: force, shrinkFont: shrinkFont, wrap: wrap, fz: fz, bg: 'white', fill: 'black'});
-		//TODO: shrinkFont,wrap,ellipsis options implementieren
-		//if replaceFirst true ... if this elem already contains a text, that text child is replaced by new text
 		let isFirstChild = this.elem.childNodes.length == 0;
-
-		//let r = getText({txt:txt,className:className,isOverlay:isOverlay,fill:fill,textBg:textBg,alpha:alpha,x:x,y:y,fz:fz,family:family,weight:weight});
 
 		let r = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 		if (isFirstChild) {
@@ -136,20 +144,19 @@ class RSG {
 
 		// CSS classes
 		if (isOverlay) {
-			r.classList.add('overlay'); //className);
+			r.classList.add('overlay');
 			this.overlay = r;
 		}
 		r.classList.add('msText');
 		if (className) {
 			r.classList.add(className);
 		}
-		//console.log('classes attached to new text element',r.getAttribute('class'),r.classList);
 
 		textBg = this.setTextFill(r, fill, alpha, textBg);
-		if (isFirstChild) { 
+		if (isFirstChild) {
 			//console.log('ist das hier?!?!?!?!?!?!?')
-			this.bgs.ground = textBg; 
-			this.fgs.ground = fill; 
+			this.bgs.ground = textBg;
+			this.fgs.ground = fill;
 		}
 		//console.log('text: textBg='+textBg)
 		let wText = this.calcTextWidth(txt, fz, family, weight);
@@ -220,10 +227,10 @@ class RSG {
 			//console.log('ist ein text!!!!!')
 			//this.elem.style.maxWidth = this.w+'px';
 			this.elem.style.textAlign = 'center';
-			this.elem.style.color = fill ? fill : this.fg? this.fg : 'white';
+			this.elem.style.color = fill ? fill : this.fg ? this.fg : 'white';
 			//this.elem.style.padding = '20px';
 			//console.log('fz',fz,this.elem)
-			let margin = this.h/2 - fz/2;
+			let margin = this.h / 2 - fz / 2;
 			this.elem.innerHTML = `<div style='margin-top:${margin}px;font-size:${fz}px;'>${txt}</div>`;
 			this.elem.boxSizing = 'border-box';
 			return this;
@@ -232,7 +239,7 @@ class RSG {
 		if (empty(txt)) {
 			//console.log('erasing...')
 
-			this.removeTexts();return this;
+			this.removeTexts(); return this;
 		}
 
 
@@ -264,9 +271,9 @@ class RSG {
 		//console.log('classes attached to new text element',r.getAttribute('class'),r.classList);
 
 		textBg = this.setTextFill(r, fill, alpha, textBg);
-		if (isFirstChild) { 
-			this.bgs.ground = textBg; 
-			this.fgs.ground = fill; 
+		if (isFirstChild) {
+			this.bgs.ground = textBg;
+			this.fgs.ground = fill;
 		}
 		//console.log('text: textBg='+textBg)
 		let wText = this.calcTextWidth(txt, fz, family, weight);
@@ -427,7 +434,31 @@ class RSG {
 	}
 	//#endregion
 
-	//#region geo
+	//#region primitive shapes
+
+	_ellipse() { return document.createElementNS('http://www.w3.org/2000/svg', 'ellipse'); }
+	_circle() { return document.createElementNS('http://www.w3.org/2000/svg', 'ellipse'); }
+
+	_rect() { return document.createElementNS('http://www.w3.org/2000/svg', 'rect'); }
+	_square() { return document.createElementNS('http://www.w3.org/2000/svg', 'rect'); }
+	_quad() { return document.createElementNS('http://www.w3.org/2000/svg', 'rect'); }
+	_roundedRect() { return document.createElementNS('http://www.w3.org/2000/svg', 'rect'); }
+
+	_hex() { return document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); }
+
+	_triangle() { return document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); }
+	_triangleDown() { return document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); }
+	_star() { return document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); }
+
+	_line() { return document.createElementNS('http://www.w3.org/2000/svg', 'line'); }
+
+	_image() { return document.createElementNS('http://www.w3.org/2000/svg', 'image'); }
+
+	_text() { return document.createElementNS('http://www.w3.org/2000/svg', 'text'); }
+
+	//#endregion
+
+	//#region geo: TODO: update!
 	ellipse({ idx, border, thickness = 0, className = '', w = 50, h = 25, fill, alpha = 1, x = 0, y = 0 } = {}) {
 		let r = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
 
@@ -444,9 +475,11 @@ class RSG {
 			r.setAttribute('stroke', border);
 		}
 
+		// _initGroundOrig(className,r,bg,r.getAttribute('stroke'),x,y,w,h,'ellipse',1,0,thickness);
 		if (this.elem.childNodes.length == 0 || className.includes('ground')) {
 			this.ground = r;
-			this.bgs.ground = bg; this.fgs.ground = r.getAttribute('stroke');
+			this.bgs.ground = bg;
+			this.fgs.ground = r.getAttribute('stroke');
 			this.w = w;
 			this.h = h;
 		}
@@ -493,7 +526,7 @@ class RSG {
 
 		r.setAttribute('stroke-width', thickness);
 		if (thickness > 0) {
-			border = convertToRgba(border, alpha);
+			border = anyColorToStandardString(border, alpha);
 			r.setAttribute('stroke', border);
 		}
 
@@ -526,9 +559,7 @@ class RSG {
 		//if h<=0, heightis calculated from width!
 		let r = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
 
-		if (h <= 0) {
-			h = (2 * w) / 1.73;
-		}
+		if (h <= 0) { h = (2 * w) / 1.73; }
 		let pts = size2hex(w, h, x, y);
 		r.setAttribute('points', pts);
 
@@ -554,6 +585,41 @@ class RSG {
 			}
 		}
 		this.elem.appendChild(r);
+		if (className.includes('ground')) { this.w = w; this.h = h; this.x = x; this.y = y; }
+		return this;
+	}
+	triangle({ idx, className = '', x = 0, y = 0, w, h = 0, fill, alpha = 1, border = 'white', thickness = 0 }) {
+		let pts = size2triup(w, h, x, y);
+		if (this.elem.childNodes.length == 0 || className.includes('ground')) { this.w = w; this.h = h; this.x = x; this.y = y; }
+		this.poly({ idx: idx, className: className, pts: pts, fill: fill, alpha: alpha, border: border, thickness: thickness });
+		return this;
+	}
+	triangleDown({ idx, className = '', x = 0, y = 0, w, h = 0, fill, alpha = 1, border = 'white', thickness = 0 }) {
+		let pts = size2tridown(w, h, x, y);
+		this.poly({ idx: idx, className: className, pts: pts, fill: fill, alpha: alpha, border: border, thickness: thickness });
+		if (this.elem.childNodes.length == 1 || className.includes('ground')) { this.w = w; this.h = h; this.x = x; this.y = y; }
+		return this;
+	}
+	star({ idx, className = '', n = 6, w, h = 0, x = 0, y = 0, fill, alpha = 1, border = 'white', thickness = 0 }) {
+		h = h == 0 ? w : h;
+		let rad = w / 2;
+		let pOuter = getCirclePoints(rad, n);
+		let pInner = getCirclePoints(rad / 2, n, 180 / n);
+		//console.log(pOuter,pInner)
+		let pts = [];
+		for (let i = 0; i < n; i++) {
+			pts.push(pOuter[i]);
+			pts.push(pInner[i]);
+		}
+		for (let i = 0; i < pts.length; i++) {
+			pts[i].X = (pts[i].X + w / 2) / w;
+			pts[i].Y = (pts[i].Y + h / 2) / h;
+		}
+		let sPoints = polyPointsFrom(w, h, x, y, pts);
+		//let sPoints = pts.map(p=>''+p.X+','+p.Y).join(' ');
+		//console.log(sPoints)
+		this.poly({ idx: idx, className: className, pts: sPoints, fill: fill, alpha: alpha, border: border, thickness: thickness });
+		if (this.elem.childNodes.length == 1 || className.includes('ground')) { this.w = w; this.h = h; this.x = x; this.y = y; }
 		return this;
 	}
 	image({ idx, className = '', path = '', w = 50, h = 50, x = 0, y = 0 } = {}) {
@@ -578,7 +644,29 @@ class RSG {
 		this.elem.appendChild(r);
 		return this;
 	}
-	line({ idx, className = '', x1 = 0, y1 = 0, x2 = 100, y2 = 100, fill, alpha = 1, thickness = 2 }) {
+	getEndPointsOfLineSegmentOfLength(d) {
+		if (!this.isLine) return null;
+		let x1 = this.x1;
+		let y1 = this.y1;
+		let x2 = this.x2;
+		let y2 = this.y2;
+		let dx = x2 - x1;
+		let dy = y2 - y1;
+		let mx = dx / 2;
+		let my = dy / 2;
+		let sx = x1;
+		let sy = y1;
+		//console.log('distance', this.distance, 'length', this.length)
+		let factor = d / this.distance;
+		let ex = x1 + factor * dx;
+		let ey = y1 + factor * dy;
+		let addx = (1 - factor) * dx / 2;
+		let addy = (1 - factor) * dy / 2;
+		return [sx + addx, sy + addy, ex + addx, ey + addy];
+
+	}
+
+	line({ idx, cap, className = '', x1 = 0, y1 = 0, x2 = 100, y2 = 100, fill, alpha = 1, length, thickness = 2 } = {}) {
 		// <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2" />
 		let r = document.createElementNS('http://www.w3.org/2000/svg', 'line');
 		r.setAttribute('x1', x1);
@@ -586,8 +674,9 @@ class RSG {
 		r.setAttribute('x2', x2);
 		r.setAttribute('y2', y2);
 
-		this.thickness = thickness;
-		this.w = this.h = thickness
+		if (isdef(cap)) r.setAttribute('stroke-linecap', cap);
+
+
 		// Math.max(thickness,Math.abs(x1-x2)/2); 
 		// this.h=Math.max(thickness,Math.abs(y1-y2)/2);
 
@@ -611,6 +700,21 @@ class RSG {
 			this.isLine = true;
 			this.x = Math.round((x1 + x2) / 2);
 			this.y = Math.round((y1 + y2) / 2);
+			this.x1 = x1;
+			this.y1 = y1;
+			this.x2 = x2;
+			this.y2 = y2;
+			this.center = { x: (x1 + x2) / 2, y: (y1 + y2) / 2 };
+			this.distance = distance(x1, y1, x2, y2);
+
+			if (length) {
+				this.length = this.h = length; //default case!
+			} else {
+				this.length = this.h = this.distance; //default case!
+			}
+
+			this.thickness = thickness;
+			this.w = thickness;
 		}
 
 		this.elem.appendChild(r);
@@ -623,7 +727,7 @@ class RSG {
 		let isFirstChild = this.elem.childNodes.length == 0;
 
 		let bg = this._setFill(r, fill, alpha);
-		if (this.elem.childNodes.length == 0 || className.includes('ground')) {
+		if (isFirstChild || className.includes('ground')) {
 			this.ground = r;
 			this.bgs.ground = bg; this.fgs.ground = r.getAttribute('stroke');
 
@@ -772,7 +876,7 @@ class RSG {
 	}
 	addHandler(evName, partName = 'elem', handler = null, autoEnable = true) {
 		let part = this.parts[partName];
-		if (nundef(part)) { part = this.elem; partName = 'elem'; } 
+		if (nundef(part)) { part = this.elem; partName = 'elem'; }
 
 		if (isdef(handler)) { this.handlers[evName][partName] = handler; }
 
@@ -800,12 +904,17 @@ class RSG {
 		return nundef(part) ? elemIfMissing ? this.elem : null : part;
 	}
 	highC(c, pname = 'elem', elIfMiss = true) {
-		//console.log('highC',this.id)
+		//console.log('highC', this.id)
 		let part = this._getPart(pname, elIfMiss);
 		if (!part) return;
 		if (this.cat == 'g') {
-			this.ground.setAttribute('fill', c);
-			this.ground.setAttribute('stroke', c);
+			if (this.isPicto) {
+				//console.log('high', this.id, this.picto);
+				this.setTextFill(this.picto, '#ccff00', 1);//.elem.addClass('high',this.ground); 
+			} else {
+				this.ground.setAttribute('fill', c);
+				this.ground.setAttribute('stroke', c);
+			}
 		} else { part.style.backgroundColor = c; part.style.color = colorIdealText(c); }
 	}
 	unhighC(pname = 'elem', elIfMiss = true) {
@@ -819,22 +928,42 @@ class RSG {
 		else { let bg = part.bg; if (nundef(bg)) bg = null; part.style.backgroundColor = bg; if (isdef(bg)) part.style.color = colorIdealText(bg); }
 	}
 	high(pname = 'elem', elIfMiss = true) {
-		//console.log('high',this.id)
 		let part = this._getPart(pname, elIfMiss);
 		if (!part) return; //{//console.log('no part',pname); return;}
-		if (this.cat == 'g') addClass('high', this.ground);
-		else part.style.backgroundColor = '#ccff00';
+		if (this.cat == 'g') {
+			if (this.isPicto) {
+				this.setTextFill(this.picto, '#ccff00', 1);//.elem.addClass('high',this.ground); 
+				//console.log('high', this.id, this.ground);
+			} else addClass('high', this.overlay);
+		} else part.style.backgroundColor = '#ccff00';
+
+		// if (this.isLine) {
+		// 	console.log('high', this.id, this.overlay);
+		// }
+
+
 	}
 	unhigh(pname = 'elem', elIfMiss = true) {
 		let part = this._getPart(pname, elIfMiss);
 		if (!part) return;
-		if (this.cat == 'g') removeClass('high', this.ground);
-		else { let bg = part.bg; if (nundef(bg)) bg = null; part.style.backgroundColor = bg; }
+		if (this.cat == 'g') {
+			if (this.isPicto) {
+				//this.removeClass('high',this.ground); 
+				this.setTextFill(this.picto, this.orig.fg, 1);//.elem.addClass('high',this.ground); 
+			} else removeClass('high', this.overlay);
+
+			//removeClass('high', this.overlay);
+		} else { let bg = part.bg; if (nundef(bg)) bg = null; part.style.backgroundColor = bg; }
 	}
 	highFrame(pname = 'elem', elIfMiss = true) {
 		let part = this._getPart(pname, elIfMiss);
 		if (!part) return;
 		if (this.isLine) this.addClass('lineHighFrame', this.overlay);
+		else if (this.isPicto) {
+			this.setTextFill(this.picto, '#ccff00', 1);//.elem.addClass('high',this.ground); 
+		}else if (this.isa.field){
+			this.high();
+		}
 		else addClass('highFrame', this.cat == 'g' ? this.overlay : this.parts['title'])
 		// if (this.cat == 'g') addClass('highFrame',this.overlay);
 		// else part.style.backgroundColor = colorTrans('#ccff00');
@@ -843,7 +972,11 @@ class RSG {
 		let part = this._getPart(pname, elIfMiss);
 		if (!part) return;
 		if (this.isLine) this.removeClass('lineHighFrame', this.overlay);
-		else removeClass('highFrame', this.cat == 'g' ? this.overlay : this.parts['title'])
+		else if (this.isPicto) {
+			this.setTextFill(this.picto, this.orig.fg, 1);//.elem.addClass('high',this.ground); 
+		}else if (this.isa.field){
+			this.unhigh();
+		}	else removeClass('highFrame', this.cat == 'g' ? this.overlay : this.parts['title'])
 		// removeClass('highFrame',this.cat=='g'?this.overlay:this.parts['title'])
 		// if (this.cat == 'g') removeClass('highFrame',this.overlay);
 		// else { let bg = part.bg; if (nundef(bg)) bg = null; part.style.backgroundColor = bg; }
@@ -877,7 +1010,42 @@ class RSG {
 	//#endregion
 
 	//#region basic properties x,y,w,h,bg,fg
+	resetBg() {
+		if (this.orig.bg) {
+			this.setBg(this.orig.bg);
+		}
+	}
+	resetShape() {
+		this.setShape(this.orig.shape);
+	}
+	resetSize() {
+		this.setSize(this.originalSize.w, this.originalSize.h);
+	}
 	setBg(c, { updateFg = false, partName = 'elem' } = {}) {
+
+		if (this.isLine) {
+			this.bg = c;
+			//console.log(this.parts);
+			let el = this.elem;
+			el.setAttribute('fill', c)
+			el.setAttribute('stroke', c)
+			//el.setAttribute('stroke-width', 20)
+			el.style.stroke = c;
+			//el.style.strokeWidth = "20px";
+			//el.style.class=null;
+			//el.setAttribute('class',null)
+			for (const e of el.children) {
+				//e.style.class=null;
+				//e.setAttribute('class',null)
+				e.setAttribute('stroke', c)
+				//e.setAttribute('stroke-width', 20)
+				e.setAttribute('fill', c);
+				e.style.stroke = c;
+				//e.style.strokeWidth = "20px";
+				//console.log(e.style.class,e.getAttribute('stroke'),e.getAttribute('fill'))
+				return this;
+			}
+		}
 
 		let part = this.parts[partName];
 		if (partName == 'elem') { this.bg = c; }
@@ -891,13 +1059,18 @@ class RSG {
 				// give it color
 			} else {
 				this.elem.setAttribute('fill', c);
-				if (this.isLine) { this.ground.setAttribute('stroke', c) }
+				// if (this.isLine) {
+				// 	//console.log('line:',this.o.obj_type)
+				// 	//this.setFg(c)
+				// 	this.ground.setAttribute('stroke', c)
+				// 	this.ground.setAttribute('fill', c)
+				// }
 			}
 		} else {
 			part.style.backgroundColor = c;
 		}
 		if (updateFg) {
-			this.setFg(colorIdealText(c),{partName:partName});
+			this.setFg(colorIdealText(c), { partName: partName });
 		}
 		return this;
 	}
@@ -935,7 +1108,7 @@ class RSG {
 		this.setSize(w, h);
 		this.setPos(x, y);
 	}
-	setColor(c){
+	setColor(c) {
 		//console.log('setColor',c)
 		// this.elem.backgroundColor = 'red';//
 		this.setBg(c);
@@ -973,10 +1146,99 @@ class RSG {
 		}
 		return this;
 	}
+	_modTransformBy(el, { x, y, scaleX, scaleY, rotDeg } = {}) {
+		let info = getTransformInfo(el);
+		console.log(info)
+		let xNew, yNew, scaleXNew, scaleYNew, rotNew;
+		if (isdef(x)) xNew = info.translateX + x; else xNew = info.translateX;
+		if (isdef(y)) yNew = info.translateY + y; else yNew = info.translateY;
+		if (isdef(scaleX)) scaleXNew = info.scaleX + scaleX; else scaleXNew = info.scaleX;
+		if (isdef(scaleY)) scaleYNew = info.scaleY + scaleY; else scaleYNew = info.scaleY;
+		if (isdef(rotDeg)) rotNew = info.rotation + rotDeg; else rotNew = info.rotation;
+		let sTrans = ''; let sScale = ''; let sRot = '';
+		if (xNew != 0 || yNew != 0) sTrans = `translate(${xNew},${yNew})`;
+		if (scaleXNew != 1 || scaleYNew != 1) sScale = `scale(${scaleXNew},${scaleYNew})`;
+		if (rotNew != 0) sRot = `rotation(${rotNew}deg)`;
+		let s = (sTrans + ' ' + sScale + ' ' + sRot).trim();
+		el.setAttribute("transform", s);
+
+		//also set x y in case that has been mod!
+	}
+	_setTransform(el, { x, y, scaleX, scaleY, rotDeg } = {}) {
+		//console.log('old transform:',el.getAttribute('transform'));
+		let info = getTransformInfo(el);
+		//console.log(info)
+		let xNew, yNew, scaleXNew, scaleYNew, rotNew;
+		if (isdef(x)) xNew = x; else xNew = info.translateX;
+		if (isdef(y)) yNew = y; else yNew = info.translateY;
+		if (isdef(scaleX)) scaleXNew = scaleX; else scaleXNew = info.scaleX;
+		if (isdef(scaleY)) scaleYNew = scaleY; else scaleYNew = info.scaleY;
+		if (isdef(rotDeg)) rotNew = rotDeg; else rotNew = info.rotation;
+		let sTrans = ''; let sScale = ''; let sRot = '';
+		if (xNew != 0 || yNew != 0) sTrans = `translate(${xNew} ${yNew})`;
+		if (scaleXNew != 1 || scaleYNew != 1) sScale = `scale(${scaleXNew} ${scaleYNew})`;
+		if (rotNew != 0) sRot = `rotate(${rotNew})`;
+		let s = (sTrans + ' ' + sScale + ' ' + sRot).trim();
+		//s+=' skewX(60)'
+		//console.log('new transform:',s)
+		el.setAttribute("transform", s);
+
+
+	}
+	setScale(scale, partName = 'elem') {
+		let el = this.parts[partName];
+		if (!el) return;
+		//console.log(el);
+		if (this.cat == 'd') el.style.transform = `scale(${scale})`;
+		else this._setTransform(el, { x: this.x, y: this.y, scaleX: scale, scaleY: scale });
+	}
+	setShape(shape) {
+		//replaces ground and overlay!
+		if (nundef(this.ground)) {
+			console.log('cannot replace shape because no this.ground');
+			return;
+		}
+		let curShape = getTypeOf(this.ground);
+		//console.log('setShape: current shape:',curShape);
+		if (shape == 'circle') shape = 'ellipse';
+		if (shape == 'square') shape = 'rect';
+		if (curShape != shape) {
+			//remove ground and overlay, replace them by new shape of same size!
+			//console.log(this.ground);
+			//console.log(this.overlay);
+
+			let childNodes = [...this.elem.children];
+			//console.log(typeof (childNodes), childNodes)
+			let iGround = childNodes.indexOf(this.ground);
+			//console.log('iGround', iGround);
+			let iOverlay = childNodes.indexOf(this.overlay);
+			//console.log('iOverlay', iOverlay);
+
+			let fill = this.ground.getAttribute('fill');
+			this.overlay = null;
+			this.ground = null;
+			this[shape]({ className: 'ground', w: this.w, h: this.h, fill: fill });
+
+			let newGround = this.elem.children[this.len() - 1];
+			this[shape]({ className: 'overlay', w: this.w, h: this.h });
+			let newOverlay = this.elem.children[this.len() - 1];
+
+			this.replaceChild(this.elem.childNodes[iGround], newGround);
+			//			this.replaceChild(this.overlay,newOverlay);
+			this.ground = newGround;
+			this.replaceChild(this.elem.childNodes[iOverlay], newOverlay);
+			//			this.overlay = newOverlay;
+			//this.elem.removeChild(this.ground)
+			//this.elem.removeChild(this.overlay)
+
+
+
+		}
+	}
 	//#endregion
 
 	//#region parts
-	title(s, key = 'title', color='dimgray') {
+	title(s, key = 'title', color = 'dimgray') {
 		if (this.parts[key]) {
 			//console.log('HALLLLLLLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO', this.parts[key], this.elem); 
 			this.parts[key].style.backgroundColor = randomColor();
@@ -993,7 +1255,7 @@ class RSG {
 		this.parts[key] = t;
 		//add these props to part:
 		$(t).attrs({ name: key });//, bg: bg });
-		this.setBg(bg, { updateFg:(color!='dimgray'), partName: key });
+		this.setBg(bg, { updateFg: (color != 'dimgray'), partName: key });
 		// t.name = key;
 		// t.bg = t.style.backgroundColor;
 		return this;
@@ -1104,7 +1366,14 @@ class RSG {
 		let parent = UIS[this.idParent];
 		removeInPlace(parent.children, this.id);
 	}
+	len() { return this.elem.children.length; }
+	replaceChild(oldChild, newChild) {
+		this.elem.insertBefore(newChild, oldChild);
+		this.elem.removeChild(oldChild);
+		//console.log(this.elem);
+	}
 
 	toString() { return 'id: ' + this.id + ', ' + this.domType + ', ' + this.x + ', ' + this.y + ', ' + this.w + ', ' + this.h + ', ' + this.bg + ', ' + this.fg + ', ' + this.children; }
 	//#endregion
 }
+

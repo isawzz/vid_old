@@ -8,15 +8,20 @@ V = {
 		desert: colorTrans('beige', .6)
 	}
 };
-
 TABLE_UPDATE = {
-	resources_numbers: (id, o, phase) => {
-		if (o.obj_type == 'hex') { return { f: 'setup_field', vis: [id] }; }
+	resources_numbers: (oid, o, phase) => {
+		if (o.obj_type == 'hex') { return { f: 'setup_field', vis: [oid] }; }
 	},
+	ports: (oid, o, phase) => {
+		if (o.obj_type == 'Corner') { return { f: 'setup_port', vis: [oid] }; }
+	},
+	update_city: (oid,o)=>{
+		if (o.obj_type == 'city') {return {f: 'update_city', vis: [oid]}}
+	}
 };
 PLAYER_UPDATE = {
 	player_update_devcards: (id, pl, phase) => {
-		if (pl.obj_type == 'GamePlayer') { return { f: 'player_update_devcards', vis: [id, 'DevCards'] }; }
+		if (pl.obj_type == 'GamePlayer') { return { f: 'player_update_devcards' }; }
 	},
 };
 
@@ -27,24 +32,30 @@ FUNCS = {
 			let color = V.colors[o.res];
 			field.setBg(color);
 			let num = Number(o.num);
-			field.text({ txt: '' + o.num, fill: num == 6 || num == 8 ? 'red' : 'white' });
+			field.text({ txt: o.num, fill: num == 6 || num == 8 ? 'red' : 'white' });
 		}
 		return true;
 	},
-	player_update_devcards: (oid, o, pl, cardArea) => {
-		//console.log(getFunctionCallerName())
-		//console.log('__________exec player_update_devcards:');//, oid, o, pl, cardArea)
-		//let current = cardArea.cards;
-		let areaName = 'DevCards';
-		let idPlayer = oid;
-		let idArea= getMainId(areaName);// 'm_A_DevCards';//todo getId of mainArea
-		if (o.obj_type == 'GamePlayer' && isdef(o.devcards)) {
-			//console.log('player devcards:',o.devcards)
-			let ids = o.devcards._set.map(x => x._obj);
-			//console.log('areaName:',areaName,'idArea',idArea)
-			//console.log('player devcards:',ids)
-			//console.log('area devcards:',idArea,UIS[idArea])
-			showPlayerHand(idPlayer,'devcards','DevCards');//ids,areaName);
-		} else {alert('SHOULD NEVER HAPPEN!~');  }
+	setup_port: (oid, o, corner) => {
+		if (nundef(o.port)) { return false; }
+		else {
+			//console.log('port update:',oid,o.port)
+			let color = o.port == "3to1" ? 'black' : V.colors[o.port];
+			corner.circle({ idx: 0, sz: 52, fill: color, alpha: .5 });
+			let label = o.port == "3to1" ? '3/1' : o.port;
+			let textColor = colorIdealText(color);
+			corner.text({ txt: label, fz: 8, x: 0, y: -22, fill: textColor });
+			return true;
+		}
 	},
-}
+	player_update_devcards: (idPlayer) => {
+		showPlayerHand(idPlayer, 'devcards', 'DevCards');
+	},
+	update_city: (oid, o, city) => {
+		city.setScale(2);
+	}
+};
+
+
+
+

@@ -1,15 +1,44 @@
-var commandChain=[];
+var commandChain = [];
+var maxZIndex = 110;
+var iconChars;
+
 function _start() {
 	_initServer();
+	timit.reset();
+	let faChars, gaChars;
+	loadYML('/static/rsg/assets/gameIconCodes.yml', dga => {
+		//console.log(dga);
+		gaChars = dga;
+		loadYML('/static/rsg/assets/faIconCodes.yml', dfa => {
+			//console.log(dfa);
+			faChars = dfa;
+			timit.showTime('loaded icons codes')
+			iconChars = {};
+			for (const k in faChars) {
+				iconChars[k] = faChars[k];
+			}
+			for (const k in gaChars) {
+				iconChars[k] = gaChars[k];
+			}
+			//clientData.name = USERNAME; _startLobby();
 
-	//clientData.name = USERNAME; _startLobby();
+			//_startLogin(); login(chooseRandom(names)); openGameConfig();
 
-	//_startLogin(); login(chooseRandom(names)); openGameConfig();
+			//commandChain=[()=>onClickCheat('devcard'),onClickRunToNextPhase];
+			S.gameConfig = gcs[GAME];	_startNewGame('starter'); //START HERE!!!!
 
-	//commandChain=[onClickRunToNextPhase,()=>onClickCheat('devcard')];
-	S.gameConfig = gcs[GAME];	_startNewGame('starter');
 
-	//testCards();
+			//testLines();
+			
+			//testShapes();
+			//testNewMSAPI();
+			//stressTest();
+			//testAndSave();
+			//testAndSave2();
+			//testPicto();
+			//testCards();
+		})
+	})
 }
 function _startLogin() { loginView(); }
 
