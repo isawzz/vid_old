@@ -52,8 +52,9 @@ var gcs = {
 		players: [
 			{ id: 'White', playerType: 'me', agentType: null, username: USERNAME },
 			{ id: 'Red', playerType: 'me', agentType: null, username: USERNAME + '1' },
-			// { id: 'Red', playerType: 'AI', agentType: 'random', username: 'bot0' },
 			{ id: 'Blue', playerType: 'me', agentType: null, username: USERNAME + '2' },
+			// { id: 'Red', playerType: 'AI', agentType: 'regular', username: 'bot0' },
+			// { id: 'Blue', playerType: 'AI', agentType: 'random', username: 'bot1' },
 		]
 	}
 }

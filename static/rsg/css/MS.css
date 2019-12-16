@@ -12,9 +12,15 @@
 	color:  #ccff00;
 	color: black;
 }
+.fieldHighFrame{
+	fill: #ffffff4d;
+	stroke: #ffffff4d;
+	color: black;
+}
 .lineHighFrame{
 	fill: #ccff0099;
 	stroke: #ccff0099;
+	color: black;
 }
 
 /* #region table */

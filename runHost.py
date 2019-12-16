@@ -305,7 +305,7 @@ def login(username):
 		return username+' already logged in in another window!'
 	if not user:
 		#TODO: add this user to db
-		print('found user!!!')
+		# print('found user!!!')
 		return 'not authorized: '+username
 	usersLoggedIn.append(username)
 	login_user(user)
@@ -349,7 +349,7 @@ def _rootsimPathSpec(game):
 	path = userSpecPath(game,'yaml',None)
 	f=open(path, "r")
 	txt = f.read()
-	#print(txt)
+	# print(txt)
 	return txt
 
 @app.route('/behaviors/<game>')
@@ -357,7 +357,7 @@ def _rootsimPathCode(game):
 	path = userSpecPath(game,'js',None)
 	f=open(path, "r")
 	txt = f.read()
-	print(txt)
+	# print(txt)
 	return txt
 
 def userSpecPath(game,ext,v=None):

@@ -784,8 +784,8 @@ class RSG {
 	//#endregion
 
 	//#region css classes
-	addClass(clName) {
-		let el = this.overlay;
+	addClass(clName,el) {
+		if (nundef(el)) el = this.overlay?this.overlay:this.ground;
 		if (!el) return;
 
 		el.classList.add(clName);
@@ -796,8 +796,10 @@ class RSG {
 		}
 		return null;
 	}
-	removeClass(clName) {
-		let el = this.overlay;
+	removeClass(clName,el) {
+		if (nundef(el)) el = this.overlay?this.overlay:this.ground;
+
+		//let el = this.overlay;
 		if (!el) return;
 		el.classList.remove(clName);
 	}
@@ -960,9 +962,10 @@ class RSG {
 		if (!part) return;
 		if (this.isLine) this.addClass('lineHighFrame', this.overlay);
 		else if (this.isPicto) {
-			this.setTextFill(this.picto, '#ccff00', 1);//.elem.addClass('high',this.ground); 
+			this.addClass('high',this.ground); 
+			//this.setTextFill(this.picto, '#ccff00', 1);
 		}else if (this.isa.field){
-			this.high();
+			this.addClass('fieldHighFrame', this.overlay);
 		}
 		else addClass('highFrame', this.cat == 'g' ? this.overlay : this.parts['title'])
 		// if (this.cat == 'g') addClass('highFrame',this.overlay);
@@ -973,9 +976,10 @@ class RSG {
 		if (!part) return;
 		if (this.isLine) this.removeClass('lineHighFrame', this.overlay);
 		else if (this.isPicto) {
-			this.setTextFill(this.picto, this.orig.fg, 1);//.elem.addClass('high',this.ground); 
+			this.removeClass('high',this.ground); 
+			//this.setTextFill(this.picto, this.orig.fg, 1);//.elem.addClass('high',this.ground); 
 		}else if (this.isa.field){
-			this.unhigh();
+			this.removeClass('fieldHighFrame', this.overlay);
 		}	else removeClass('highFrame', this.cat == 'g' ? this.overlay : this.parts['title'])
 		// removeClass('highFrame',this.cat=='g'?this.overlay:this.parts['title'])
 		// if (this.cat == 'g') removeClass('highFrame',this.overlay);
