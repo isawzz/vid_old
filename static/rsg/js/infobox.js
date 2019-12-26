@@ -82,55 +82,6 @@ function clearInfoboxes() {
 	maxZIndex = 10;
 }
 
-function makeInfobox(uid, oid, o) {
-	let id = makeIdInfobox(oid);
-	if (isdef(UIS[id])) { 
-		//console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); 
-		return; 
-	}
-	let ms = new RSG();
-	ms.id = id;
-	let domel = document.createElement('div');
-	domel.style.cursor = 'default';
-	ms.elem = domel;
-	ms.parts.elem = ms.elem;
-	ms.domType = getTypeOf(domel);
-	ms.cat = DOMCATS[ms.domType];
-	let idParent = 'a_d_game'; //wer soll parent von infobox sein? brauch div!
-	ms.idParent = idParent;
-	let parent = UIS[idParent];
-	parent.children.push(id);
-
-	let sTitle = oid + ': ' + o.obj_type;
-	ms.title(sTitle);
-
-	//let pos = staticPos(ms);
-	//ms.setPos(pos.x, pos.y);
-	ms.setBg('sienna')
-	ms.elem.style.border = '2px solid dimgray';
-
-	ms.o = o;
-	ms.isa['infobox'] = true;
-
-	linkObjects(id, oid);
-	listKey(IdOwner, id[2], id);
-	UIS[id] = ms;
-	ms.attach();
-
-	let x = ms.tableX(o);
-	//console.log(ms.id,ms.refs,ms.refs['table'])
-	ms.addMouseEnterHandler('title', highlightMsAndRelatives);
-	ms.addMouseLeaveHandler('title', unhighlightMsAndRelatives);
-	ms.addMouseEnterHandler('', ()=>bringInfoboxToFront(ms));
-	ms.addClickHandler('',()=>ms.hide())
-	ms.refs['table'].map(x => {
-		UIS[x].addMouseEnterHandler('title', highlightMsAndRelatives);
-		UIS[x].addMouseLeaveHandler('title', unhighlightMsAndRelatives);
-	});
-	bringInfoboxToFront(ms);
-	return ms;
-}
-
 function staticPos(ms) {
 	let gameArea = UIS['a_d_game'];
 	let actionArea = UIS['a_d_actions'];

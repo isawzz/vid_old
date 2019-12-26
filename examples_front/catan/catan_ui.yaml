@@ -1,5 +1,5 @@
 SETTINGS:
-  gameAreaSize: [800, 800]
+  gameAreaSize: [1000, 800]
   table:
     optin: [res, num, building, port]
   pieceSizeRelativeToLoc:
@@ -30,14 +30,11 @@ STRUCTURES:
   DevCards:
     location: a_d_game
     bounds: [0, 600, 800, 200, px]
+    color: '#00FFFF0D'
+  Stats:
+    location: a_d_game
+    bounds: [800, 0, 200, 800, px]
     color: '#00FF000D'
-    binding:
-      source:
-        pool: players
-        cond: 'obj_type == GamePlayer'
-        property: devcards
-      target:
-        type: cardHand
       
 
 

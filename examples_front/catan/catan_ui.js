@@ -23,6 +23,9 @@ PLAYER_UPDATE = {
 	player_update_devcards: (id, pl, phase) => {
 		if (pl.obj_type == 'GamePlayer') { return { f: 'player_update_devcards' }; }
 	},
+	player_update_stats: (id, pl, phase) => {
+		return { f: 'player_update_stats' }; 
+	},
 };
 
 FUNCS = {
@@ -50,6 +53,10 @@ FUNCS = {
 	},
 	player_update_devcards: (idPlayer) => {
 		showPlayerHand(idPlayer, 'devcards', 'DevCards');
+	},
+	player_update_stats: (idPlayer) => {
+		// showPlayerStats(idPlayer,['res','vps','num_res'],'Stats')
+		showPlayerStats(idPlayer,'num_res','Stats')
 	},
 	update_city: (oid, o, city) => {
 		city.setScale(2);
