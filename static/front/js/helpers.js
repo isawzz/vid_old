@@ -284,7 +284,7 @@ class TimeIt {
 	reset() { this.init('timing start') }
 	init(msg) {
 		this.t = new Date(); //new Date().getTime();
-		this.showOutput = true;
+		//this.showOutput = true;
 		if (this.showOutput) console.log('___', msg);
 		this.namedTimestamps = { start: this.t };
 	}

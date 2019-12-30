@@ -25,17 +25,6 @@ function startInteraction() {
 		unfreezeUI();
 	}
 }
-function robbedDescInBoats(){
-	for(const id of IdOwner.a){
-		let boat = UIS[id];
-		let desc = boat.desc;
-		if (desc == 'robbed'){
-			console.log('skip robbed!');
-			return true;
-		}
-	}
-	return false;
-}
 function stopAllHighlighting() {
 	//only unhighlight all, leave handlers on
 	if (isdef(IdOwner.a)) IdOwner.a.map(x => _removeAllHighlighting(x));
@@ -78,17 +67,15 @@ function checkArrowKeys(ev) {
 }
 
 //#region onClick...
-function onClickSelectTuple(ev, ms, part) {
-	//console.log(ev,ms,part)
-	if (choiceCompleted) return;
-	choiceCompleted = true;
-	//let id = ms.id;
-	iTuple = ms.o.iTuple;
-	//console.log(counters.msg + ': ' + G.player + ' :', iTuple, ms.o.desc, ms.o.text, ms.id);
-	freezeUI();
-	stopAllHighlighting();
-	sendAction(ms.o, [gameStep]);
+function onClickCatan() {
+	GAME = S.settings.game = 'catan';
+	PLAYMODE = S.settings.playmode = 'hotseat'; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
+	S.gameConfig = gcs[GAME];
+	_startNewGame('starter');
+
 }
+function onClickCheat(code) { _sendRoute('/cheat/' + code, null); }
+
 function onClickFilterTuples(ev, ms, part) {
 	//hat auf irgendein object or player geclickt
 	let id = ms.id;
@@ -122,40 +109,10 @@ function onClickFilterOrInfobox(ev, ms, part) { if (!ev.ctrlKey) onClickFilterTu
 function onClickFilterAndInfobox(ev, ms, part) { onClickFilterTuples(ev, ms, part); onClickPlusControlInfobox(ev, ms, part); }
 
 function onClickPlusControlInfobox(ev, ms, part) { if (ev.ctrlKey) { openInfobox(ev, ms, part); } }
-
-function onClickCheat(code) { _sendRoute('/cheat/' + code, null); }
-
-function onClickStep() {
-	if (!this.choiceCompleted) {
-		//let ms = getRandomBoat();
-		//let ms = getBoatWith(['demand', 'offer'], false);
-		let ms = getBoatWith(['buy'], true);
-		if (nundef(ms)) ms = getBoatWith(['pass'], true);
-		if (nundef(ms)) ms = getBoatWith(['demand', 'offer'], false);
-		if (nundef(ms)) ms = getRandomBoat();
-		onClickSelectTuple(null, ms);
-	}
-}
 function onClickPollStatus() {
 	//poll status for USERNAME, and if does not work, poll for waiting for if it belongs to me!
 
 	pollStatusAs(USERNAME);
-}
-function onClickToggleButton(button, handlerList) {
-	let current = button.textContent;
-	let idx = -1;
-	let i = 0;
-	for (const item of handlerList) {
-		if (item[0] == current) {
-			idx = i; break;
-		}
-		i += 1;
-	}
-	if (idx >= 0) {
-		let idxNew = (idx + 1) % handlerList.length;
-		button.textContent = handlerList[idxNew][0];
-		handlerList[idxNew][1]();
-	}
 }
 function onClickLobby() {
 	lobbyView();
@@ -219,15 +176,75 @@ function onClickStop() {
 	//STOP = true;
 	//setTimeout(showStep,100);
 }
+
+function onClickSelectTuple(ev, ms, part) {
+	//console.log(ev,ms,part)
+	if (choiceCompleted) return;
+	choiceCompleted = true;
+	//let id = ms.id;
+	iTuple = ms.o.iTuple;
+	//console.log(counters.msg + ': ' + G.player + ' :', iTuple, ms.o.desc, ms.o.text, ms.id);
+	freezeUI();
+	stopAllHighlighting();
+	sendAction(ms.o, [gameStep]);
+}
+var startBoats = ['93', '99', '109', '121', '124', '116', '106', '111', '116', '129'];
+function getNextStartBoat() {
+	console.log('phase', G.phase)
+	let ms = null;
+	let sb = startBoats[0];
+	if (G.phase == 'setup') {
+		let boats = getBoats();
+		for (const b of boats) {
+			//console.log(b, b.o, b.o.text);
+			for (const id of startBoats) {
+				//console.log(b.o.text);
+				for (const t of b.o.text) {
+					if (t.includes(id)) {
+						console.log('choosing', id)
+						sb = id;
+						ms = b;
+						removeInPlace(startBoats, sb);
+						return ms;
+					}
+				}
+			}
+		}
+	}
+	console.log(startBoats)
+	return ms;
+}
+function onClickStep() {
+	if (!this.choiceCompleted) {
+		//let ms = getRandomBoat();
+		//let ms = getBoatWith(['demand', 'offer'], false);
+		let ms = getNextStartBoat();
+		if (nundef(ms)) ms = getBoatWith(['demand', 'offer'], false);
+		if (nundef(ms)) ms = getBoatWith(['buy'], true);
+		if (nundef(ms)) ms = getBoatWith(['pass'], true);
+		if (nundef(ms)) ms = getBoatWith(['demand', 'offer'], false);
+		if (nundef(ms)) ms = getRandomBoat();
+		onClickSelectTuple(null, ms);
+	}
+}
+function onClickToggleButton(button, handlerList) {
+	let current = button.textContent;
+	let idx = -1;
+	let i = 0;
+	for (const item of handlerList) {
+		if (item[0] == current) {
+			idx = i; break;
+		}
+		i += 1;
+	}
+	if (idx >= 0) {
+		let idxNew = (idx + 1) % handlerList.length;
+		button.textContent = handlerList[idxNew][0];
+		handlerList[idxNew][1]();
+	}
+}
 function onClickTTT() {
 	GAME = S.settings.game = 'ttt';
-	PLAYMODE = S.settings.playmode = 'hotseat'; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
-	S.gameConfig = gcs[GAME];
-	_startNewGame('starter');
-
-}
-function onClickCatan() {
-	GAME = S.settings.game = 'catan';
 	PLAYMODE = S.settings.playmode = 'hotseat'; // das wird in specAndDom gemacht! setPlaymode(currentPlaymode);
 	S.gameConfig = gcs[GAME];
 	_startNewGame('starter');
@@ -400,6 +417,17 @@ function _unhighlightAndMinify(ev, ms, partName) {
 	unhighlightMsAndRelatives(ev, ms, partName);
 }
 
+function robbedDescInBoats() {
+	for (const id of IdOwner.a) {
+		let boat = UIS[id];
+		let desc = boat.desc;
+		if (desc == 'robbed') {
+			console.log('skip robbed!');
+			return true;
+		}
+	}
+	return false;
+}
 
 
 

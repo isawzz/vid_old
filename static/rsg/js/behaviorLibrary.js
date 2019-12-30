@@ -4,12 +4,14 @@ function bgNum(k,v){
 }
 
 function showPlayerStats(plid, propName, areaName) {
-	console.log(getFunctionCallerName())
+	//console.log(getFunctionCallerName())
 
 	let oPlayer = G.playersAugmented[plid];
 	let oStatsVal = oPlayer[propName];
 	let msStats = UIS[getIdArea(areaName)];
-	console.log(oPlayer,oStatsVal,msStats);
+	//console.log(oPlayer,oStatsVal,msStats);
+
+	
 	// if (isSet(oCards)) oCards = oCards._set;
 	// //now oCards should be a list!
 	// if (!isListOfLiterals(oCards)) { alert('wrong format of cards property: ' + propName); }

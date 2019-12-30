@@ -76,12 +76,13 @@ function getBoatWith(lst, isGood = true) {
 			if (empty(lst.filter(x => b.o.text.includes(x)))) goodBoats.push(b);
 		}
 		//boats = boats.filter(x => empty(lst.filter(y => x.text.includes(y))));
-		return goodBoats.length > 0 ? chooseRandom(goodBoats) : getRandomBoat();
+		return goodBoats.length > 0 ? chooseRandom(goodBoats) : null;
 	} else {
 		for (const b of boats) {
 			if (!empty(lst.filter(x => b.o.text.includes(x)))) return b;
 		}
 	}
+	return null;
 }
 function strategicBoat(goodlist, badlist) {
 	let boats = getBoats();
