@@ -1,5 +1,5 @@
 var USERNAME = 'dwight';
-var GAME = 'catan'; // catan | ttt
+var GAME = 'ttt'; // catan | ttt
 var PLAYMODE = 'hotseat'; // multiplayer | hotseat | solo | passplay
 var SEED = 1;
 //var AI_TYPE = 'random';
@@ -41,6 +41,13 @@ var isReallyMultiplayer = false;
 
 var gcs = {
 	ttt: {
+		numPlayers: 2,
+		players: [
+			{ id: 'Player1', playerType: 'me', agentType: null, username: USERNAME },
+			{ id: 'Player2', playerType: 'me', agentType: null, username: USERNAME + '1' },
+		]
+	},
+	aristocracy: {
 		numPlayers: 2,
 		players: [
 			{ id: 'Player1', playerType: 'me', agentType: null, username: USERNAME },

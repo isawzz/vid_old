@@ -1,29 +1,20 @@
 #...#!/var/www/html/flask/scriptapp/scriptapp-venv/bin/python3
 
 #region imports
-import json
-import http
-import os
-import random
-import sys
-import time
-import traceback
-from collections import OrderedDict, namedtuple
-from itertools import chain, product
-from string import Formatter
-import numpy as np
 import argparse
-from flask import Flask, render_template, request, send_from_directory
-from flask_cors import CORS
+import http
+import json
+import os
+import sys
+import traceback
 
-import examples
+import exam #ples
 import gsm
-from gsm import jsonify
+from flask import Flask, request, send_from_directory
+from flask_cors import CORS
 from gsm.io.transmit import LstConverter, create_dir
 
-
 SAVE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saves')
-
 
 null = http.HTTPStatus.NO_CONTENT
 #endregion
@@ -269,7 +260,6 @@ def _get_active_players():
 #endregion
 
 #region login
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user, login_required
 
@@ -366,6 +356,7 @@ def userSpecPath(game,ext,v=None):
 	if v != None:
 		fname += '_'+v
 	path = os.path.join(rootPath, 'examples_front/' + game + '/' + fname + '_ui.' + ext)
+	path = os.path.join(rootPath, 'exam/' + game + '/_rsg/' + fname + '_ui.' + ext)
 	return path
 
 def ymlFile_jString(path):

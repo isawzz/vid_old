@@ -83,6 +83,7 @@ function setAreaWidth(areaName, w) {
 	if (UIS[areaName] && wNum) UIS[areaName].w = wNum;
 	//console.log('width of', areaName, w,wNum,wString);
 }
+
 function setAreaHeight(areaName, h) {
 	let varName = AREAS[areaName][1];
 	let hAttr = isNumber(h)? '' + h + 'px':h;

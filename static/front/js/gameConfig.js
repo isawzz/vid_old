@@ -7,7 +7,6 @@ var allGames1 = {
 		short_name: 'ttt',
 		num_players: [2],
 		player_names: ['Player1', 'Player2'],
-
 	},
 	catan: {
 		name: 'Catan',
@@ -15,7 +14,15 @@ var allGames1 = {
 		short_name: 'catan',
 		num_players: [3, 4],
 		player_names: ['White', 'Red', 'Blue', 'Orange'],
+	},
+	aristocracy: {
+		name: 'Aristocracy',
+		long_name: 'Aristocracy',
+		short_name: 'aristocracy',
+		num_players: [2, 3, 4, 5],
+		player_names: ['Player1', 'Player2', 'Player3', 'Player4', 'Player5'],
 	}
+
 };
 var allGames = allGames1;
 var numPlayersMin = 0;

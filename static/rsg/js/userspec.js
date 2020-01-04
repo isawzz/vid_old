@@ -166,6 +166,8 @@ function loadUserCode(callbacks = []) {
 	} else {
 		//console.log('code filename is:', fname)
 		S.path.script = '/examples_front/' + S.settings.game + '/' + fname + '.js';
+		S.path.script = '/exam/' + S.settings.game + '/_rsg/' + fname + '.js';
+		//S.path.script = '/exam/' + allGames[S.settings.game].name + '/' + fname + '.js';
 		loadScript(S.path.script, dScript => {
 			loadText(S.path.script, code => {
 				S.user.script = code;

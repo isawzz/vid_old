@@ -1,0 +1,20 @@
+SETTINGS:
+  gameAreaSize: [600, 600]
+  table:
+    optin: [symbol]
+  color:
+    theme: "#668dff"
+
+STRUCTURES:
+  P:
+    location: a_d_game
+    bounds: [0, 0, 600, 100, px]
+    color: '#0000000D'
+  M:
+    location: a_d_game
+    bounds: [0, 100, 600, 500, px]
+    structure: 
+      type: detectBoard
+
+CODE: aristocracy_ui
+
