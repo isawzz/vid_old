@@ -355,7 +355,7 @@ def userSpecPath(game,ext,v=None):
 	fname = game
 	if v != None:
 		fname += '_'+v
-	path = os.path.join(rootPath, 'examples_front/' + game + '/' + fname + '_ui.' + ext)
+	#path = os.path.join(rootPath, 'examples_front/' + game + '/' + fname + '_ui.' + ext)
 	path = os.path.join(rootPath, 'exam/' + game + '/_rsg/' + fname + '_ui.' + ext)
 	return path
 
