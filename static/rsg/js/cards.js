@@ -121,8 +121,8 @@ function _makeCardDiv(oid, o) {
 	//d.style.backgroundColor = randomColor();
 
 	let ch = iconChars[symbol];
-	let text=String.fromCharCode('0x'+ch);
-	let family=(ch[0]=='f'||ch[0]=='F')?'pictoFa':'pictoGame';
+	let text = String.fromCharCode('0x' + ch);
+	let family = (ch[0] == 'f' || ch[0] == 'F') ? 'pictoFa' : 'pictoGame';
 
 	d.innerHTML = `
 		<div class="card">
@@ -160,7 +160,7 @@ function minifyBack(id) {
 	_sendCardToBack(id)
 
 }
-function _bringCardToFront(id) { let elem = document.getElementById(id); maxZIndex+=1; elem.style.zIndex = maxZIndex; }
+function _bringCardToFront(id) { let elem = document.getElementById(id); maxZIndex += 1; elem.style.zIndex = maxZIndex; }
 function _sendCardToBack(id) { let c = UIS[id]; let elem = document.getElementById(id); elem.style.zIndex = c.zIndex; }
 function _repositionCards(hand) {
 	if (hand.numCards == 0) return;
