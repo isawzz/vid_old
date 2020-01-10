@@ -1,0 +1,10 @@
+
+name: empty
+long_name: Empty Game Example
+short_name: empty
+
+num_players: [2, 3, 4]
+player_names: [Player1, Player2, Player3, Player4]
+
+
+

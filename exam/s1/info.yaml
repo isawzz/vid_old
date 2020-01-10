@@ -1,0 +1,10 @@
+
+name: s1
+long_name: s1
+short_name: s1
+
+num_players: [2,3,4,5]
+player_names: [Player1, Player2, Player3, Player4, Player5]
+
+
+

@@ -5,13 +5,13 @@ function presentTable() {
 	_tableCreateNew();
 	_tableUpdate();
 }
-function _tableRemove(){
+function _tableRemove() {
 	for (const oid of G.tableRemoved) {
 		//console.log('deleting all related to', oid)
 		deleteOid(oid);
 	}
 }
-function _tableCreateNew(){
+function _tableCreateNew() {
 	for (const oid of G.tableCreated) {
 		let o = G.table[oid];
 
@@ -42,7 +42,7 @@ function _tableCreateNew(){
 
 	}
 }
-function _tableUpdate(){
+function _tableUpdate() {
 	for (const oid in G.tableUpdated) {
 		let o = G.table[oid];
 
@@ -83,7 +83,7 @@ function presentPlayers() {
 	_playersCreateNew();
 	_playersUpdate();
 }
-function _playersCreateNew(){
+function _playersCreateNew() {
 	//creation of new players
 	for (const pid of G.playersCreated) {
 
@@ -105,7 +105,7 @@ function _playersCreateNew(){
 		}
 	}
 }
-function _playersUpdate(){
+function _playersUpdate() {
 	//presentation of existing changed players 
 	for (const pid in G.playersUpdated) {
 		let pl = G.playersAugmented[pid];
@@ -189,6 +189,7 @@ function presentLog() {
 	//console.log('.......',logId,UIS[logId],d)
 	let BASEMARGIN = 16;
 	for (const k of G.logUpdated) {
+	//for (const k in G.log[pl]) {
 		let logEntry = G.log[pl][k];
 		let lineArr = logEntry.line;
 		let lineDiv = document.createElement('div');
@@ -268,6 +269,7 @@ function presentWaitingFor() {
 		//now waiting for a new player!!!
 		//update page header with that player and set G.previousWaitingFor
 		G.previousWaitingFor = pl;
+		console.log('presenting waiting for', pl)
 		_updatePageHeader(pl);
 	}
 	if (S.settings.playmode != 'passplay' && (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player))) {
@@ -312,7 +314,7 @@ function _onPlayerChange(pid) {
 	if (!G.playerChanged || pid != G.player) return;
 	//console.log('player has changed!!!!!!!!!!!!!!!!!!!!!!!!!')
 	let o = G.playersAugmented[pid];
-	//console.log(pid, o);
+	console.log('presenting player change', pid, o);
 	_updatePageHeader(pid);
 	if (G.previousPlayer) _updateLogArea(G.previousPlayer, pid);
 	let ms = getVisual(pid);
@@ -336,6 +338,7 @@ function _updatePageHeader(pid) {
 		ms = getPageHeaderDivForPlayer(pl.id);
 		ms.classList.remove('gamePlayer');
 	}
+	console.log('oid', pid)
 	ms = getPageHeaderDivForPlayer(pid);
 	ms.classList.add('gamePlayer');
 }
@@ -393,7 +396,7 @@ function computePresentedKeys(o, isTableObject) {
 	if (S.settings.useExtendedOptout) {
 		let keys = [];
 		optout = S.settings.extendedOptout;
-		for (const k in o) {			if (optout[k]) continue;			keys.push(k);		}
+		for (const k in o) { if (optout[k]) continue; keys.push(k); }
 		return keys;
 	}
 

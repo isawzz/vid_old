@@ -4,10 +4,11 @@ from gsm.common import TurnPhase
 from gsm import SwitchPhase
 from gsm import tset, tdict, tlist
 
+# counterOfLogs=0
 class TicPhase(TurnPhase):
 	
 	def execute(self, C, player=None, action=None):
-		
+		# global counterOfLogs
 		if action is not None:
 			
 			# update map
@@ -21,8 +22,11 @@ class TicPhase(TurnPhase):
 			loc.player = player
 			
 			# C.log.write(player, 'places at: {}, {}'.format(*action))
+			print('log','{} chooses {}'.format(player, loc))
+			# C.log.writef('hallo {}',counterOfLogs) #'{} chooses {}', player, loc)
+			# counterOfLogs += 1
 			C.log.writef('{} chooses {}', player, loc)
-			
+
 			# check for victory
 			winner = C.state.board.check()
 			if winner != 0:

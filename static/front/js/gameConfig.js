@@ -8,6 +8,20 @@ var allGames1 = {
 		num_players: [2],
 		player_names: ['Player1', 'Player2'],
 	},
+	s1: {
+		name: 's1',
+		long_name: 's1',
+		short_name: 's1',
+		num_players: [2,3,4,5],
+		player_names: ['Player1', 'Player2', 'Player3', 'Player4', 'Player5'],
+	},
+	starter: {
+		name: 'Starter',
+		long_name: 'Starter',
+		short_name: 'starter',
+		num_players: [2],
+		player_names: ['Player1', 'Player2'],
+	},
 	catan: {
 		name: 'Catan',
 		long_name: 'The Settlers of Catan',
@@ -24,7 +38,8 @@ var allGames1 = {
 	}
 
 };
-var allGames = allGames1;
+
+var allGames = null; //allGames1;
 var numPlayersMin = 0;
 var numPlayersMax = 8;
 var currentSeed;
@@ -51,8 +66,7 @@ function closeGameConfig() {
 	hideElem('bLobbyOk');
 	hideElem('bLobbyCancel');
 }
-function openGameConfig() {
-
+function ensureAllGames(callback){
 	if (allGames == null) {
 		_sendRoute('/game/available', d => {
 			let glist = JSON.parse(d);
@@ -71,10 +85,14 @@ function openGameConfig() {
 				//console.log(typeof (info), info);
 				allGames = info;
 				console.log(allGames);
-				proceedToConfig();
+				callback();
 			})
 		})
-	} else proceedToConfig();
+	} else callback();
+
+}
+function openGameConfig() {
+	ensureAllGames(proceedToConfig)
 }
 function proceedToConfig() {
 	populateGamenames();

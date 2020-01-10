@@ -1,0 +1,15 @@
+SETTINGS:
+  gameAreaSize: [600, 600]
+  table:
+    optin: [symbol]
+  color:
+    theme: "#668dff"
+
+STRUCTURES:
+  M:
+    location: a_d_game
+    bounds: [0, 0, 600, 600, px]
+    color: '#0000000D'
+
+CODE: starter_ui
+

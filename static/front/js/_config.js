@@ -1,5 +1,5 @@
-var USERNAME = 'dwight';
-var GAME = 'ttt'; // catan | ttt
+var USERNAME = 'felix';
+var GAME = 'empty'; // s1 | catan | ttt | empty
 var PLAYMODE = 'hotseat'; // multiplayer | hotseat | solo | passplay
 var SEED = 1;
 //var AI_TYPE = 'random';
@@ -39,8 +39,42 @@ var view = null;
 var isPlaying = false; //initially
 var isReallyMultiplayer = false;
 
+
+function gcsAuto(){
+	gcs = {};
+	for (const gName in allGames){
+		let info = allGames[gName]
+		console.log(gName, info);
+		let nPlayers = info.num_players[info.num_players.length - 1]; // max player number
+		let pls = [];
+		for(let i=0;i<nPlayers;i++){
+			let pl = {id:info.player_names[i],playerType:'me',agentType:null,username:USERNAME+(i>0?i:'')};
+			console.log('player:', pl)
+			pls.push(pl);
+		}
+		gcs[gName]={numPlayers:nPlayers,players:pls};
+
+	}
+	console.log('-------------------',gcs);
+}
 var gcs = {
 	ttt: {
+		numPlayers: 2,
+		players: [
+			{ id: 'Player1', playerType: 'me', agentType: null, username: USERNAME },
+			{ id: 'Player2', playerType: 'me', agentType: null, username: USERNAME + '1' },
+		]
+	},
+	s1: {
+		numPlayers: 4,
+		players: [
+			{ id: 'Player1', playerType: 'me', agentType: null, username: USERNAME },
+			{ id: 'Player2', playerType: 'me', agentType: null, username: USERNAME + '1' },
+			{ id: 'Player3', playerType: 'me', agentType: null, username: USERNAME + '2' },
+			{ id: 'Player4', playerType: 'me', agentType: null, username: USERNAME + '3' },
+		]
+	},
+	starter: {
 		numPlayers: 2,
 		players: [
 			{ id: 'Player1', playerType: 'me', agentType: null, username: USERNAME },

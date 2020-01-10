@@ -1,0 +1,6 @@
+
+characters: X O A N +
+vals: 2 3 5 7 11
+
+side_length: 5
+stride_length: 3

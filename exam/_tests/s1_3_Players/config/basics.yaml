@@ -1,0 +1,8 @@
+
+characters:
+  p1: X
+  p2: O
+  p3: A
+
+side_length: 5
+stride_length: 3

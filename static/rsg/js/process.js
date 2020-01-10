@@ -150,6 +150,7 @@ function processPlayers(data) {
 	}
 	return canProceed;
 }
+var logCounter=0;
 function processLog(data) {
 	if (!G.log) G.log = {}; 
 	let pl = G.player;
@@ -158,8 +159,12 @@ function processLog(data) {
 	G.logUpdated = []; //keys to new logs
 	if (isdef(data.log)) {
 		for (const logEntry of data.log) {
+
 			//save this log so it isnt created multiple times!!!
-			let key = logEntry.line.map(x => isSimple(x) ? x : x.val).join(' ');
+			//let key = logEntry.line.map(x => isSimple(x) ? x : x.val).join(' ');
+			let key = ''+logCounter+'_'+logEntry.line.map(x => isSimple(x) ? x : x.val).join(' ');
+			logCounter += 1;
+			
 			if (dict[key]) continue;
 			dict[key] = logEntry;
 			G.logUpdated.push(key);

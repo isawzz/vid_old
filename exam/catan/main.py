@@ -34,7 +34,8 @@ class Catan(gsm.GameController):
 		                 log=log,
 		                 info_path=os.path.join(MY_PATH, 'info.yaml'),
 		                 # settings
-		                 shuffle_order=shuffle_order, player_names=player_names)
+		                 shuffle_order=shuffle_order,
+		                 player_names=player_names)
 		
 		# register config files
 		self.register_config('rules', os.path.join(MY_PATH, 'config/rules.yaml'))
@@ -47,7 +48,7 @@ class Catan(gsm.GameController):
 		self.register_obj_type(name='hex', obj_cls=Hex)
 		
 		self.register_obj_type(name='devcard', obj_cls=DevCard,
-		                       req={'name', 'desc'},)
+		                       req={'name', 'desc'},) #do not use req
 		self.register_obj_type(name='devdeck', obj_cls=Deck)
 		self.register_obj_type(name='robber', open={'loc'})
 		

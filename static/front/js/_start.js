@@ -25,11 +25,18 @@ function _start() {
 			//_startLogin(); login(chooseRandom(names)); openGameConfig();
 
 			//commandChain=[()=>onClickCheat('devcard'),onClickRunToNextPhase];
-			S.gameConfig = gcs[GAME];	_startNewGame('starter'); //START HERE!!!!
+			
+
+			ensureAllGames(() => {
+				gcsAuto();
+				S.gameConfig = gcs[GAME];
+				_startNewGame('starter');
+			}
+			); //START HERE!!!!
 
 
 			//testLines();
-			
+
 			//testShapes();
 			//testNewMSAPI();
 			//stressTest();

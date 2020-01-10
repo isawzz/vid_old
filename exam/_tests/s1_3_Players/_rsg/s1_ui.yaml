@@ -1,0 +1,16 @@
+SETTINGS:
+  gameAreaSize: [600, 600]
+  table:
+    optin: [symbol]
+  color:
+    theme: "#ff8dff"
+
+STRUCTURES:
+  M:
+    location: a_d_game
+    bounds: [0, 0, 600, 600, px]
+    structure: 
+      type: detectBoard
+
+CODE: s1_ui
+

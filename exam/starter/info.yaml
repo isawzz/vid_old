@@ -1,0 +1,10 @@
+
+name: Starter
+long_name: Starter
+short_name: starter
+
+num_players: [2]
+player_names: [Player1, Player2]
+
+
+
