@@ -1,12 +1,12 @@
 //convert data to various objects in G and M >pre-UI processing
 function processData(data) {
-	if (G.end){
+	if (G.end) {
 		//noch von voriger runde!
-		console.log(USERNAME,'has G.end!!!!')
+		console.log(USERNAME, 'has G.end!!!!')
 		stopBlinking('a_d_status');
 		stopInteraction();
 		clearLog();
-		console.log('signals:',G.signals)
+		console.log('signals:', G.signals)
 		//delete G.signals.receivedEndMessage;
 	}
 	S.gameInProgress = true;
@@ -124,9 +124,9 @@ function processPlayers(data) {
 					canProceed = true;
 				} else {
 					console.log('this must be multiplayer mode!!! OR i will never get here hopefully!!!!!!!!!!!!!!!!')
-					console.log('playmode:',PLAYMODE,S.settings.playmode);
-					console.log('I am',G.player,'player changed:',G.playerChanged)
-					console.log('processPlayers: waiting for',G.serverData.waiting_for);
+					console.log('playmode:', PLAYMODE, S.settings.playmode);
+					console.log('I am', G.player, 'player changed:', G.playerChanged)
+					console.log('processPlayers: waiting for', G.serverData.waiting_for);
 					console.log('NOT MY TURN!!! HAVE TO WAIT!!!');
 				}
 
@@ -150,11 +150,11 @@ function processPlayers(data) {
 	}
 	return canProceed;
 }
-var logCounter=0;
+var logCounter = 0;
 function processLog(data) {
-	if (!G.log) G.log = {}; 
+	if (!G.log) G.log = {};
 	let pl = G.player;
-	if (!G.log[pl]) G.log[pl]={};
+	if (!G.log[pl]) G.log[pl] = {};
 	let dict = G.log[pl];
 	G.logUpdated = []; //keys to new logs
 	if (isdef(data.log)) {
@@ -162,9 +162,9 @@ function processLog(data) {
 
 			//save this log so it isnt created multiple times!!!
 			//let key = logEntry.line.map(x => isSimple(x) ? x : x.val).join(' ');
-			let key = ''+logCounter+'_'+logEntry.line.map(x => isSimple(x) ? x : x.val).join(' ');
+			let key = '' + logCounter + '_' + logEntry.line.map(x => isSimple(x) ? x : x.val).join(' ');
 			logCounter += 1;
-			
+
 			if (dict[key]) continue;
 			dict[key] = logEntry;
 			G.logUpdated.push(key);
@@ -195,56 +195,29 @@ function processWaitingFor() {
 	//console.log('change player to ',G.serverData.waiting_for[0]);
 	//error('Missed player change!'); //TODO: geht nur 1 action + fixed player order
 }
+function getTupleGroups() {
+	let act = G.serverData.options;
 
-//#region tuple helpers
-function handleSet(x) {
-	//console.log('handleSet')
-	let irgend = x.map(exp);
+	//console.log('options', act)
+	// json_str = JSON.stringify(act);
+	// saveFile("yourfilename.json", "data:application/json", new Blob([json_str], { type: "" }));
 
-	//soll list von list of actions returnen
-	let res = stripSet(irgend);
-	//console.log('set returns',res)
-	return res;
-	// //console.log(irgend)
-	// //console.log(tsRec('irgend',irgend))
-}
-function multiCartesi() {
-	//each arg is a list of list
-	let arr = Array.from(arguments);
-	if (arr.length > 2) {
-		return cartesi(arr[0], stripSet(multiCartesi(...arr.slice(1))));
-	} else if (arr.length == 2) return cartesi(arr[0], arr[1]);
-	else if (arr.length == 1) return arr[0];
-	else return [];
-}
-function extractTuples(x) {
+	let tupleGroups = [];
+	for (const desc in act) {
+		let tg = { desc: desc, tuples: [] };
+		//let tuples = expand99(act[desc].actions);
+		let tuples = expand1_99(act[desc].actions);
+		//console.log('*** ', desc, '........tuples:', tuples);
 
-	if (isList(x))
-		if (isListOfListOfActions(x)) return x;
-	return isList(x) && x.length > 0 ? stripSet(x[0]) : x;
+		if (tuples.length == 1 && !isList(tuples[0])) tuples = [tuples];
+		//console.log(tuples)
+		tg.tuples = tuples;
+		tupleGroups.push({ desc: desc, tuples: tuples });
+	}
+	//console.log('tupleGroups', tupleGroups);
+	return tupleGroups;
 }
-function stripSet(x) {
-	if (isListOfListOfActions(x)) return x;
-	else if (isActionElement(x)) return [[x]];
-	else if (isList(x) && isActionElement(x[0])) return [x];
-	else return [].concat(...x.map(stripSet));
-	//return isList(x)&&x.length>0?stripSet(x[0]):x;
-}
-function isListOfListOfActions(x) {
-	return isList(x) && x.length > 0 && isList(x[0]) && x[0].length > 0 && isActionElement(x[0][0]);
-}
-function handleTuple(x) {
-	//console.log('handleTuple')
-
-	let irgend = x.map(exp);//console.log('irgend',tsRec(irgend))
-	//supposedly, irgend contains lists of action elements
-	//these should be combined via cartesian
-	return multiCartesi(...irgend);
-}
-
-function handleAction(x) {
-	return [[x]];
-}
+//#region gebraucht fuer getTupleGroups
 function expand1_99(x) {
 	//console.log('input', tsRec(x))
 	if (isDict(x)) {
@@ -259,144 +232,49 @@ function expand1_99(x) {
 		} else { error('IMPOSSIBLE OBJECT', x); return null; }
 	} else { error('IMPOSSIBLE TYPE', x); return null; }
 }
-//toString
-function tsRec(x) {
-	//console.log('input',x)
-	if (isList(x)) { return '[' + x.map(tsRec).join('') + ']'; }
-	if (isDict(x)) {
-		if ('_set' in x) {
-			return '{' + tsRec(x._set) + '}';
-		} else if ('_tuple' in x) {
-			return '(' + tsRec(x._tuple) + ')'
-		} else if ('type' in x) {
-			return tsAction(x)
-		} else { return 'obj unknown'; }
-	} else return 'type unknown';
-}
-function tsAction(x) { if ('ID' in x) return x.ID; else return x.val; }
-
-function findPool(id) {
-	if (G.players[id]) return G.playersAugmented;
-	else if (G.table[id]) return G.table;
-}
-
-function getGamePlayer() {
-	for (const k in G.playersAugmented) {
-		o = G.playersAugmented[k];
-		if (o.obj_type == 'GamePlayer') return o;
-	}
-}
-function sysColor(iPalette, ipal) { return S.pals[iPalette][ipal]; }
-function t2(act) {
-	let res = [];
-	for (const key in act) {
-		let data = act[key].actions;
-		//console.log('data', data);
-		let e = exp(data);
-		//console.log(e)
-		res.push(e)
-	}
+function handleSet(x) {
+	let irgend = x.map(expand1_99);
+	let res = stripSet(irgend);
 	return res;
 }
-
-
-function t1() {
-	let a1 = { type: 1 };
-	let a2 = { type: 2 };
-	let a3 = { type: 3 };
-	let a = {
-		tic: {
-			actions:
-			{
-				_set:
-					[{ _tuple: [{ _set: [a1, a2, a3] }] }]
-			}
-		}
-	};
+function handleTuple(x) {
+	let irgend = x.map(expand1_99);
+	return multiCartesi(...irgend);
 }
-var cnt = 0;
-function exp_dep(data) {
-	//console.log('' + cnt + ": ", data); cnt += 1;
-	if (isDict(data) && 'type' in data) {
-		//console.log('returning', [data])
-		return [data];
-	}
-	if (is_Set(data) && data._set.length == 1) {
-		//console.log('returning', data._set[0])
-		return exp(data._set[0]);
-	}
-	if (is_Set(data) && data._set.length > 1) {
-		//console.log('returning', data._set.map(exp));
-		return data._set.map(exp);
-	}
-	if (is_Tuple(data) && data._tuple.length == 1) {
-		//console.log('returning', exp(data._tuple[0]))
-		return exp(data._tuple[0]);
-	}
-	if (is_Tuple(data) && data._tuple.length > 1) data = data._tuple;
-	if (isList(data) && empty(data)) return [];
-	if (isList(data) && data.length == 1) return exp(data[0])
-	if (isList(data)) {
-		let a = exp(data[0]); //this is a list of tuples
-		let rest = data.slice(1);
-		let tlist = exp(rest);
-		//console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>returning', a, tlist, carteset(a, tlist))
-		return carteset(a, tlist);
-
-	}
+function handleAction(x) {
+	return [[x]];
 }
-
-
-function expand99(e) {
+function isActionElement(x) {
+	return typeof x == 'object' && 'type' in x;
+}
+function isListOfListOfActions(x) {
+	return isList(x) && x.length > 0 && isList(x[0]) && x[0].length > 0 && isActionElement(x[0][0]);
+}
+function cartesi(l1, l2) {
+	//l1,l2 are lists of list
 	let res = [];
-	e = expand1_99(e);
-	for (const el of e) {
-		if (isll(el)) el.map(x => res.push(x));
-		else res.push(el);
-	}
-	return res;
-}
-function isListOfActions(l) {
-	return isList(l) && !empty(l) && isActionElement(l[0]);
-}
-function extractActionLists(lst) {
-	//console.log(lst);
-	let res = [];
-	for (const l of lst) {
-		if (isListOfActions(l)) res.push(l);
-		else if (isActionElement(l)) res.push([l]);
-		else {
-			let r2 = extractActionLists(l);
-			r2.map(x => res.push(x));
+	for (var el1 of l1) {
+		for (var el2 of l2) {
+			res.push(el1.concat(el2));
 		}
 	}
 	return res;
 }
-var exp = expand1_99;
-
-function getTupleGroups() {
-	let act = G.serverData.options;
-
-	//console.log('options', act)
-	// json_str = JSON.stringify(act);
-	// saveFile("yourfilename.json", "data:application/json", new Blob([json_str], { type: "" }));
-
-	let tupleGroups = [];
-	for (const desc in act) {
-		let tg = { desc: desc, tuples: [] };
-		//let tuples = expand99(act[desc].actions);
-		let tuples = exp(act[desc].actions);
-		//console.log('*** ', desc, '........tuples:', tuples);
-
-		if (tuples.length == 1 && !isList(tuples[0])) tuples = [tuples];
-		//console.log(tuples)
-		tg.tuples = tuples;
-		tupleGroups.push({ desc: desc, tuples: tuples });
-	}
-	//console.log('tupleGroups', tupleGroups);
-	return tupleGroups;
+function multiCartesi() {
+	//each arg is a list of list
+	let arr = Array.from(arguments);
+	if (arr.length > 2) {
+		return cartesi(arr[0], stripSet(multiCartesi(...arr.slice(1))));
+	} else if (arr.length == 2) return cartesi(arr[0], arr[1]);
+	else if (arr.length == 1) return arr[0];
+	else return [];
+}
+function stripSet(x) {
+	if (isListOfListOfActions(x)) return x;
+	else if (isActionElement(x)) return [[x]];
+	else if (isList(x) && isActionElement(x[0])) return [x];
+	else return [].concat(...x.map(stripSet));
+	//return isList(x)&&x.length>0?stripSet(x[0]):x;
 }
 
 
-
-//#endregion

@@ -6,7 +6,7 @@ window.onbeforeunload = () => { if (loggedIn) logout(); };
 function onLoginSubmitted(e) {
 	e.preventDefault();
 	let name = getInputValue('login');
-	if (empty(name)) name = chooseRandom(names);
+	if (isEmpty(name)) name = chooseRandom(names);
 	login(name);
 }
 function onClickLogout() { logout(); }

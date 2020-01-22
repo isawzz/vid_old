@@ -126,9 +126,9 @@ function _initAutoplayToActionButtons() {
 function _initCheatButtons() {
 	let areaName = 'a_d_cheat_buttons';
 	let kws = lookup(S.settings, ['dev', 'cheat_buttons']);
-	if (!kws) { hideElem(areaName); return; }
+	if (!kws) { hide(areaName); return; }
 
-	showElem(areaName);
+	show(areaName);
 	let d = document.getElementById(areaName);
 	let buttons = [...d.children];
 	let kwKeys = getKeys(kws);

@@ -27,14 +27,14 @@ function sendInitNewGame() {
 	let gc = S.gameConfig;
 	let nPlayers = gc.numPlayers;
 
-	console.log('___________________',gc,nPlayers);
+	//console.log('___________________',gc,nPlayers);
 
 	//TODO: mach chain commands: [[f,route,data],...]
 	let cmdChain = [];
 	let chain = [];
 	for (let i = 0; i < nPlayers; i++) {
 		let plInfo = gc.players[i];
-		console.log('PL_INFO:',plInfo)
+		//console.log('PL_INFO:',plInfo)
 		let isAI = plInfo.agentType !== null;
 		let isBackendAI = USE_BACKEND_AI && isAI;
 		if (isBackendAI) {
@@ -97,10 +97,10 @@ function sendAction(boat, callbacks = []) {
 		//console.log(data)
 		data = JSON.parse(data)
 		processData(data);
-		if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 
 		// if (processData(data)) {
-		// 	if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		// 	if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 		// } else console.log('sendAction: NOT MY TURN!!!! WHAT NOW?!?!?\n', data);
 
 	});

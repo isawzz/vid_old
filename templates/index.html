@@ -15,6 +15,7 @@
 </head>
 
 <body>
+	<!-- <body  onresize="myFunction()"> -->
 	<script>
 		window.onload = () => _start(); // _start |
 
@@ -25,7 +26,7 @@
 			'clear',
 			'gameConfig',
 			'gameStep',
-			'helpers', //TODO: gehoert mal ausgemistet!!!
+			'helpers', //old helpers is now: helpers_19
 			'identity',
 			'login',
 			'server',
@@ -291,6 +292,7 @@
 			<br />
 			<button id='c_b_ttt' onclick="onClickTTT()">ttt</button>
 			<button id='c_b_catan' onclick="onClickCatan()">catan</button>
+			<button id='c_b_areaSizes' style='display:none' onclick="onClickAreaSizes()">sz info</button>
 			<br />
 			<br />
 			<!-- <button id='c_b_CheatDev' onclick="onClickCheat('devcard')">cheat devcard</button>
@@ -298,7 +300,7 @@
 
 			<button id='c_b_Pass' style='display:none' onclick="onClickPass()">pass</button>
 			<button onclick="onClickToggleButton(this,[['view:default',fullViewObjects],['view:minimized',minimizeObjects]])">view:default</button>
-			<div id='tempFreezer' class='hidden'>
+			<div id='tempFreezer' style='display:none'>
 				<h1>processing...</h1>
 				<button id='bStop' class='buttonSpecial' onclick="onClickStop()">STOP!</button>
 

@@ -5,9 +5,6 @@
 .hit_invisible {
 	pointer-events: none;
 }
-.hidden {
-	display: none;
-}
 .mouseDisabled {
 	pointer-events: none;
 }

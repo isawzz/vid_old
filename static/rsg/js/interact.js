@@ -84,14 +84,14 @@ function onClickFilterTuples(ev, ms, part) {
 		removeInPlace(boatFilters, id);
 		let relids = getList(id2uids[id]);
 		let boats = relids.filter(x => x[2] == 'a');
-		if (empty(boats)) { return; } // no effect!
+		if (isEmpty(boats)) { return; } // no effect!
 		for (const bid of boats) { if (!fi.includes(bid)) { _showBoat(bid); } }//show boats that have been filtered out but do not contain any of the other filters
 	} else {
 		let relids = getList(id2uids[id]);
 		//console.log(relids)
 		let boats = relids.filter(x => x[2] == 'a');
 		//console.log(boats)
-		if (empty(boats)) { return }//console.log('no boat!'); return; } // no effect!
+		if (isEmpty(boats)) { return }//console.log('no boat!'); return; } // no effect!
 
 		if (boats.length == 1) {
 			//console.log(boats[0])
@@ -211,7 +211,7 @@ function getNextStartBoat() {
 			}
 		}
 	}
-	console.log(startBoats)
+	//console.log(startBoats)
 	return ms;
 }
 function onClickStep() {
@@ -282,12 +282,12 @@ function minimizeObjects() { let ids = getDefaultObjectIds(); ids.map(x => UIS[x
 function freezeUI() {
 	if (frozen) return;
 	frozen = true;
-	show(document.getElementById('tempFreezer'));
+	show('tempFreezer');
 }
 function unfreezeUI() {
 	if (!frozen) return;
 	frozen = false;
-	hide(document.getElementById('tempFreezer'));
+	hide('tempFreezer');
 }
 function hideTooltip() { $('div#tooltip').css({ display: 'none' }); }
 

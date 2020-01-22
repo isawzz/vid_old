@@ -28,7 +28,7 @@ function socketEmitMessage(msg) {
 function socketEmitChat(msg = '') {
 	if (!USE_SOCKETIO) return;
 	let text = msg + getInputValue('chat');
-	if (!empty(text)) { socket.emit('chat', text); }
+	if (!isEmpty(text)) { socket.emit('chat', text); }
 }
 
 function onMessageReceived(d) { if (!USE_SOCKETIO) return; processMessage(d); }

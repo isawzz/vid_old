@@ -20,7 +20,7 @@ function gameStep() {
 	DELETED_THIS_ROUND = [];
 	timit.showTime('start presentation!');
 
-	console.log(jsCopy(G.serverData))
+	//console.log(jsCopy(G.serverData))
 
 	presentTable();
 
@@ -38,7 +38,7 @@ function gameStep() {
 
 		//testingMS();
 
-		// if (!empty(commandChain)) {
+		// if (!isEmpty(commandChain)) {
 		// 	let nextCommand = commandChain.shift();
 		// 	//unitTestGameloop('____________COMMAND=0/' + execOptions.commandChain.length, nextCommand.name);
 		// 	nextCommand();

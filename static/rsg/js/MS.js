@@ -217,10 +217,10 @@ class RSG {
 		weight = ''
 	} = {}) {
 
-		//console.log('MS.text: family:',family)
+		//console.log('MS.text: family:',family,'txt',txt)
 		if (this.cat == 'd') {
 
-			if (empty(txt)) {
+			if (isEmpty(txt)) {
 				//console.log('erasing...')
 				this.elem.innerHTML = ''; return this;
 			}
@@ -236,7 +236,8 @@ class RSG {
 			return this;
 		}
 
-		if (empty(txt)) {
+		if (isdef(txt) && !isString(txt)) txt=txt.toString();
+		if (isEmpty(txt)) {
 			//console.log('erasing...')
 
 			this.removeTexts(); return this;
@@ -297,6 +298,7 @@ class RSG {
 		r.textContent = txt;
 		r.setAttribute('pointer-events', 'none'); // geht!!!!!!
 
+		//console.log('texts',this.texts.length,'replaceFirst',replaceFirst,'txt',txt)
 		if (replaceFirst && this.texts.length > 0) {
 			let ch = this.texts[0].el; //findChildOfType('text', this.elem);
 
@@ -310,11 +312,14 @@ class RSG {
 			if (this.isLine && !isMultiText) {
 				this.elem.appendChild(this.textBackground);
 			}
+			//console.log('mache appendChild mit ',txt)
 			this.elem.appendChild(r);
 		}
 
 		let res = { el: r, w: wText };
 		this.texts.push(res);
+		//console.log('MS.text done: res',res)
+		//console.log(r)
 		return res;
 	}
 	reduceFontSize(el, n) {
@@ -784,7 +789,7 @@ class RSG {
 	//#endregion
 
 	//#region css classes
-	addClass(clName,el) {
+	addClass(el,clName) {
 		if (nundef(el)) el = this.overlay?this.overlay:this.ground;
 		if (!el) return;
 
@@ -792,11 +797,13 @@ class RSG {
 	}
 	getClass() {
 		if (this.overlay) {
-			return this.overlay.getAttribute('class');
+			return getClass(this.overlay);
+		}else if (this.ground){
+			return this.getClass(this.ground);
 		}
 		return null;
 	}
-	removeClass(clName,el) {
+	removeClass(el,clName) {
 		if (nundef(el)) el = this.overlay?this.overlay:this.ground;
 
 		//let el = this.overlay;
@@ -936,7 +943,7 @@ class RSG {
 			if (this.isPicto) {
 				this.setTextFill(this.picto, '#ccff00', 1);//.elem.addClass('high',this.ground); 
 				//console.log('high', this.id, this.ground);
-			} else addClass('high', this.overlay);
+			} else addClass(this.overlay,'high');
 		} else part.style.backgroundColor = '#ccff00';
 
 		// if (this.isLine) {
@@ -952,7 +959,11 @@ class RSG {
 			if (this.isPicto) {
 				//this.removeClass('high',this.ground); 
 				this.setTextFill(this.picto, this.orig.fg, 1);//.elem.addClass('high',this.ground); 
-			} else removeClass('high', this.overlay);
+			} else {
+				//console.log('overlay',this.overlay)
+				//if (isdef(this.overlay)) console.log(this.overlay.classList)
+				removeClass(this.overlay,'high');
+			}
 
 			//removeClass('high', this.overlay);
 		} else { let bg = part.bg; if (nundef(bg)) bg = null; part.style.backgroundColor = bg; }
@@ -960,27 +971,25 @@ class RSG {
 	highFrame(pname = 'elem', elIfMiss = true) {
 		let part = this._getPart(pname, elIfMiss);
 		if (!part) return;
-		if (this.isLine) this.addClass('lineHighFrame', this.overlay);
+		if (this.isLine) this.addClass(this.overlay,'lineHighFrame');
 		else if (this.isPicto) {
-			this.addClass('high',this.ground); 
+			this.addClass(this.ground,'high'); 
 			//this.setTextFill(this.picto, '#ccff00', 1);
 		}else if (this.isa.field){
-			this.addClass('fieldHighFrame', this.overlay);
+			this.addClass(this.overlay,'fieldHighFrame');
 		}
-		else addClass('highFrame', this.cat == 'g' ? this.overlay : this.parts['title'])
-		// if (this.cat == 'g') addClass('highFrame',this.overlay);
-		// else part.style.backgroundColor = colorTrans('#ccff00');
+		else addClass(this.cat == 'g' ? this.overlay : this.parts['title'],'highFrame')
 	}
 	unhighFrame(pname = 'elem', elIfMiss = true) {
 		let part = this._getPart(pname, elIfMiss);
 		if (!part) return;
-		if (this.isLine) this.removeClass('lineHighFrame', this.overlay);
+		if (this.isLine) this.removeClass(this.overlay,'lineHighFrame');
 		else if (this.isPicto) {
-			this.removeClass('high',this.ground); 
+			this.removeClass(this.ground,'high'); 
 			//this.setTextFill(this.picto, this.orig.fg, 1);//.elem.addClass('high',this.ground); 
 		}else if (this.isa.field){
-			this.removeClass('fieldHighFrame', this.overlay);
-		}	else removeClass('highFrame', this.cat == 'g' ? this.overlay : this.parts['title'])
+			this.removeClass(this.overlay,'fieldHighFrame');
+		}	else removeClass(this.cat == 'g' ? this.overlay : this.parts['title'],'highFrame')
 		// removeClass('highFrame',this.cat=='g'?this.overlay:this.parts['title'])
 		// if (this.cat == 'g') removeClass('highFrame',this.overlay);
 		// else { let bg = part.bg; if (nundef(bg)) bg = null; part.style.backgroundColor = bg; }
@@ -1307,7 +1316,7 @@ class RSG {
 			this.parts[key] = tNew;
 		}
 
-		if (!empty(res)) {
+		if (!isEmpty(res)) {
 			makeRefs(this.id, res.refs);
 			this.refs[key] = rNew; //keep list of refs for key
 			//console.log(this.id,key,this.refs[key])
@@ -1335,7 +1344,7 @@ class RSG {
 			this.parts[key] = tNew;
 		}
 
-		if (!empty(res)) {
+		if (!isEmpty(res)) {
 			makeRefs(this.id, res.refs);
 			this.refs[key] = rNew; //keep list of refs for key
 		}

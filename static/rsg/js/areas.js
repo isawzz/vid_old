@@ -1,4 +1,4 @@
-var ROOT = null; //root of UIS domId('root')
+var ROOT = null; 
 const AREAS = {
 	a_d_action_header: ['--wActions', '--hStatus'],
 	a_d_status: ['--wGame', '--hStatus'],
@@ -14,6 +14,56 @@ const AREAS = {
 
 	a_d_player:['--wPlayers','--hGame'],
 }
+function zoom(percent) {
+	console.log('zoom level',percent)
+	document.body.style.zoom = ''+percent+"%";
+}
+function onClickAreaSizes(){
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+	console.log('_____________',width,height);
+	let zoomlevel=calcScreenSizeNeeded();
+	console.log(zoomlevel)
+	zoom(zoomlevel);
+}
+function calcScreenSizeNeeded(){
+
+	let wAreas = ['a_d_actions','a_d_game','a_d_player','a_d_log'];
+	let wTotal=0;
+	let wTotal2=0;
+	
+	for(const a of wAreas){
+		let ms = UIS[a];
+		let wSoll = ms.w;
+		wTotal += wSoll;
+		//console.log('ms.w',wSoll);
+		let b=getBounds(ms.elem);
+		let wIst = Math.round(b.width);
+		wTotal2 += wIst;
+		//console.log('w ist',wIst);
+	}
+	//console.log('total width min:',wTotal,'ist',wTotal2, 'aber window nur',window.innerWidth);
+
+	let hAreas = ['a_d_header','a_d_status','a_d_game','a_d_buttons'];
+	let hTotal=0;
+	let hTotal2=0;
+	
+	for(const a of hAreas){
+		let ms = UIS[a];
+		let hSoll = ms.h;
+		hTotal += hSoll;
+		//console.log('ms.h',hSoll);
+		let b=getBounds(ms.elem);
+		let hIst = Math.round(b.height);
+		hTotal2 += hIst;
+		//console.log('w ist',hIst);
+	}
+	//console.log('total height min:',hTotal,'ist',hTotal2, 'aber window nur',window.innerHeight);
+
+	return (window.innerWidth*100)/wTotal2;
+}
+
+
 function initPageHeader() {
 	pageHeaderSetGame();
 	pageHeaderSetPlayers();
@@ -109,7 +159,7 @@ function growIfDefaultMainAreaWidth(ms) {
 	}
 
 }
-function growIfDefaultPlayerAreaWidthblablabla(ms) {
+function growIfDefaultPlayerAreaWidthblablabla_UNUSED(ms) {
 	//return;
 	//console.log('real w of table:',ms.parts.table.offsetWidth)
 	//console.log('width of table is:', ms.elem.offsetWidth, ms.elem, ms.idParent);
@@ -140,6 +190,8 @@ function initDom() {
 	measureMSTree(ROOT); //each div is measured: x,y,w,h
 	// timit.showTime('...measure tree');
 
+	let zoomlevel = calcScreenSizeNeeded();
+	zoom(zoomlevel);
 }
 function createMSTree(ms) {
 	let areas = ms.elem.children;
@@ -153,15 +205,16 @@ function createMSTree(ms) {
 		createMSTree(msChild);
 	}
 }
+
 function measureMSTree(root) {
 	//list of relevant dom els: named divs
 	let divs = root.elem.getElementsByTagName('div');
 	let divNames = [...divs].map(x => x.id);
-	divNames = divNames.filter(x => !empty(x));
+	divNames = divNames.filter(x => !isEmpty(x));
 	divNames.map(x => { measureDomel(UIS[x]) });
 
 	//correct measurement for hidden divs (tabs)
-	let tabDivs = domId('a_d_testing').getElementsByClassName('divInTab');
+	let tabDivs = document.getElementById('a_d_testing').getElementsByClassName('divInTab');
 	let correctTabName = 'a_d_objects';
 	let correctMS = UIS[correctTabName];
 	for (const div of [...tabDivs]) {

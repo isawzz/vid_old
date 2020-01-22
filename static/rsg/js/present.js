@@ -59,6 +59,7 @@ function _tableUpdate() {
 				updatedVisuals = runBehaviors(oid, G.table, TABLE_UPDATE);
 			}
 			//if (ms.isLine) console.log('updatedVisuals',updatedVisuals)
+			//console.log(updatedVisuals)
 			if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
 				//console.log('oid',oid,'has NOT been updated!!!!!')
 				if (changedProps.includes('loc')) _presentLocationChange(oid, ms);
@@ -75,8 +76,6 @@ function _tableUpdate() {
 		presentDefault(oid, G.table[oid]);
 	}
 }
-
-
 
 function presentPlayers() {
 	//TODO: players remove
@@ -130,11 +129,6 @@ function _playersUpdate() {
 	}
 }
 
-
-
-
-
-
 function presentStatus() {
 	if (isdef(G.serverData.status)) {
 		let lineArr = G.serverData.status.line;
@@ -156,7 +150,7 @@ function presentStatus() {
 		for (const item of lineArr) {
 			if (isSimple(item)) {
 				let s = trim(item.toString());
-				if (!empty(s)) {
+				if (!isEmpty(s)) {
 					//console.log('adding item:', s, 'to log');
 					d.appendChild(document.createTextNode(item)); //ausgabe+=item+' ';
 				}
@@ -189,7 +183,7 @@ function presentLog() {
 	//console.log('.......',logId,UIS[logId],d)
 	let BASEMARGIN = 16;
 	for (const k of G.logUpdated) {
-	//for (const k in G.log[pl]) {
+		//for (const k in G.log[pl]) {
 		let logEntry = G.log[pl][k];
 		let lineArr = logEntry.line;
 		let lineDiv = document.createElement('div');
@@ -197,7 +191,7 @@ function presentLog() {
 		for (const item of lineArr) {
 			if (isSimple(item)) {
 				let s = trim(item.toString());
-				if (!empty(s)) {
+				if (!isEmpty(s)) {
 					//console.log('adding item:', s, 'to log');
 					lineDiv.appendChild(document.createTextNode(item));
 					//let node=document.createElement('div');
@@ -314,7 +308,7 @@ function _onPlayerChange(pid) {
 	if (!G.playerChanged || pid != G.player) return;
 	//console.log('player has changed!!!!!!!!!!!!!!!!!!!!!!!!!')
 	let o = G.playersAugmented[pid];
-	console.log('presenting player change', pid, o);
+	//console.log('presenting player change', pid, o);
 	_updatePageHeader(pid);
 	if (G.previousPlayer) _updateLogArea(G.previousPlayer, pid);
 	let ms = getVisual(pid);
@@ -338,15 +332,15 @@ function _updatePageHeader(pid) {
 		ms = getPageHeaderDivForPlayer(pl.id);
 		ms.classList.remove('gamePlayer');
 	}
-	console.log('oid', pid)
+	//console.log('oid', pid)
 	ms = getPageHeaderDivForPlayer(pid);
 	ms.classList.add('gamePlayer');
 }
 function _updateLogArea(prevPlid, plid) {
 	//console.log(prevPlid)
-	if (prevPlid) hideElem('a_d_log_' + prevPlid);
+	if (prevPlid) hide('a_d_log_' + prevPlid);
 	let id = 'a_d_log_' + plid;
-	if (UIS[id]) showElem(id);
+	if (UIS[id]) show(id);
 }
 function _showPassToNextPlayer(plWaitingFor) {
 	unfreezeUI();
@@ -355,7 +349,7 @@ function _showPassToNextPlayer(plWaitingFor) {
 	d.style.backgroundColor = color;
 	let button = document.getElementById('c_b_passToNextPlayer');
 	button.textContent = 'PASS TO ' + plWaitingFor;
-	showElem('passToNextPlayerUI');
+	show('passToNextPlayerUI');
 
 	WAITINGFORPLAYER = plWaitingFor;
 
@@ -365,8 +359,8 @@ function _showPassToNextPlayer(plWaitingFor) {
 function totalFreeze() {
 	//player clicked the passToNextPlayer button
 	//hide entire ui until the nextPlayerReady button is clicked!
-	hideElem('passToNextPlayerUI')
-	showElem('freezer');
+	hide('passToNextPlayerUI')
+	show('freezer');
 }
 function onClickNextPlayerReady() {
 	if (WAITINGFORPLAYER !== null) {
@@ -376,7 +370,7 @@ function onClickNextPlayerReady() {
 		_sendRoute('/status/' + user, d => {
 			//console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
 			//console.log('reply to status request for',user,d);
-			hideElem('freezer');
+			hide('freezer');
 			d = JSON.parse(d);
 			processData(d);
 			gameStep();
@@ -425,7 +419,7 @@ function presentMain(oid, ms, pool, isTableObject = true) {
 		let val = o[k];
 		if (isSimple(val)) akku.push(val.toString());
 	}
-	if (!empty(akku)) { ms.multitext({ txt: akku, fill: color }); } else ms.clearText();
+	if (!isEmpty(akku)) { ms.multitext({ txt: akku, fill: color }); } else ms.clearText();
 }
 function presentMainPlayer(oid, ms, pool, isTableObject) {
 	let o = pool[oid];

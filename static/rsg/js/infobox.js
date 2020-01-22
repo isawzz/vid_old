@@ -82,15 +82,15 @@ function clearInfoboxes() {
 	maxZIndex = 10;
 }
 
-function staticPos(ms) {
-	let gameArea = UIS['a_d_game'];
-	let actionArea = UIS['a_d_actions'];
-	let pageHeaderArea = UIS['a_d_header'];
-	let statusArea = UIS['a_d_status'];
-	let x = actionArea.w + gameArea.w / 2 + ms.x;
-	let y = pageHeaderArea.h + statusArea.h + gameArea.h / 2 + ms.y;
-	return { x: x, y: y };
-}
+// function staticPos(ms) {
+// 	let gameArea = UIS['a_d_game'];
+// 	let actionArea = UIS['a_d_actions'];
+// 	let pageHeaderArea = UIS['a_d_header'];
+// 	let statusArea = UIS['a_d_status'];
+// 	let x = actionArea.w + gameArea.w / 2 + ms.x;
+// 	let y = pageHeaderArea.h + statusArea.h + gameArea.h / 2 + ms.y;
+// 	return { x: x, y: y };
+// }
 
 
 

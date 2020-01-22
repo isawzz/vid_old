@@ -60,21 +60,21 @@ function closeGameConfig() {
 	}
 	setMessage('hi again!');
 
-	showElem('bJoinGame');
-	showElem('bCreateGame');
-	showElem('bResumeGame');
-	hideElem('bLobbyOk');
-	hideElem('bLobbyCancel');
+	show('bJoinGame');
+	show('bCreateGame');
+	show('bResumeGame');
+	hide('bLobbyOk');
+	hide('bLobbyCancel');
 }
 function ensureAllGames(callback){
 	if (allGames == null) {
 		_sendRoute('/game/available', d => {
 			let glist = JSON.parse(d);
-			console.log(typeof (glist), glist);
+			//console.log(typeof (glist), glist);
 			let chain = [];
 			for (g of glist) chain.push('/game/info/' + g);
 			chainSend(chain, res => {
-				console.log(res);//res is a list!!!
+				//console.log(res);//res is a list!!!
 				let info=[];
 				for(const s of res){
 					let sJSON = JSON.parse(s);
@@ -84,7 +84,7 @@ function ensureAllGames(callback){
 				//let info = JSON.parse(res);
 				//console.log(typeof (info), info);
 				allGames = info;
-				console.log(allGames);
+				//console.log(allGames);
 				callback();
 			})
 		})
@@ -100,11 +100,11 @@ function proceedToConfig() {
 	showGameConfig();
 	setMessage('Setup new game!');
 
-	hideElem('bJoinGame');
-	hideElem('bCreateGame');
-	showElem('bLobbyOk');
-	showElem('bLobbyCancel');
-	showElem('bResumeGame');
+	hide('bJoinGame');
+	hide('bCreateGame');
+	show('bLobbyOk');
+	show('bLobbyCancel');
+	show('bResumeGame');
 
 	//console.log('*game config:', S.settings.game, '=', GAME, S.settings.playmode, '=', PLAYMODE, USERNAME)
 	updateGamename(S.settings.game);
@@ -226,25 +226,25 @@ function closeJoinConfig() {
 	}
 	setMessage('hi again!');
 
-	showElem('bJoinGame');
-	showElem('bCreateGame');
-	showElem('bResumeGame');
-	hideElem('bLobbyJoinOk');
-	hideElem('bLobbyJoinCancel');
+	show('bJoinGame');
+	show('bCreateGame');
+	show('bResumeGame');
+	hide('bLobbyJoinOk');
+	hide('bLobbyJoinCancel');
 }
 function isJoinMenuOpen() {
-	return isVisibleElem('bLobbyJoinOk');
+	return isVisible(document.getElementById('bLobbyJoinOk'));
 }
 function openJoinConfig() {
 	hideEventList();
 	showJoinConfig();
 	setMessage('Join the game!');
 
-	hideElem('bJoinGame');
-	hideElem('bCreateGame');
-	showElem('bLobbyJoinOk');
-	showElem('bLobbyJoinCancel');
-	showElem('bResumeGame');
+	hide('bJoinGame');
+	hide('bCreateGame');
+	show('bLobbyJoinOk');
+	show('bLobbyJoinCancel');
+	show('bResumeGame');
 
 	populateJoinList();
 	joinCandidate = null;
@@ -258,30 +258,30 @@ function populateJoinList() {
 		let idRadio = getidAvailable(i);
 		let idSpan = getidSpanJoin(i);
 		//console.log(idRadio, idSpan,pl)
-		if (empty(pl.username)) {
+		if (isEmpty(pl.username)) {
 			//idRadio muss unchecked sein!
 			//beide muessen visible sein!
-			showElem(idRadio);
-			showElem(idSpan);
+			show(idRadio);
+			show(idSpan);
 			uncheckAvailable(i);
 			document.getElementById(idSpan).innerHTML = pl.id;
 		} else {
-			hideElem(idRadio);
-			hideElem(idSpan);
+			hide(idRadio);
+			hide(idSpan);
 		}
 	}
 	for (let i = S.gameConfig.numPlayers + 1; i <= MAX_PLAYERS_AVAILABLE; i++) {
 		let idRadio = getidAvailable(i);
 		let idSpan = getidSpanJoin(i);
-		hideElem(idRadio);
-		hideElem(idSpan);
+		hide(idRadio);
+		hide(idSpan);
 	}
 }
 function checkGameConfigComplete() {
 
 	//find out how many players do NOT have username
 	for (const pl of S.gameConfig.players) {
-		if (empty(pl.username)) return false;
+		if (isEmpty(pl.username)) return false;
 	}
 	return true;
 }
@@ -308,7 +308,7 @@ function onClickJoinGameOk() {
 		//count mes
 		let countMes = 0;
 		for (pl of S.gameConfig.players) {
-			if (!empty(pl.username) && startsWith(pl.username, USERNAME)) countMes += 1;
+			if (!isEmpty(pl.username) && startsWith(pl.username, USERNAME)) countMes += 1;
 		}
 		let uname = USERNAME + (countMes > 0 ? countMes : '');
 		joinCandidate.username = uname;
@@ -409,15 +409,15 @@ function changeToForInput(newListName, elid, defaultVal) {
 }
 function hidePlayer(i) {
 	let id;
-	id = getidNum(i); hideElem(id);
-	id = getidSpan(i); hideElem(id);
-	id = getidType(i); hideElem(id);
+	id = getidNum(i); hide(id);
+	id = getidSpan(i); hide(id);
+	id = getidType(i); hide(id);
 }
 function showPlayer(i) {
 	let id;
-	id = getidNum(i); showElem(id);
-	id = getidSpan(i); showElem(id);
-	id = getidType(i); showElem(id);
+	id = getidNum(i); show(id);
+	id = getidSpan(i); show(id);
+	id = getidType(i); show(id);
 }
 function checkPlayer(i) {
 	id = getidNum(i); document.getElementById(id).checked = true;

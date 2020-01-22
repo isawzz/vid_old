@@ -32,7 +32,7 @@ function gameView() {
 	setIsReallyMultiplayer();
 
 	if (!isReallyMultiplayer){
-		hideElem('c_b_PollStatus');
+		hide('c_b_PollStatus');
 	}
 
 	document.title = GAME+' '+USERNAME;
@@ -68,8 +68,8 @@ function lobbyView() {
 function showGameConfig() { document.getElementById('gameConfig').style.display = null; }
 function hideGameConfig() { document.getElementById('gameConfig').style.display = 'none'; }
 
-function showJoinConfig() { showElem('joinConfig');}
-function hideJoinConfig() { hideElem('joinConfig');}
+function showJoinConfig() { show('joinConfig');}
+function hideJoinConfig() { hide('joinConfig');}
 
 function showEventList() { document.getElementById('events').style.display = null; }
 function hideEventList() { document.getElementById('events').style.display = 'none'; }

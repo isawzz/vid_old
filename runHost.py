@@ -8,7 +8,7 @@ import os
 import sys
 import traceback
 
-import exam #ples
+import games
 import gsm
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS
@@ -356,7 +356,7 @@ def userSpecPath(game,ext,v=None):
 	if v != None:
 		fname += '_'+v
 	#path = os.path.join(rootPath, 'examples_front/' + game + '/' + fname + '_ui.' + ext)
-	path = os.path.join(rootPath, 'exam/' + game + '/_rsg/' + fname + '_ui.' + ext)
+	path = os.path.join(rootPath, 'games/' + game + '/_rsg/' + fname + '_ui.' + ext)
 	return path
 
 def ymlFile_jString(path):

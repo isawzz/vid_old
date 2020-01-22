@@ -56,14 +56,14 @@ function getAuxIds() { return getList(IdOwner.l); }
 function getAux() { return getAuxIds.map(x => UIS[x]); }
 
 function getBoatIdByIdx(idx) {
-	if (!IdOwner.a || empty(IdOwner.a)) return null;
+	if (!IdOwner.a || isEmpty(IdOwner.a)) return null;
 	if (idx < 0) idx += IdOwner.a.length;
 	idx = idx % IdOwner.a.length;
 	return IdOwner.a[idx];
 }
-function getFirstBoatId() { if (!IdOwner.a || empty(IdOwner.a)) return null; return IdOwner.a[0]; }
-function getLastBoatId() { if (!IdOwner.a || empty(IdOwner.a)) return null; return IdOwner.a[IdOwner.a.length - 1]; }
-function getFirstBoat() { if (!IdOwner.a || empty(IdOwner.a)) return null; return UIS[getFirstBoatId()]; }
+function getFirstBoatId() { if (!IdOwner.a || isEmpty(IdOwner.a)) return null; return IdOwner.a[0]; }
+function getLastBoatId() { if (!IdOwner.a || isEmpty(IdOwner.a)) return null; return IdOwner.a[IdOwner.a.length - 1]; }
+function getFirstBoat() { if (!IdOwner.a || isEmpty(IdOwner.a)) return null; return UIS[getFirstBoatId()]; }
 function getBoatIds() { return getList(IdOwner.a); }
 function getBoats() { return getBoatIds().map(x => UIS[x]); }
 function getRandomBoat() { return UIS[chooseRandom(getBoatIds())]; }
@@ -73,13 +73,13 @@ function getBoatWith(lst, isGood = true) {
 		let goodBoats = [];
 		for (const b of boats) {
 			//console.log(b.o.text)
-			if (empty(lst.filter(x => b.o.text.includes(x)))) goodBoats.push(b);
+			if (isEmpty(lst.filter(x => b.o.text.includes(x)))) goodBoats.push(b);
 		}
-		//boats = boats.filter(x => empty(lst.filter(y => x.text.includes(y))));
+		//boats = boats.filter(x => isEmpty(lst.filter(y => x.text.includes(y))));
 		return goodBoats.length > 0 ? chooseRandom(goodBoats) : null;
 	} else {
 		for (const b of boats) {
-			if (!empty(lst.filter(x => b.o.text.includes(x)))) return b;
+			if (!isEmpty(lst.filter(x => b.o.text.includes(x)))) return b;
 		}
 	}
 	return null;
@@ -91,7 +91,7 @@ function strategicBoat(goodlist, badlist) {
 		goodBoats = [];
 		for (const b of boats) {
 			//console.log(b.o.text)
-			if (empty(badlist.filter(x => b.o.text.includes(x)))) goodBoats.push(b);
+			if (isEmpty(badlist.filter(x => b.o.text.includes(x)))) goodBoats.push(b);
 		}
 	}
 	if (isdef(goodlist)) { //take it by priority! first one is highest priority!
@@ -110,7 +110,7 @@ function pureId(id){return id.substring(4)}
 function getIds(id, type = 'all') {
 	let res = id2uids[id];
 	if (nundef(res)) return [];
-	if (empty(res) || type == 'all') return res;
+	if (isEmpty(res) || type == 'all') return res;
 	return res.filter(x => isdef(x[type]));
 }
 

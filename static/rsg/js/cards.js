@@ -189,7 +189,7 @@ function _clearHand(idArea) {
 
 	let hand = UIS[idArea];
 	if (hand.cards) {
-		while (!empty(hand.cards)) {
+		while (!isEmpty(hand.cards)) {
 			//console.log(hand.cards.toString())
 			removeCardFromHand(hand.cards[0], hand);
 		}
@@ -230,7 +230,7 @@ function _handChanged(oids, area) {
 	let hand = UIS[idHand];
 	if (nundef(hand)) return false;
 	let cards = hand.cards;
-	if (nundef(cards) && empty(oids)) return false;
+	if (nundef(cards) && isEmpty(oids)) return false;
 	if (isdef(hand) && isdef(hand.cards)) return !sameList(oids, hand.cards);
 	else return true;
 }

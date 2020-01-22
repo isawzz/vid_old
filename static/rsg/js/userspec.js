@@ -14,7 +14,7 @@ function specAndDOM(callbacks = []) {
 	}
 	openTabTesting(S.settings.openTab);
 
-	if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+	if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 }
 function initSTRUCTURES() {
 	let data = S.user.spec.STRUCTURES;
@@ -75,7 +75,7 @@ function presentSpecAndCode(callbacks = []) {
 		return this.innerHTML.replace(/\t/g, '&nbsp;&nbsp;');
 	});
 
-	if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+	if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 }
 
 function redrawScreen() {
@@ -152,26 +152,26 @@ function loadUserSpec(callbacks = []) {
 		_sendRoute('/spec/' + GAME, d2 => {
 			//console.log(d2);
 			S.user.specText = d2;
-			if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+			if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 		});
 	});
 }
 function loadUserCode(callbacks = []) {
 	//timit.showTime(getFunctionCallerName());
 	let fname = S.user.spec.CODE;
-	console.log('...loading code from', fname + '.js')
+	//console.log('...loading code from', fname + '.js')
 	if (nundef(fname)) {
 		S.user.script = 'no code';
-		if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 	} else {
 		//console.log('code filename is:', fname)
-		S.path.script = '/examples_front/' + S.settings.game + '/' + fname + '.js';
-		S.path.script = '/exam/' + S.settings.game + '/_rsg/' + fname + '.js';
-		//S.path.script = '/exam/' + allGames[S.settings.game].name + '/' + fname + '.js';
+		//S.path.script = '/examples_front/' + S.settings.game + '/' + fname + '.js';
+		S.path.script = '/games/' + S.settings.game + '/_rsg/' + fname + '.js';
+		//S.path.script = '/games/' + allGames[S.settings.game].name + '/' + fname + '.js';
 		loadScript(S.path.script, dScript => {
 			loadText(S.path.script, code => {
 				S.user.script = code;
-				if (!empty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+				if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 			});
 		});
 	}

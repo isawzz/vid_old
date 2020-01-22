@@ -54,7 +54,7 @@ function makeRoot() {
 	let ms = new RSG();
 	let id = 'R_d_root';
 	ms.id = id;
-	ms.elem = domId(id);
+	ms.elem = document.getElementById(id);
 	ms.domType = getTypeOf(ms.elem);
 	ms.IdParent = null;
 	ms.isAttached = true;
@@ -536,7 +536,7 @@ function atleastOneElementOfXIsDictWithKey(lst, k) {
 	return false;
 }
 function isListOf(x, key = '_obj') {
-	return isList(x) && !empty(x) && atleastOneElementOfXIsDictWithKey(x, key); //isDict(x[0]) && '_obj' in x[0];
+	return isList(x) && !isEmpty(x) && atleastOneElementOfXIsDictWithKey(x, key); //isDict(x[0]) && '_obj' in x[0];
 }
 function makeRefLinkDiv(val, refs, prop, prefix) {
 	let cl = prefix + '_r_' + getUID(); let ref = { oids: [val[prop]], id: cl }; refs.push(ref);
@@ -569,10 +569,10 @@ function makeRefLinkDiv4MatrixOf_obj(val, refs) {
 }
 function transformToString(k, val, refs) {
 	if (val && isDict(val) && '_set' in val) { val = val._set; }
-	if (k == 'visible' && !empty(val) && !isDict(val[0])) { val = val.map(x => { return { _player: x } }); }
+	if (k == 'visible' && !isEmpty(val) && !isDict(val[0])) { val = val.map(x => { return { _player: x } }); }
 
 	let sval = null;
-	if (isList(val) && empty(val)) { sval = '{ }'; }
+	if (isList(val) && isEmpty(val)) { sval = '{ }'; }
 	else if (isList(val) && isString(val[0])) { sval = '{' + val.join(',') + '}' }
 	else if (isListOf(val, '_obj')) { sval = makeRefLinkDiv4ListOf_obj(val, refs); }
 	else if (isListOf(val, '_player')) { sval = makeRefLinkDiv4ListOf_player(val, refs); }
@@ -657,7 +657,7 @@ function getColorHint(o) {
 	}
 	return null;
 }
-function getRandomShape() { return chooseRandom('ellipse', 'roundedRect', 'rect', 'hex'); }
+function getRandomShape() { return chooseRandom(['ellipse', 'roundedRect', 'rect', 'hex']); }
 function linkObjects(id, oid) {
 	if (isdef(UIS[id])) {
 		//console.log('linkObjects: ui', id, 'exists and CANNOT be overriden!!!!!');

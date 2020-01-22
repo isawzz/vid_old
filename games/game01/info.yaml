@@ -1,0 +1,10 @@
+
+name: game01
+long_name: Game01 Example
+short_name: game01
+
+num_players: [2, 3, 4]
+player_names: [Player1, Player2, Player3, Player4]
+
+
+

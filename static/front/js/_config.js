@@ -1,5 +1,5 @@
 var USERNAME = 'felix';
-var GAME = 'empty'; // s1 | catan | ttt | empty
+var GAME = 'catan'; // s1 | catan | ttt | empty
 var PLAYMODE = 'hotseat'; // multiplayer | hotseat | solo | passplay
 var SEED = 1;
 //var AI_TYPE = 'random';
@@ -44,18 +44,18 @@ function gcsAuto(){
 	gcs = {};
 	for (const gName in allGames){
 		let info = allGames[gName]
-		console.log(gName, info);
+		//console.log(gName, info);
 		let nPlayers = info.num_players[info.num_players.length - 1]; // max player number
 		let pls = [];
 		for(let i=0;i<nPlayers;i++){
 			let pl = {id:info.player_names[i],playerType:'me',agentType:null,username:USERNAME+(i>0?i:'')};
-			console.log('player:', pl)
+			//console.log('player:', pl)
 			pls.push(pl);
 		}
 		gcs[gName]={numPlayers:nPlayers,players:pls};
 
 	}
-	console.log('-------------------',gcs);
+	//console.log('-------------------',gcs);
 }
 var gcs = {
 	ttt: {

@@ -44,9 +44,6 @@
 /* #endregion root */
 
 /* #region hidden, */
-.hidden{ 
-	display:none;
-}
 .buttonLikeLink {
   background: none!important;
   border: none;
