@@ -12,6 +12,9 @@ function specAndDOM(callbacks = []) {
 	if (!hasStructure && S.settings.boardDetection) {
 		detectBoard(G.table, 'a_d_game');
 	}
+	if (!hasStructure && S.settings.deckDetection) {
+		detectDeck(G.table, 'a_d_game');
+	}
 	openTabTesting(S.settings.openTab);
 
 	if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
@@ -106,6 +109,7 @@ function onClickUseNoBoardDetection() {
 	S.settings.userStructures = false;
 	S.settings.userSettings = false;
 	S.settings.boardDetection = S_boardDetection = false;
+	S.settings.deckDetection = S_deckDetection = false;
 	S.settings.openTab = 'London';
 	redrawScreen();
 }
@@ -114,6 +118,7 @@ function onClickUseNoSpec() {
 	S.settings.userStructures = false;
 	S.settings.userSettings = false;
 	S.settings.boardDetection = S_boardDetection = true;
+	S.settings.deckDetection = S_deckDetection = true;
 	S.settings.openTab = 'London';
 	redrawScreen();
 }
@@ -122,6 +127,7 @@ function onClickUseSettings() {
 	S.settings.userStructures = false;
 	S.settings.userSettings = true;
 	S.settings.boardDetection = S_boardDetection = true;
+	S.settings.deckDetection = S_deckDetection = true;
 	S.settings.openTab = 'Seattle';
 	redrawScreen();
 }
@@ -130,6 +136,7 @@ function onClickUseStructures() {
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;
 	S.settings.boardDetection = S_boardDetection = true;
+	S.settings.deckDetection = S_deckDetection = true;
 	S.settings.openTab = 'Paris';
 	redrawScreen();
 }
@@ -138,6 +145,7 @@ function onClickUseBehaviors() {
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;
 	S.settings.boardDetection = S_boardDetection = true;
+	S.settings.deckDetection = S_deckDetection = true;
 	S.settings.openTab = 'Oslo';
 	redrawScreen();
 }

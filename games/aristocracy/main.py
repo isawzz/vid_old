@@ -35,12 +35,12 @@ class Aristocracy(gsm.GameController):
 		
 		# register config files
 		self.register_config('rules', os.path.join(MY_PATH, 'config/rules.yaml'))
-		self.register_config('card', os.path.join(MY_PATH,'config/cards.yaml'))
+		self.register_config('cards', os.path.join(MY_PATH,'config/cards.yaml'))
 		self.register_config('msgs', os.path.join(MY_PATH,'config/msgs.yaml'))
 		
 		# register game object types
 		self.register_obj_type(name='card', obj_cls=Card)
-		self.register_obj_type(name='discard_pile', obj_cls=DiscardPile)
+		self.register_obj_type(name='discard_pile', obj_cls=DiscardPile) #DiscardPile) ###
 		self.register_obj_type(name='draw_pile', obj_cls=DrawPile,)
 		self.register_obj_type(name='market', obj_cls=Market)
 		
@@ -54,7 +54,6 @@ class Aristocracy(gsm.GameController):
 		self.register_phase(name='market', cls=MarketPhase)
 		self.register_phase(name='tax', cls=TaxPhase)
 		self.register_phase(name='claim', cls=ClaimPhase)
-		
 		
 	def _pre_setup(self, config, info=None):
 		# register players
@@ -82,12 +81,25 @@ class Aristocracy(gsm.GameController):
 				cards.extend([c]*config.rules.num_royals[n])
 			else:
 				cards.extend([c]*num)
-		
-		self.state.discard_pile = self.create_object('discard_pile', top_face_up=config.rules.discard_market,
-		                                            seed=self.RNG.getrandbits(32), default='card')
+
+		# top_face_up = config.rules.discard_market
+
+		# WORKS!!!!!!!!!!!!!!!!!!!!!!
+		# self.state.discard_pile = self.table.create(obj_type='discard_pile', cards=cards, # top_face_up=config.rules.discard_market,
+		#                                         seed=self.RNG.getrandbits(64), default='card')
+		# WORKS!!!!!!!!!!!!!!!!!!!!!!
+		# self.state.discard_pile = self.table.create(obj_type='discard_pile', # cards=cards, # top_face_up=config.rules.discard_market,
+		#                                         seed=self.RNG.getrandbits(64), default='card')
+
+		self.state.discard_pile = self.create_object('discard_pile', # cards=cards, # top_face_up=config.rules.discard_market,
+		                                        seed=self.RNG.getrandbits(64), default='card')
+
+		self.state.discard_pile.top_face_up = config.rules.discard_market #top_face_up
+		# self.state.discard_pile = self.create_object('discard_pile', top_face_up=config.rules.discard_market,
+		#                                             seed=self.RNG.getrandbits(32), default='card')
 		
 		self.state.deck = self.create_object('draw_pile', discard_pile=self.state.discard_pile,
-		                                    cards=cards, seed=self.RNG.getrandbits(32), default='card')
+		                                     log=self.log, cards=cards, seed=self.RNG.getrandbits(32), default='card')
 		self.state.deck.shuffle()
 		
 		self.state.market = self.create_object('market', neutral=tset(),

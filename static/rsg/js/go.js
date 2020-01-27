@@ -17,6 +17,7 @@ function someVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'd'
 function mainVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'm'); }
 function isBoardElement(oid) { let o = getVisual(oid); return o.idParent[2] == 's'; }
 function isBoardObject(o) { return o.map && o.fields; }
+function isDeckObject(o) { return o.obj_type.toLowerCase().includes('deck') && o.count; }
 function isField(o) { return o.neighbors; }
 
 //function getOidForId(id){ return id[0]=='d'||id[0]=='m'?substring(id,4) : stringAfter(id,'@');}

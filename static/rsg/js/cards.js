@@ -1,3 +1,32 @@
+//#region deck presentation
+function detectDeck(tableObjects,areaName){
+	let deck = firstCondDict(tableObjects,x=>isDeckObject(x));
+	if (nundef(deck)) return;
+	console.log('deck',tableObjects[deck]);
+
+	//show a deck w/ count cards (dummy!)
+	let odeck=tableObjects[deck];
+	let numCards = odeck.count;
+
+	let div1 = UIS[areaName].elem;
+	var deck1 = makeDeck({ kind: 'deck52', N: numCards });
+	//deck1.cards.forEach(function (card, i) { card.enableDragging(); card.enableFlipping(); });
+
+	//was ich jetzt brauche ist dass die oberste card vom deck interactive ist
+	//muesste aus dem ganzen deck object ein ms object machen!
+	// vielleicht mit deck1.elem als elem
+	// wo hab ich die ms objects gemacht?
+
+	let ms1 = new DeckMS('deck1', deck1);
+	ms1.attachTo(div1);
+
+	console.log(div1,deck1,ms1)
+	
+}
+
+
+
+
 //#region API
 function addCardToHand(oid, areaName) {
 	//idHand = isdef(idHand)?idHand:getMainId(areaName);
@@ -125,7 +154,7 @@ function _makeCardDiv(oid, o) {
 	let family = (ch[0] == 'f' || ch[0] == 'F') ? 'pictoFa' : 'pictoGame';
 
 	d.innerHTML = `
-		<div class="card">
+		<div class="cardCatan">
 			<p style='font-size:22px;'>${o.name}</p>
 			<div class="cardCenter">
 				<div class="circular" style='background:${color}'><span style='color:white;font-size:70px;font-weight:900;font-family:${family}'>${text}</span></div>

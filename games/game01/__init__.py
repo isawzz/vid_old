@@ -1,3 +1,3 @@
-from .main import EmptyGame
+from .main import Game01
 from .ai import *
 

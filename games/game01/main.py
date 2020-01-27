@@ -7,16 +7,16 @@ from gsm.common.world import grid
 from gsm.common import TurnPhaseStack
 
 from .phases import *
-from .objects import Card, CustomObj
+from .objects import Card, DiscardPile, DrawPile
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 
-class EmptyGame(gsm.GameController):
+class Game01(gsm.GameController):
 	
 	def __init__(self, player_names, debug=False, force_order=False):
 		
 		# create player manager
-		manager = gsm.GameManager(open={'name', 'hand'})
+		manager = gsm.GameManager(open={'name','hand'})
 		
 		stack = TurnPhaseStack()
 		
@@ -32,14 +32,20 @@ class EmptyGame(gsm.GameController):
 		                 )
 		
 		# register config files
+		self.register_config('cards', os.path.join(MY_PATH,'config/cards.yaml'))
 		self.register_config('rules', os.path.join(MY_PATH, 'config/rules.yaml'))
 		
 		# register game object types
 		self.register_obj_type(name='card', obj_cls=Card)
+		self.register_obj_type(name='deck52', obj_cls=Deck, open={'count'})
+		#self.register_obj_type(name='draw_pile', obj_cls=DrawPile)
+		# self.register_obj_type(name='card', obj_cls=CardBase)
+		# self.register_obj_type(name='deck', obj_cls=Deck)
 
 		# register possible phases
-		self.register_phase(name='ExamplePhase', cls=ExamplePhase)
-		
+		self.register_phase(name='phase1', cls=RoyalPhase)
+		self.register_phase(name='phase2', cls=ExamplePhase)
+
 	def _pre_setup(self, config, info=None):
 		# register players
 		assert 2 <= len(self.player_names) <= 4, 'Not the right number of players: {}'.format(len(self.player_names))
@@ -50,13 +56,29 @@ class EmptyGame(gsm.GameController):
 
 	def _set_phase_stack(self, config):
 		self.stack.set_player_order(tlist(self.players))
-		return tlist(['ExamplePhase'])
+		return tlist(['phase2'])
 
-	def _select_player(self):
-		return next(iter(self.players))
+	# def _select_player(self):
+	# 	return next(iter(self.players))
 
 	def _init_game(self, config):
-		self.state = config.rules
+		cards = tlist()
+		for n, c in config.cards.items():
+			cards.extend([c])
+		self.state.deck = self.table.create(obj_type='deck52', cards=cards,
+		                                        seed=self.RNG.getrandbits(64),
+		                                        default='card')
+		self.state.deck.shuffle()
+
+		for i, player in enumerate(self.players):
+			player.order = i + 1
+			player.hand = tset()
+			for k in range(5):
+				c1 = self.state.deck.draw()
+				c1.face_down(player)
+				#c1.visible = tset([player])
+				player.hand.add(c1)
+		self.state.deck.count = len(self.state.deck)
 
 	def _end_game(self):
 		out = tdict()
@@ -68,17 +90,9 @@ class EmptyGame(gsm.GameController):
 		return out
 	
 	def cheat(self, code=None):
-		
 		self.log.writef('Cheat code activated: {}', code)
 		self.log.iindent()
-		
-		# if code == 'devcard':
-		# 	for player in self.players:
-		# 		gain_res('wheat', self.state.bank, player, 1, log=self.log)
-		# 		gain_res('ore', self.state.bank, player, 1, log=self.log)
-		# 		gain_res('sheep', self.state.bank, player, 1, log=self.log)
-		
 		self.log.dindent()
 
 
-gsm.register_game(EmptyGame, os.path.join(MY_PATH, 'info.yaml'))
+gsm.register_game(Game01, os.path.join(MY_PATH, 'info.yaml'))

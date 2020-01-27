@@ -15,6 +15,7 @@ function _tableCreateNew() {
 	for (const oid of G.tableCreated) {
 		let o = G.table[oid];
 
+		//default objects are objects in objects tab underneath game area!
 		if (!defaultVisualExists(oid) && S.settings.table.createDefault == true) {
 			//console.log('>>>>>>>>>>>>>>>>>should create default object for',oid)
 			makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
@@ -22,7 +23,7 @@ function _tableCreateNew() {
 
 		if (S.settings.table.ignoreTypes.includes(o.obj_type)
 			|| mainVisualExists(oid)
-			|| !S.settings.boardDetection && !S.settings.userStructures) {
+			|| !S.settings.boardDetection && !S.settings.deckDetection && !S.settings.userStructures) {
 			//console.log('NOT creating main visual!!!',oid,o.obj_type)
 			continue;
 		}

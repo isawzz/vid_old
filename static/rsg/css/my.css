@@ -1,0 +1,30 @@
+:root {
+  --grid-cols: 1;
+	--grid-rows: 1;
+	--grid-gap: 1em;
+	--grid_center_w: 3fr;
+	--grid_center_h: 3fr;
+}
+
+.gridContainer {
+  display: grid;
+  grid-gap: var(--grid-gap);
+  grid-template-rows: repeat(var(--grid-rows), 1fr);
+  grid-template-columns: repeat(var(--grid-cols), 1fr);
+}
+
+.grid9 {
+  display: grid;
+  grid-gap: var(--grid-gap);
+  grid-template-rows: 1fr var(--grid_center_h) 1fr;
+  grid-template-columns: 1fr var(--grid_center_w) 1fr;
+}
+
+.grid-item {
+  /* padding: 1em; */
+	/* border: 1px solid #ddd; */
+	background-color: rgba(255,255,255,.1);
+	/* text-align: center; */
+	/* box-sizing: border-box; */
+}
+

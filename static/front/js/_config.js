@@ -1,5 +1,5 @@
 var USERNAME = 'felix';
-var GAME = 'catan'; // s1 | catan | ttt | empty
+var GAME = 'aristocracy'; // s1 | catan | ttt | empty | game01 | aristocracy
 var PLAYMODE = 'hotseat'; // multiplayer | hotseat | solo | passplay
 var SEED = 1;
 //var AI_TYPE = 'random';
@@ -28,6 +28,7 @@ var S_autoplayFunction = (_g) => false;//_g.phase == 'setup';// false; //counter
 
 //rsg settings
 var S_boardDetection = true; //if no spec per default use board detection
+var S_deckDetection = true; //if no spec per default use board detection
 var S_useColorHintForProperties = true; //color hint used as foreground when writing prop vals on object
 var S_useColorHintForObjects = true;//color hint used as background when creating new objects (eg., road)
 var S_defaultObjectArea = 'a_d_objects';

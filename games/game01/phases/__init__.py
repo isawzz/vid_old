@@ -1,1 +1,1 @@
-from .examplePhase import ExamplePhase
+from .examplePhase import ExamplePhase, RoyalPhase

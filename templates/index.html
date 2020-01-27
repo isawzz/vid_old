@@ -7,8 +7,10 @@
 	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"> -->
 	<!-- <meta charset="utf-8"> -->
 	<link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/facebook/65/game-die_1f3b2.png">
-	<link rel="stylesheet" href="/static/front/css/main.css">
+	<!-- <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600|Ubuntu+Condensed" rel="stylesheet" type="text/css"> -->
+	<!-- <link rel="stylesheet" href="/static/front/css/main.css"> -->
 	<!-- <script type="text/javascript" src="http://livejs.com/live.js"></script> -->
+	<script src="https://d3js.org/d3.v5.min.js" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js" crossorigin="anonymous"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.12.2/js-yaml.js" crossorigin="anonymous"></script>
@@ -44,7 +46,8 @@
 			'behavior',
 			'behaviorLibrary',
 			'cards',
-			'color',
+			'color', //not much used, collection of palettes
+			'deckABC',
 			// 'deck',
 			// 'faChars',
 			//'glyphs',
@@ -56,20 +59,22 @@
 			'presentation_util',
 			'process',
 			'structures',
+			'transfer',
 			'userspec',
 		];
 
-		var CSS_FILES = [
-			// 'favicon',
-			'card52',
-			'cards',
-			'gsm',
+		var FRONT_STYLES = [
+			'frontStyles',
+		]
+		var RSG_STYLES = [
+			'cardCatan',
+			'cardStandard',
+			// 'my',
+			'main',
 			'pageLayout',
-			'pageLayoutNew',
 			'selectStyle',
 			'tabs',
 			'tooltips',
-			'area_objects',
 			'MS',
 		];
 		var OFFLINE = false; //DO NOT CHANGE! TODO: support offline
@@ -100,7 +105,8 @@
 			}
 			document.getElementsByTagName('head')[0].appendChild(style);
 		}
-		for (const fname of CSS_FILES) styleLoader(fname, 'static/rsg/css', false, OFFLINE);
+		for (const fname of FRONT_STYLES) styleLoader(fname, 'static/front/css', false, OFFLINE);
+		for (const fname of RSG_STYLES) styleLoader(fname, 'static/rsg/css', false, OFFLINE);
 		for (const fname of JS_LOBBY) scriptLoader(fname, 'static/front/js', false, OFFLINE);
 		for (const fname of JS_FILES) scriptLoader(fname, 'static/rsg/js', false, OFFLINE);
 
@@ -301,7 +307,7 @@
 			<button id='c_b_Pass' style='display:none' onclick="onClickPass()">pass</button>
 			<button onclick="onClickToggleButton(this,[['view:default',fullViewObjects],['view:minimized',minimizeObjects]])">view:default</button>
 			<div id='tempFreezer' style='display:none'>
-				<h1>processing...</h1>
+				<h1>processing...</h1><br/><br/>
 				<button id='bStop' class='buttonSpecial' onclick="onClickStop()">STOP!</button>
 
 			</div>
@@ -334,7 +340,6 @@
 
 			<div id="a_d_Paris" class="tabcontent">
 				<div class='divInTab' id='a_d_spec' style='overflow-y:auto;text-align:left;'>
-					<!-- <textarea id='a_d_spec_content' style='font-size:20px;margin:auto;width:90%;height:90%'></textarea> -->
 					<pre id='a_d_spec_content'></pre>
 				</div>
 			</div>

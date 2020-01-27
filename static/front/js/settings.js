@@ -24,6 +24,7 @@ function setDefaultRSGSettings() {
 	S.settings.table.createDefault = true; // miss | true | false
 	S.settings.player.createDefault = true; // miss | true | false
 	S.settings.boardDetection = S_boardDetection;
+	S.settings.deckDetection = S_deckDetection;
 	S.settings.useColorHintForProperties = S_useColorHintForProperties;
 	S.settings.useColorHintForObjects = S_useColorHintForObjects;
 	S.settings.gameAreaSize = S_boardDetection ? [1000, 800] : [1000, '65vh'];
@@ -48,8 +49,8 @@ function setDefaultRSGSettings() {
 	S.settings.addSymbolToEdges = false;
 	S.settings.symbols = {};
 	//TODO add symbol keys to yml files!!!!
-	S.settings.symbols.city='castle';
-	S.settings.symbols.settlement='house';
+	//S.settings.symbols.city='castle';
+	//S.settings.symbols.settlement='house';
 
 	S.settings.color.theme = '#6B7A8F';
 	S.settings.gap = 4;

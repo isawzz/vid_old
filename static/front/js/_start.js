@@ -1,6 +1,7 @@
 var commandChain = [];
 var maxZIndex = 110;
 var iconChars;
+var bodyZoom = null;
 
 function _start() {
 	_initServer();
@@ -31,6 +32,7 @@ function _start() {
 				gcsAuto();
 				S.gameConfig = gcs[GAME];
 				_startNewGame('starter');
+				//test13_simpleDD(); //test12 | test07 | test13_simpleDDMultiple
 			}
 			); //START HERE!!!!
 
@@ -90,6 +92,49 @@ function _startRestartSame() {
 		});
 	});
 }
+
+//#region views
+function gameView() { 
+	if (bodyZoom) 	document.body.style.transform = 'scale('+bodyZoom+')'; 
+
+	setIsReallyMultiplayer();
+
+	if (!isReallyMultiplayer){
+		hide('c_b_PollStatus');
+	}
+
+	document.title = GAME+' '+USERNAME;
+	view = 'game'; isPlaying = true; 
+	hideLobby(); hideLogin(); showGame(); 
+	removeAllGlobalHandlers(); 
+	addGameViewHandlers();  //das sind nur die key handlers
+
+}
+function loginView() { 
+	view = 'login'; hideLobby(); showLogin(); hideGame(); clearChat(); clearMessages(); 
+	removeAllGlobalHandlers(); 
+	addLoginViewHandlers(); 
+}
+function lobbyView() { 
+	document.body.style.transform = null; //'scale('+1+')'; //.5)'; //+(percent/100)+")";
+
+	view = 'lobby'; 
+	hideLogin(); 
+	showLobby(); 
+	hideGame(); 
+	updateLoginHeader(); 
+	removeAllGlobalHandlers(); 
+	addLobbyViewHandlers(); 
+	//enable resume button if isPlayer
+	if (isPlaying) enableResumeButton(); else disableResumeButton();
+	//console.log('lobbyView isPlaying=',isPlaying)
+	//enable create game button
+	enableCreateButton();
+	//enableJoinButton 
+	enableJoinButton();
+	if (!USE_SOCKETIO) hideEventList(); // openGameConfig();
+}
+
 
 //#region helpers
 function getUsernameForPlayer(id) {

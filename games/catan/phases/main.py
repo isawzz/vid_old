@@ -147,6 +147,7 @@ class MainPhase(TurnPhase):
 				
 		elif obj_type == 'devdeck':
 			card = C.state.dev_deck.draw()
+			card.visible = tset([player])
 			self.player.devcards.add(card)
 			self.bought_devcards.add(card)
 			C.log.writef('{} buys a development card', self.player)

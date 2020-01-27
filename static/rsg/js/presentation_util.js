@@ -1,9 +1,9 @@
 //#region create MS 
 function makeInfobox(uid, oid, o) {
 	let id = makeIdInfobox(oid);
-	if (isdef(UIS[id])) { 
+	if (isdef(UIS[id])) {
 		//console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); 
-		return; 
+		return;
 	}
 	let ms = new RSG();
 	ms.id = id;
@@ -38,8 +38,8 @@ function makeInfobox(uid, oid, o) {
 	//console.log(ms.id,ms.refs,ms.refs['table'])
 	ms.addMouseEnterHandler('title', highlightMsAndRelatives);
 	ms.addMouseLeaveHandler('title', unhighlightMsAndRelatives);
-	ms.addMouseEnterHandler('', ()=>bringInfoboxToFront(ms));
-	ms.addClickHandler('',()=>ms.hide())
+	ms.addMouseEnterHandler('', () => bringInfoboxToFront(ms));
+	ms.addClickHandler('', () => ms.hide())
 	ms.refs['table'].map(x => {
 		UIS[x].addMouseEnterHandler('title', highlightMsAndRelatives);
 		UIS[x].addMouseLeaveHandler('title', unhighlightMsAndRelatives);
@@ -145,8 +145,8 @@ function makeDrawingArea(id, idArea, addToUIS = false) {
 	let parentElem = parent ? parent.elem : document.getElementById(idArea);
 
 	let domel = addSvgg(parentElem, id, { originInCenter: true }); //attaches drawing area!
-	ms.w=parent.w;
-	ms.h=parent.h;
+	ms.w = parent.w;
+	ms.h = parent.h;
 	//console.log(domel.offsetWidth,domel.offsetHeight,parent.w,parent.h)
 	ms.isAttached = true;
 
@@ -393,14 +393,18 @@ function makeDefaultAction(boat, areaName) {
 
 }
 
-function getBoardElementStandardType(ms){
-	return ms.isa.corner?'corner':ms.isa.field?'field':'edge';
+function getBoardElementStandardType(ms) {
+	return ms.isa.corner ? 'corner' : ms.isa.field ? 'field' : 'edge';
 }
 function makeMainVisual(oid, o) {
 	//examples are: building(road,settlement), robber
 	//main objects are only made if loc on board element!
 	//console.log(oid, o);
 	//depending on size, will be labeled w/ any simple field val, or oid if none
+	
+	//TODO: das muss geaendert werden!!!
+	//this function only makes visuals located on a board!
+	
 	if (!('loc' in o) || !isBoardElement(o.loc._obj)) return null;
 
 	let id = 'm_t_' + oid;
@@ -434,42 +438,48 @@ function makeMainVisual(oid, o) {
 	//if (locElem.isa.edge) console.log(locElem.w,locElem.h,locElem)
 	//console.log('........locElem.isa',locElem.isa);
 	let boardElemType = getBoardElementStandardType(locElem);
-	let sizeInfo=S.settings.pieceSizeRelativeToLoc[boardElemType];
-	
+	let sizeInfo = S.settings.pieceSizeRelativeToLoc[boardElemType];
+
 	let baseValue = locElem[sizeInfo[0]];
 	let percent = Number(sizeInfo[1]);
-	let sz = (baseValue*percent)/100;
+	let sz = (baseValue * percent) / 100;
 
 	//default piece for field,node is circle of size sz w/ symbol in middle
-	if (boardElemType != 'edge'){
-		makePictoPiece(ms,o,sz,color)
-		ms.setPos(locElem.x, locElem.y); 
-	}else{
-	//default piece for edge is lineSegment along edge of length sz (w/ symbol only if addSymbolToEdges==true)
-		makeLineSegment(ms,o,locElem,sz,color);
+	if (boardElemType != 'edge') {
+		makePictoPiece(ms, o, sz, color)
+		ms.setPos(locElem.x, locElem.y);
+	} else {
+		//default piece for edge is lineSegment along edge of length sz (w/ symbol only if addSymbolToEdges==true)
+		makeLineSegment(ms, o, locElem, sz, color);
 	}
 	ms.attach();
 	return ms;
 }
-function makeLineSegment(ms,o,msLoc,sz,color){
+function makeLineSegment(ms, o, msLoc, sz, color) {
 	//TODO: S.settings.addSymbolsToEdges
-	let [x1,y1,x2,y2]=msLoc.getEndPointsOfLineSegmentOfLength(sz);
+	let [x1, y1, x2, y2] = msLoc.getEndPointsOfLineSegmentOfLength(sz);
 	//let ms2=makeDrawingElement('el2', 'board');
-	ms.line({cap:'round',thickness:msLoc.thickness,x1:x1,y1:y1,x2:x2,y2:y2}).setBg(color).attach();
-	ms.line({className:'overlay',cap:'round',thickness:msLoc.thickness,x1:x1,y1:y1,x2:x2,y2:y2});
+	ms.line({ cap: 'round', thickness: msLoc.thickness, x1: x1, y1: y1, x2: x2, y2: y2 }).setBg(color).attach();
+	ms.line({ className: 'overlay', cap: 'round', thickness: msLoc.thickness, x1: x1, y1: y1, x2: x2, y2: y2 });
 
 }
-function makePictoPiece(ms,o,sz,color){
+function makePictoPiece(ms, o, sz, color) {
 
 	//console.log('unit',unit,'percent',percent,'sz',sz);
-	let [w, h] = [sz,sz]; 
+	let [w, h] = [sz, sz];
 
 	let sym = o.obj_type;
-	if (sym in S.settings.symbols){sym = S.settings.symbols[sym];}
-	if (!(sym in iconChars)) sym = randomNumber(5,120); //abstract symbols
-	ms.ellipse({ w: w, h: h, fill: color, alpha:.3 });
-	let pictoColor = color == 'black'?randomColor():color;
-	ms.pictoImage(sym,pictoColor, sz*2/3); //colorDarker(color),sz*2/3);
+	if (sym in S.settings.symbols) { sym = S.settings.symbols[sym]; }
+	if (!(sym in iconChars)) {
+		console.log("didn't find key", sym);
+		symNew = Object.keys(iconChars)[randomNumber(5, 120)]; //abstract symbols
+		console.log('will rep',sym,'by',symNew)
+		S.settings.symbols[sym]=symNew;
+		sym=symNew;
+	}
+	ms.ellipse({ w: w, h: h, fill: color, alpha: .3 });
+	let pictoColor = color == 'black' ? randomColor() : color;
+	ms.pictoImage(sym, pictoColor, sz * 2 / 3); //colorDarker(color),sz*2/3);
 }
 function makeMainPlayer(oid, o, areaName) {
 	let id = 'm_p_' + oid;

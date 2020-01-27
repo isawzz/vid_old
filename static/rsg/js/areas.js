@@ -14,61 +14,12 @@ const AREAS = {
 
 	a_d_player:['--wPlayers','--hGame'],
 }
-function zoom(percent) {
-	console.log('zoom level',percent)
-	document.body.style.zoom = ''+percent+"%";
-}
-function onClickAreaSizes(){
-	var width = window.innerWidth;
-	var height = window.innerHeight;
-	console.log('_____________',width,height);
-	let zoomlevel=calcScreenSizeNeeded();
-	console.log(zoomlevel)
-	zoom(zoomlevel);
-}
-function calcScreenSizeNeeded(){
-
-	let wAreas = ['a_d_actions','a_d_game','a_d_player','a_d_log'];
-	let wTotal=0;
-	let wTotal2=0;
-	
-	for(const a of wAreas){
-		let ms = UIS[a];
-		let wSoll = ms.w;
-		wTotal += wSoll;
-		//console.log('ms.w',wSoll);
-		let b=getBounds(ms.elem);
-		let wIst = Math.round(b.width);
-		wTotal2 += wIst;
-		//console.log('w ist',wIst);
-	}
-	//console.log('total width min:',wTotal,'ist',wTotal2, 'aber window nur',window.innerWidth);
-
-	let hAreas = ['a_d_header','a_d_status','a_d_game','a_d_buttons'];
-	let hTotal=0;
-	let hTotal2=0;
-	
-	for(const a of hAreas){
-		let ms = UIS[a];
-		let hSoll = ms.h;
-		hTotal += hSoll;
-		//console.log('ms.h',hSoll);
-		let b=getBounds(ms.elem);
-		let hIst = Math.round(b.height);
-		hTotal2 += hIst;
-		//console.log('w ist',hIst);
-	}
-	//console.log('total height min:',hTotal,'ist',hTotal2, 'aber window nur',window.innerHeight);
-
-	return (window.innerWidth*100)/wTotal2;
-}
-
 
 function initPageHeader() {
 	pageHeaderSetGame();
 	pageHeaderSetPlayers();
 }
-function isPlain() { return !S.settings.boardDetection && !S.settings.userStructures }
+function isPlain() { return !S.settings.boardDetection && !S.settings.deckDetection && !S.settings.userStructures }
 function initTABLES() {
 	//prepare areas for default objects
 	let tables = {

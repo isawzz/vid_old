@@ -47,8 +47,7 @@ class Catan(gsm.GameController):
 		self.register_obj_type(name='board', obj_cls=Board)
 		self.register_obj_type(name='hex', obj_cls=Hex)
 		
-		self.register_obj_type(name='devcard', obj_cls=DevCard,
-		                       req={'name', 'desc'},) #do not use req
+		self.register_obj_type(name='devcard', obj_cls=DevCard) # ,req={'name', 'desc'},) #do not use req
 		self.register_obj_type(name='devdeck', obj_cls=Deck)
 		self.register_obj_type(name='robber', open={'loc'})
 		

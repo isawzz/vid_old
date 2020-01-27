@@ -23,6 +23,7 @@ class RSG {
 		//sollte eigentlich fuer beide gehen!
 		//zuerst als g
 		let ch = iconChars[key];
+		//if (nundef(ch)) ch = chooseRandom(Object.values(iconChars));
 		let family = (ch[0] == 'f' || ch[0] == 'F') ? 'pictoFa' : 'pictoGame';
 		let text = String.fromCharCode('0x' + ch);
 		//key="skiing-nordic";

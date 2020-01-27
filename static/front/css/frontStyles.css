@@ -1,98 +1,11 @@
-/* #region root */
 :root{
-	--fzLobby:24px;
+	--fzLobby: 24px;
 	--hLobbyStatus:500px;
 	--hLobbyChat:200px;
 
-	--gap:0px;
 	--bgLobby: #2196F3;
-	--bgBody: #2196F3;
-	--bgAreas: rgba(255, 255, 255, 0.8);
-
-	--bgTabActive: null;
-	--fgButton: null;
-	--bgButton: null;
-	--bgButtonHover: null;
-	--bgButtonActive: null;
-	--bgTabContent: null;
-	--bgWinner: null;
-	--baltbg: null;
-	--bbg: null;
-	--bhbg: null;
-	--babg: null;
-	--bgS: null;
-	--bgA: null;
-	--bgL: null;
-	--bgG: null;
-	--bgO: null;
-	--bgT: null;
-	--bgB: null;
-	--bgTabs: null;
-
-	--wGame: 800px;
-	--wActions: 200px;
-	--wLog: 200px;
-	--wPlayers: 320px;
-	--hStatus: 40px;
-	--hGame: 800px;
-	--hTesting: 800px;
-	--hTabs: 40px;
-
-	--tableRowPadding: 6px;
-	--upRowPadding: -10px;
+	--bgLobbyMessageArea: rgba(255, 255, 255, 0.8);
 }
-/* #endregion root */
-
-/* #region hidden, */
-.buttonLikeLink {
-  background: none!important;
-  border: none;
-	color: #069;
-	padding:0px;
-	height:20px;
-  text-decoration: underline;
-	cursor: pointer;
-}
-
-/* #endregion */
-
-/* #region tags */
-body {
-	font-family: "Helvetica Neue", sans-serif;
-	font-size: var(--fzLobby);
-  margin: 0;
-  padding: 0;
-}
-input {
-  outline: none;
-  /* font-size: 1.0rem; */
-  font-size: var(--fzLobby);
-  padding: 0 5px;
-}
-.button {
-  text-transform: uppercase;
-	/* font-size: 0.8rem; */
-  font-size: var(--fzLobby);
-	margin: 10px;
-	min-width: 120px;
-	padding: 8px 10px;
-	/* padding: 6px 6px 6px 8px; */
-  /* padding: 3px 15px; */
-  color: white;
-  /* line-height: 25px; */
-  background-color: var(--bgLobby);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  /* box-shadow: rgba(0, 0, 0, 0.12) 0 1px 6px, rgba(0, 0, 0, 0.12) 0 1px 4px; */
-  transition: all 150ms ease-in;
-  outline: none;
-}
-.button:hover {
-    background-color: #79d7e4;
-}
-
-/* #endregion */
 
 /* #region login */
 .layout_login{
@@ -105,7 +18,17 @@ input {
 	display:inline;
 
 }
-/* #endregion login */
+.buttonLikeLink {
+  background: none!important;
+  border: none;
+	color: #069;
+	padding:0px;
+	height:20px;
+  text-decoration: underline;
+	cursor: pointer;
+}
+
+/* #endregion */
 
 /* #region lobby */
 
@@ -121,7 +44,7 @@ input {
 	box-sizing: border-box;
 }
 .layout_lobby > div {
-	background-color: var(--bgAreas);
+	background-color: var(--bgLobbyMessageArea);
 	display: flex;
 	margin-bottom: 10px;
 	width:100%;
@@ -129,6 +52,37 @@ input {
 	flex-grow: 1;
 	box-sizing: border-box;
 }
+
+body {
+	font-family: "Helvetica Neue", sans-serif;
+	font-size: var(--fzLobby);
+  margin: 0;
+  padding: 0;
+}
+input {
+  outline: none;
+  font-size: var(--fzLobby);
+  padding: 0 5px;
+}
+.button {
+  text-transform: uppercase;
+  font-size: var(--fzLobby);
+	margin: 10px;
+	min-width: 120px;
+	padding: 8px 10px;
+  color: white;
+  background-color: var(--bgLobby);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 150ms ease-in;
+  outline: none;
+}
+.button:hover {
+    background-color: #79d7e4;
+}
+
+
 
 /* status */
 #a_d_status_lobby{
@@ -222,22 +176,8 @@ input {
 	display:block;
 	text-align:center;
   font-size: var(--fzLobby);
-	/* font-size:14px; */
-}
-@font-face{
-	font-family: 'pictoFa';
-	src: url('Font Awesome 5 Free-Solid-900.otf') format("truetype");
-}
-@font-face {
-	font-family: 'pictoGame';
-	src: url('game-icons.ttf') format("truetype");
-}
-@font-face {
-	font-family: 'AlgerianRegular';
-	src: url('ALGER.ttf') format("truetype");
 }
 .pageTitle{
-	/* background-color:red; */
 	position: absolute;
 	top:0px;
 	left:50%;

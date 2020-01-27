@@ -1,11 +1,4 @@
-.center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.card {
+.cardCatan {
   float: left;
   background: white;
 	height: 320px;
@@ -20,12 +13,13 @@
 	color:black;
 }
 
-.card:hover {
+.cardCatan:hover {
 	box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
 }
 
-p {
-  font-family: "Arial", Helvetica, sans-serif;
+.cardCatan p {
+	font-family: "Arial", Helvetica, sans-serif;
+	/* color: green; */
 }
 
 .circular {
@@ -47,7 +41,7 @@ p {
   margin: 0 auto; 
 }
 
-hr { 
+.cardCatan hr { 
   border: 0; 
 	height: 2px; 
 	width:70%;
@@ -56,20 +50,3 @@ hr {
   background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
   background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0); 
 }
-
-.fas {
-	/* position: relative; */
-	color: #EEE;
-	font-size: 80px;
-}
-/* .fas:before {
-	position: absolute;
-	left: calc(50% - .50em);
-	top: calc(50% - .10em);
-}
-.fas.fa-icon {
-	width: 80%;
-	height: 80%;
-	color: white;
-	background-color: black;
-} */
