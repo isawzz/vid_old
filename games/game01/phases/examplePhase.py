@@ -26,7 +26,7 @@ class RoyalPhase(TurnPhase):
 				for p in C.players:
 					cards = C.state.deck.draw(num, player=player)
 					C.log[p].writef('You draw: {}'.format(', '.join(['{}']*num)), *cards)
-					p.hand.add(cards)
+					p.hand.update(cards)
 
 		if action is not None:
 			obj, = action

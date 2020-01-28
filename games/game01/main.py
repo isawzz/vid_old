@@ -7,7 +7,7 @@ from gsm.common.world import grid
 from gsm.common import TurnPhaseStack
 
 from .phases import *
-from .objects import Card, DiscardPile, DrawPile
+from .objects import Card, DiscardPile, DrawPile, Deck_WA
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,7 +37,7 @@ class Game01(gsm.GameController):
 		
 		# register game object types
 		self.register_obj_type(name='card', obj_cls=Card)
-		self.register_obj_type(name='deck52', obj_cls=Deck, open={'count'})
+		self.register_obj_type(name='deck52', obj_cls=Deck_WA, open={'count'})
 		#self.register_obj_type(name='draw_pile', obj_cls=DrawPile)
 		# self.register_obj_type(name='card', obj_cls=CardBase)
 		# self.register_obj_type(name='deck', obj_cls=Deck)
@@ -77,7 +77,7 @@ class Game01(gsm.GameController):
 				c1 = self.state.deck.draw()
 				c1.face_down(player)
 				#c1.visible = tset([player])
-				player.hand.add(c1)
+				player.hand.add(c1) #bei 1 card kann add nehmen, bei set of cards muss update nehmen!
 		self.state.deck.count = len(self.state.deck)
 
 	def _end_game(self):

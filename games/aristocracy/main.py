@@ -77,6 +77,8 @@ class Aristocracy(gsm.GameController):
 		
 		num = config.rules.num_numbers
 		for n, c in config.cards.items():
+			c.name=str(c.name)
+			c.short_name=str(c.short_name)
 			if n in config.rules.num_royals:
 				cards.extend([c]*config.rules.num_royals[n])
 			else:
@@ -91,10 +93,11 @@ class Aristocracy(gsm.GameController):
 		# self.state.discard_pile = self.table.create(obj_type='discard_pile', # cards=cards, # top_face_up=config.rules.discard_market,
 		#                                         seed=self.RNG.getrandbits(64), default='card')
 
-		self.state.discard_pile = self.create_object('discard_pile', # cards=cards, # top_face_up=config.rules.discard_market,
-		                                        seed=self.RNG.getrandbits(64), default='card')
+		self.state.discard_pile = \
+			self.create_object('discard_pile', top_face_up=config.rules.discard_market,
+			                   seed=self.RNG.getrandbits(64), default='card') # cards=cards, # top_face_up=config.rules.discard_market,
 
-		self.state.discard_pile.top_face_up = config.rules.discard_market #top_face_up
+		# self.state.discard_pile.top_face_up = config.rules.discard_market #top_face_up
 		# self.state.discard_pile = self.create_object('discard_pile', top_face_up=config.rules.discard_market,
 		#                                             seed=self.RNG.getrandbits(32), default='card')
 		
@@ -108,7 +111,7 @@ class Aristocracy(gsm.GameController):
 		self.state.royal_phases = config.rules.royal_phases
 		
 		for i, player in enumerate(self.players):
-			player.hand = tset(self.state.deck.draw(config.rules.hand_size.starting))
+			player.hand = tset(self.state.deck.draw(config.rules.hand_size.starting-1))
 			player.buildings = tdict({bld:tlist() for bld in config.rules.counts})
 			player.vps = 0
 			player.hand_limit = config.rules.hand_size.max
