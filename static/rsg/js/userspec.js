@@ -9,11 +9,12 @@ function specAndDOM(callbacks = []) {
 
 	let hasStructure = false;
 	if (S.settings.userStructures) hasStructure = initSTRUCTURES();
+	//console.log(hasStructure,S.settings)
 	if (!hasStructure && S.settings.boardDetection) {
 		detectBoard(G.table, 'a_d_game');
 	}
 	if (!hasStructure && S.settings.deckDetection) {
-		detectDeck(G.table, 'a_d_game');
+		detectDecks(G.table, 'a_d_game');
 	}
 	openTabTesting(S.settings.openTab);
 

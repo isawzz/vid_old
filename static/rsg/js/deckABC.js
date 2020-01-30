@@ -43,18 +43,18 @@ function deckWiseBack(card) {
 var DeckB = (function () {
 
 	//#region variables	
-	var ____fontSize;
-	var ___fontSize;
-	var __fontSize;
-	var _fontSize;
-	var ticking;
-	var animations = [];
-	var style = document.createElement('p').style;
-	var memoized = {};
-	var has3d;
-	var maxZ = 52;
-	var displacement = 4;
-	var _deckParams = {}; // kind, fContent, size, N, orientation, repeat, numJokers;
+	let ____fontSize;
+	let ___fontSize;
+	let __fontSize;
+	let _fontSize;
+	let ticking;
+	let animations = [];
+	let style = document.createElement('p').style;
+	let memoized = {};
+	let has3d;
+	let maxZ = 52;
+	let displacement = 4;
+	let _deckParams = {}; // kind, fContent, size, N, orientation, repeat, numJokers;
 
 	// fallback
 	window.requestAnimationFrame || (window.requestAnimationFrame = function (cb) { setTimeout(cb, 0); });
@@ -695,20 +695,20 @@ var DeckB = (function () {
 	//#endregion
 
 	function fCard(i) {
-		//console.log(_deckParams)
-		var transform = prefix('transform');
-		var rank = i % 13 + 1;
-		var suit = i / 13 | 0;
-		var z = (_deckParams.N - i) / displacement;
-		var elem = createElement('div');
-		var faceElem = createElement('div');
-		var backElem = createElement('div');
-		var isDraggable = false;
-		var isFlippable = false;
+		////console.log(_deckParams)
+		let transform = prefix('transform');
+		let rank = i % 13 + 1;
+		let suit = i / 13 | 0;
+		let z = (_deckParams.N - i) / displacement;
+		let elem = createElement('div');
+		let faceElem = createElement('div');
+		let backElem = createElement('div');
+		let isDraggable = false;
+		let isFlippable = false;
 		let text = 'hallo'; //dummy
-		var self = { params: _deckParams, text: text, i: i, rank: rank, suit: suit, pos: i, elem: elem, mount: mount, unmount: unmount, setSide: setSide };
-		var modules = DeckB.modules;
-		var module;
+		let self = { params: _deckParams, text: text, i: i, rank: rank, suit: suit, pos: i, elem: elem, mount: mount, unmount: unmount, setSide: setSide };
+		let modules = DeckB.modules;
+		let module;
 
 		// add classes
 		faceElem.classList.add('face');
@@ -908,6 +908,12 @@ var DeckB = (function () {
 			// mount card to target (deck)
 			target.appendChild(elem);
 			self.dParent = target;
+			// //console.log('*** mount card ***')
+			// //console.log(target);
+			// //console.log(target.id);
+			// //console.log(elem);
+			// //console.log(elem.id);
+			// //console.log(self.dParent)
 		}
 
 		function unmount() {
@@ -937,7 +943,7 @@ var DeckB = (function () {
 
 	function fDeck(deckParams) {
 		_deckParams = deckParams;
-		console.log(deckParams)
+		////console.log(deckParams)
 		//card size and orientation
 		//if orientation is landscape, take larger size as w, else h
 		let w = deckParams.size.w;
@@ -951,12 +957,12 @@ var DeckB = (function () {
 		setCSSVariable('--hCard', h + 'px');
 
 		// init cards array
-		var cards = new Array(_deckParams.NTotal);
-		var deckElem = createElement('div');
-		var self = observable({ mount: mount, unmount: unmount, cards: cards, elem: deckElem });
-		var dParent;
-		var modules = DeckB.modules;
-		var module;
+		let cards = new Array(_deckParams.NTotal);
+		let deckElem = createElement('div');
+		let self = observable({ mount: mount, unmount: unmount, cards: cards, elem: deckElem });
+		let dParent;
+		let modules = DeckB.modules;
+		let module;
 
 		queue(self);
 		for (module in modules) {
@@ -964,8 +970,8 @@ var DeckB = (function () {
 		}
 		deckElem.classList.add('deck');
 
-		var card;
-		for (var i = cards.length; i; i--) {
+		let card;
+		for (let i = cards.length; i; i--) {
 			card = cards[i - 1] = fCard(i - 1);
 			card.setSide('back');
 			card.mount(deckElem);
@@ -975,6 +981,11 @@ var DeckB = (function () {
 
 		function mount(root) {
 			// mount deck to root
+			//console.log('*** mount deck ***')
+			//console.log('root',root);
+			//console.log('root.id',root.id);
+			//console.log('deckElem',deckElem);
+			//console.log('deckElem.id',deckElem.id);
 			dParent = root;
 			dParent.appendChild(deckElem);
 		}

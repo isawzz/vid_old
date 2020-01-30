@@ -1,4 +1,44 @@
 //#region create MS 
+function makeDeckMS(oid, o, deck1, areaName, x, y) {
+	//oid = getUID();
+	let id = 'm_t_' + oid; //oid;
+	//console.log(id)
+	if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+
+	//let ms1 = new DeckMS(getUID(),deck1);
+	//replace by code:
+	let ms = new RSG();
+	ms.id = id;
+	ms.o = o;
+	//console.log('o', o);
+	ms.deck = deck1;
+	//ms.deck.elem.id=getUID();
+	ms.oid = oid;
+	ms.elem = document.createElement('div');
+	ms.elem.id = id;// getUID(); // id+'hallo';
+	//console.log('elem', ms.elem);
+
+	//ms1.attachTo(UIS[areaName].elem); //div1);
+	//replace by code:
+	// let div = UIS[areaName].elem;
+	// ms.parent = UIS[areaName];
+	// //console.log(ms.parent)
+	// ms.parentDiv = div;
+	// ms.idParent = areaName;
+
+	ms.parts.elem = ms.elem;
+	ms.domType = getTypeOf(ms.elem);
+	ms.cat = DOMCATS[ms.domType];
+	ms.idParent = areaName;
+	UIS[areaName].children.push(id);
+	ms.isa.deck = true;
+	//console.log('******** vor link', id, oid)
+	listKey(IdOwner, id[2], id);
+	linkObjects(id, oid);
+	UIS[id] = ms;
+
+	return ms;
+}
 function makeInfobox(uid, oid, o) {
 	let id = makeIdInfobox(oid);
 	if (isdef(UIS[id])) {
@@ -47,9 +87,6 @@ function makeInfobox(uid, oid, o) {
 	bringInfoboxToFront(ms);
 	return ms;
 }
-
-
-
 function makeRoot() {
 	let ms = new RSG();
 	let id = 'R_d_root';
@@ -131,7 +168,6 @@ function makeLogArea(plid) {
 	listKey(IdOwner, id[2], id);
 	return ms;
 }
-
 function makeDrawingArea(id, idArea, addToUIS = false) {
 
 	if (addToUIS && isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
@@ -244,7 +280,6 @@ function makeBoard(idBoard, o, areaName) {
 	return ms;
 
 }
-
 function makeCard(oid, o, areaName) {
 	let idArea = getIdArea(areaName);
 	//console.log('makeCard', oid, areaName);
@@ -273,7 +308,6 @@ function makeCard(oid, o, areaName) {
 	return ms;
 
 }
-
 function makeRefs(idParent, refs) {
 	for (const ref of refs) {
 		let id = ref.id;
@@ -327,10 +361,10 @@ function makeAux(s, oid, areaName, directParent) {
 	return ms;
 
 }
-
 function makeDefaultObject(oid, o, areaName) { return _makeDefault(makeIdDefaultObject(oid), oid, o, areaName, oid + ': ' + o.obj_type); }
 function makeDefaultPlayer(oid, o, areaName) { return _makeDefault(makeIdDefaultPlayer(oid), oid, o, areaName, 'player: ' + oid + '(' + getPlayerColorString(oid) + ', ' + getUser(oid) + ')'); }
 function _makeDefault(id, oid, o, areaName, title) {
+	if (oid == '0') console.log(id, oid, o, areaName, title)
 	if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
 	let ms = new RSG();
 	ms.id = id;
@@ -401,10 +435,10 @@ function makeMainVisual(oid, o) {
 	//main objects are only made if loc on board element!
 	//console.log(oid, o);
 	//depending on size, will be labeled w/ any simple field val, or oid if none
-	
+
 	//TODO: das muss geaendert werden!!!
 	//this function only makes visuals located on a board!
-	
+
 	if (!('loc' in o) || !isBoardElement(o.loc._obj)) return null;
 
 	let id = 'm_t_' + oid;
@@ -473,9 +507,9 @@ function makePictoPiece(ms, o, sz, color) {
 	if (!(sym in iconChars)) {
 		console.log("didn't find key", sym);
 		symNew = Object.keys(iconChars)[randomNumber(5, 120)]; //abstract symbols
-		console.log('will rep',sym,'by',symNew)
-		S.settings.symbols[sym]=symNew;
-		sym=symNew;
+		console.log('will rep', sym, 'by', symNew)
+		S.settings.symbols[sym] = symNew;
+		sym = symNew;
 	}
 	ms.ellipse({ w: w, h: h, fill: color, alpha: .3 });
 	let pictoColor = color == 'black' ? randomColor() : color;
@@ -641,71 +675,6 @@ function deleteOid(oid) {
 	}
 }
 //#endregion
-
-//#region helpers: linking UIS ...
-function _addRelatives(id, oid) {
-	// if (isdef(oid2ids[oid])) oid2ids[oid].map(x => listKey(id2uids, id, x)); //all other already existing uis are linked to newly created element!
-	if (isdef(oid2ids[oid])) {
-		for (const idOther of oid2ids[oid]) {
-			if (idOther == id) {
-				//console.log('object',id,'already exists in oid2ids[',oid,']'); 
-				continue;
-			}
-			listKey(id2uids, id, idOther);
-			listKey(id2uids, idOther, id);
-		}
-	}
-}
-function getUser(idPlayer) { return G.playersAugmented[idPlayer].username; }
-function getPlayerColor(id) { return G.playersAugmented[id].color }
-function getPlayerColorString(id) { return G.playersAugmented[id].altName }
-
-function getColorHint(o) {
-	for (const k in o) {
-		if (k.toLowerCase() == 'color') return o[k];
-		if (isDict(o[k]) && isdef(o[k]._player)) return getPlayerColor(o[k]._player);
-	}
-	return null;
-}
-function getRandomShape() { return chooseRandom(['ellipse', 'roundedRect', 'rect', 'hex']); }
-function linkObjects(id, oid) {
-	if (isdef(UIS[id])) {
-		//console.log('linkObjects: ui', id, 'exists and CANNOT be overriden!!!!!');
-	}
-	//console.log('*** created ***',id)
-	_addRelatives(id, oid);
-	listKey(id2oids, id, oid);
-	listKey(oid2ids, oid, id);
-}
-function unlink(id) {
-	let oids = id2oids[id];
-	let uids = id2uids[id];
-	//console.log('unlink', 'oids', oids)
-	//console.log('unlink', 'uids', uids)
-	if (isdef(uids)) for (const uid of uids) removeInPlace(id2uids[uid], id);
-	if (isdef(oids)) for (const oid of oids) removeInPlace(oid2ids[oid], id);
-	delete id2uids[id];
-	delete id2oids[id];
-}
-function showTT(ev) {
-	if (TTMS) {
-
-		$(TTMS.elem).off('mouseover');
-		console.log('hallo')
-		let d = document.getElementById('tooltip');
-		clearElement(d);
-		let t = tableElem(TTMS.o);
-		d.appendChild(t);
-		$('div#tooltip').css({
-			display: 'inline-block',
-			top: ev.pageY, //clientY-dy+ms.h,//e.pageY, //clientY,
-			left: ev.pageX, //clientX-dx+ms.w, //e.pageX, //clientX,
-			//width: '300px',
-			//height: '300px'
-		});
-		TTMS = null;
-	}
-}
 
 
 //get or set attributes of a dom elem

@@ -237,7 +237,7 @@ class RSG {
 			return this;
 		}
 
-		if (isdef(txt) && !isString(txt)) txt=txt.toString();
+		if (isdef(txt) && !isString(txt)) txt = txt.toString();
 		if (isEmpty(txt)) {
 			//console.log('erasing...')
 
@@ -790,8 +790,8 @@ class RSG {
 	//#endregion
 
 	//#region css classes
-	addClass(el,clName) {
-		if (nundef(el)) el = this.overlay?this.overlay:this.ground;
+	addClass(el, clName) {
+		if (nundef(el)) el = this.overlay ? this.overlay : this.ground;
 		if (!el) return;
 
 		el.classList.add(clName);
@@ -799,13 +799,13 @@ class RSG {
 	getClass() {
 		if (this.overlay) {
 			return getClass(this.overlay);
-		}else if (this.ground){
+		} else if (this.ground) {
 			return this.getClass(this.ground);
 		}
 		return null;
 	}
-	removeClass(el,clName) {
-		if (nundef(el)) el = this.overlay?this.overlay:this.ground;
+	removeClass(el, clName) {
+		if (nundef(el)) el = this.overlay ? this.overlay : this.ground;
 
 		//let el = this.overlay;
 		if (!el) return;
@@ -871,6 +871,7 @@ class RSG {
 
 	//#region events
 	_handler(ev) {
+		//if (this.deck) console.log('event!',ev);
 		ev.stopPropagation();
 		let eventName = ev.handleObj.origType;
 
@@ -885,7 +886,8 @@ class RSG {
 		if (isdef(handler)) { counters[eventName] += 1; counters.events += 1; handler(ev, this, partName); }
 	}
 	addHandler(evName, partName = 'elem', handler = null, autoEnable = true) {
-		let part = this.parts[partName];
+		let part = this._getPart(partName); //his.parts[partName];
+		//if (this.deck) console.log('added',evName,'handler')
 		if (nundef(part)) { part = this.elem; partName = 'elem'; }
 
 		if (isdef(handler)) { this.handlers[evName][partName] = handler; }
@@ -909,9 +911,13 @@ class RSG {
 	//#endregion
 
 	//#region high
+	getTopCardElemOfDeck() {
+		return this.deck.cards[0].elem;
+	}
 	_getPart(partName, elemIfMissing = true) {
 		let part = this.parts[partName];
-		return nundef(part) ? elemIfMissing ? this.elem : null : part;
+		// if (this.isa.deck) return this.getTopCardElemOfDeck(); else return isdef(part) ? part : elemIfMissing ? this.elem : null;
+		return isdef(part) ? part : elemIfMissing ? this.elem : null;
 	}
 	highC(c, pname = 'elem', elIfMiss = true) {
 		//console.log('highC', this.id)
@@ -944,7 +950,7 @@ class RSG {
 			if (this.isPicto) {
 				this.setTextFill(this.picto, '#ccff00', 1);//.elem.addClass('high',this.ground); 
 				//console.log('high', this.id, this.ground);
-			} else addClass(this.overlay,'high');
+			} else addClass(this.overlay, 'high');
 		} else part.style.backgroundColor = '#ccff00';
 
 		// if (this.isLine) {
@@ -963,7 +969,7 @@ class RSG {
 			} else {
 				//console.log('overlay',this.overlay)
 				//if (isdef(this.overlay)) console.log(this.overlay.classList)
-				removeClass(this.overlay,'high');
+				removeClass(this.overlay, 'high');
 			}
 
 			//removeClass('high', this.overlay);
@@ -972,25 +978,25 @@ class RSG {
 	highFrame(pname = 'elem', elIfMiss = true) {
 		let part = this._getPart(pname, elIfMiss);
 		if (!part) return;
-		if (this.isLine) this.addClass(this.overlay,'lineHighFrame');
+		if (this.isLine) this.addClass(this.overlay, 'lineHighFrame');
 		else if (this.isPicto) {
-			this.addClass(this.ground,'high'); 
+			this.addClass(this.ground, 'high');
 			//this.setTextFill(this.picto, '#ccff00', 1);
-		}else if (this.isa.field){
-			this.addClass(this.overlay,'fieldHighFrame');
+		} else if (this.isa.field) {
+			this.addClass(this.overlay, 'fieldHighFrame');
 		}
-		else addClass(this.cat == 'g' ? this.overlay : this.parts['title'],'highFrame')
+		else addClass(this.cat == 'g' ? this.overlay : this.parts['title'], 'highFrame')
 	}
 	unhighFrame(pname = 'elem', elIfMiss = true) {
 		let part = this._getPart(pname, elIfMiss);
 		if (!part) return;
-		if (this.isLine) this.removeClass(this.overlay,'lineHighFrame');
+		if (this.isLine) this.removeClass(this.overlay, 'lineHighFrame');
 		else if (this.isPicto) {
-			this.removeClass(this.ground,'high'); 
+			this.removeClass(this.ground, 'high');
 			//this.setTextFill(this.picto, this.orig.fg, 1);//.elem.addClass('high',this.ground); 
-		}else if (this.isa.field){
-			this.removeClass(this.overlay,'fieldHighFrame');
-		}	else removeClass(this.cat == 'g' ? this.overlay : this.parts['title'],'highFrame')
+		} else if (this.isa.field) {
+			this.removeClass(this.overlay, 'fieldHighFrame');
+		} else removeClass(this.cat == 'g' ? this.overlay : this.parts['title'], 'highFrame')
 		// removeClass('highFrame',this.cat=='g'?this.overlay:this.parts['title'])
 		// if (this.cat == 'g') removeClass('highFrame',this.overlay);
 		// else { let bg = part.bg; if (nundef(bg)) bg = null; part.style.backgroundColor = bg; }
@@ -1127,6 +1133,9 @@ class RSG {
 		// this.elem.backgroundColor = 'red';//
 		this.setBg(c);
 	}
+	setHeight(h) {
+		this.elem.style.height = h + 'px'; this.h = h;
+	}
 	setSize(w, h) {
 		//console.log('setSize',this.id,w,h)
 		this.w = w; this.h = h;
@@ -1148,15 +1157,44 @@ class RSG {
 		}
 		return this;
 	}
+	centerInDiv() {
+		this.parent = UIS[this.idParent];
+
+		if (isdef(this.parent)) {
+			let d = this.elem;
+			let divParent = this.parent.elem;
+			let wParent = divParent.offsetWidth;
+
+			//TODO this.cards has to be replaced by something else!!!!!!!!!!!!!!
+			let cards = this.deck.cards;
+			let wElem = cards.length > 0 ? cards[0].elem.offsetWidth : 78; //this.elem.offsetWidth;
+			let hParent = divParent.offsetHeight;
+			let hElem = cards.length > 0 ? cards[0].elem.offsetHeight : 110; //this.elem.offsetHeight;
+			//console.log(wParent, wElem, hParent, hElem);
+			d.style.position = 'relative';
+			this.centerX = (wParent - wElem) / 2;
+			this.centerY = (hParent - hElem) / 2;
+			this.w = wElem;
+			this.h = hElem;
+			d.style.left = '' + this.centerX + 'px';
+			d.style.top = '' + this.centerY + 'px';
+		}
+	}
+
 	setPos(x, y) {
 		this.x = x; //centered for cat g, LT for html elements!
 		this.y = y;
 		if (this.cat == 'g') {
 			this.elem.setAttribute('transform', `translate(${x},${y})`);
 		} else {
-			this.elem.style.position = 'absolute'
-			this.elem.style.left = x + 'px';
-			this.elem.style.top = y + 'px';
+			if (isdef(this.centerX)) {
+				this.elem.style.left = '' + (this.centerX + x) + 'px';
+				this.elem.style.top = '' + (this.centerY + y) + 'px';
+			} else {
+				this.elem.style.position = 'absolute';
+				this.elem.style.left = x + 'px';
+				this.elem.style.top = y + 'px';
+			}
 		}
 		return this;
 	}

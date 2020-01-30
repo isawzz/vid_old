@@ -19,19 +19,19 @@ class DeckMS {
 			this.parent = null;
 		}
 	}
-	attachTo(div) {
+	attachTo(div, {placeInCenter=true}={}) {
 		this.detach();
 		this.parent = div;
 		div.appendChild(this.elem);
-		this.center();
+		if (placeInCenter) this.center();
 	}
 	center() {
 		if (this.parent) {
 			let d = this.elem;
 			let wParent = this.parent.offsetWidth;
-			let wElem = this.o.cards[0].elem.offsetWidth; //this.elem.offsetWidth;
+			let wElem = this.o.cards.length>0? this.o.cards[0].elem.offsetWidth:78; //this.elem.offsetWidth;
 			let hParent = this.parent.offsetHeight;
-			let hElem = this.o.cards[0].elem.offsetHeight; //this.elem.offsetHeight;
+			let hElem = this.o.cards.length>0? this.o.cards[0].elem.offsetHeight : 110; //this.elem.offsetHeight;
 			//console.log(wParent, wElem, hParent, hElem);
 			d.style.position = 'relative';
 			this.centerX = (wParent - wElem) / 2;
@@ -109,7 +109,7 @@ function makeDeck({ kind, N, nJokers, fPrep, fDraw, bDraw, x, y, w, h } = {}) {
 		numJokers: isdef(nJokers) ? nJokers : 0,
 	};
 	//calc total number of deck cards if possible or 100
-	console.log(params)
+	//console.log(params)
 	let defStyle = { deck52: { n: 52 }, catan: { n: 20 }, free: {}, deckEmpty: { n: 0 } };
 	N = isdef(N) ? N : defStyle[params.kind].n;
 	params.N = N;

@@ -351,7 +351,7 @@ function _preselectFirstVisualsForBoats() {
 	//console.log(oidlist);
 	let vislist = oidlist.map(x => getMainId(x)).filter(x => x !== null);
 	vislist = vislist.concat(oidlist.map(x => getDefId(x)));
-	//console.log(vislist);
+	//console.log('vislist',vislist);
 	vislist.map(id => UIS[id].highFrame());
 }
 function _removeFilterHighlight(ms) { ms.unhighC(); }

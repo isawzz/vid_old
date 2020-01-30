@@ -1,6 +1,5 @@
 from gsm import GameObject, tdict, tlist, tset
 from gsm.mixins import Named
-from gsm.common.world import grid
 from gsm.common.elements import Card as CardBase
 from gsm.common.elements import Deck
 
@@ -8,20 +7,25 @@ class Card(Named, CardBase):
 	def isroyal(self):
 		return '_royal' in self
 	
-class DiscardPile1(Deck):
-	pass ###
-
-class DiscardPile2(Deck):
-	def __init__(self, seed, default, top_face_up, **info):
-		super().__init__(cards=tlist(), seed=seed, default=default,
-		                 top_face_up=top_face_up, **info)
-
-#WORKS!!!!!!!!!!!!!!!!
-class DiscardPile3(Deck):
-	def __init__(self, seed, default, cards=[], top_face_up=None, **info):
-		super().__init__(seed=seed, default=default, cards=cards, top_face_up=top_face_up, **info)
+# class DiscardPile1(Deck):
+# 	pass ###
+#
+# class DiscardPile2(Deck):
+# 	def __init__(self, seed, default, top_face_up, **info):
+# 		super().__init__(cards=tlist(), seed=seed, default=default,
+# 		                 top_face_up=top_face_up, **info)
+#
+# #WORKS!!!!!!!!!!!!!!!!
+# class DiscardPile3(Deck):
+# 	def __init__(self, seed, default, cards=[], top_face_up=None, **info):
+# 		super().__init__(seed=seed, default=default, cards=cards, top_face_up=top_face_up, **info)
 
 class Deck_WA(Deck):
+	def __init__(self, **props):
+		super().__init__(**props)
+		self.deck_count = len(self)
+		print('deck has',self.deck_count,'cards')
+
 	def _peek(self):
 		if self._top_face_up is not None:
 			self.next = tlist(list(self._objs._data)[:self._top_face_up])

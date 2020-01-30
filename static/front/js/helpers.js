@@ -850,17 +850,17 @@ function addSvgg(dParent, gid, { w = '100%', h = '100%', bg, fg, originInCenter 
 //#endregion
 
 //#region DOM: coordinate and bounds helpers
-function myFunction(){
+function myFunction() {
 	console.log('onresize!!!');
 	//for(const id of [])
 }
-function actualWidth(elem){ return Math.round(getBounds(elem).width);}
-function actualHeight(elem){ return Math.round(getBounds(elem).height);}
-function actualLeft(elem,relToParent=false,elRelTo){ return Math.round(getBounds(elem,relToParent,elRelTo).left);}
-function actualTop(elem,relToParent=false,elRelTo){ return Math.round(getBounds(elem,relToParent,elRelTo).top);}
-function actualCenter(elem,relToParent=false,elRelTo){ 
-	let b = getBounds(elem,relToParent,elRelTo);
-	return {x:Math.round(b.left+b.width/2),y:Math.round(b.top+b.height/2)};
+function actualWidth(elem) { return Math.round(getBounds(elem).width); }
+function actualHeight(elem) { return Math.round(getBounds(elem).height); }
+function actualLeft(elem, relToParent = false, elRelTo) { return Math.round(getBounds(elem, relToParent, elRelTo).left); }
+function actualTop(elem, relToParent = false, elRelTo) { return Math.round(getBounds(elem, relToParent, elRelTo).top); }
+function actualCenter(elem, relToParent = false, elRelTo) {
+	let b = getBounds(elem, relToParent, elRelTo);
+	return { x: Math.round(b.left + b.width / 2), y: Math.round(b.top + b.height / 2) };
 }
 function getRelBounds(elem, elRel) {
 	let b1 = elem.getBoundingClientRect();
@@ -1532,6 +1532,11 @@ const fieldSorter = fields => (a, b) =>
 function first(arr) {
 	return arr.length > 0 ? arr[0] : null;
 }
+function allCondDict(d, func) {
+	let res = [];
+	for (const k in d) { if (func(d[k])) res.push(k); }
+	return res;
+}
 function firstCond(arr, func) {
 	//return first elem that fulfills condition
 	if (nundef(arr)) return null;
@@ -1601,8 +1606,24 @@ function lastCondDictPlusKey(dict, func) {
 	return null;
 }
 function listKey(d, lastKey, val, uniqueValues = true) {
-	if (nundef(d[lastKey])) d[lastKey] = [];
-	if (uniqueValues) addIf(d[lastKey], val); else d[lastKey].push(val);
+	// if (lastKey == '0') { //Number(lastKey)){
+	// 	console.log('//////dict', d);
+	// 	console.log('lastKey', lastKey);
+	// 	console.log('val', val, 'uniqueValues', uniqueValues)
+	// 	console.log('d[lastKey]', d[lastKey]);
+	// }
+	if (nundef(d[lastKey])) {
+		d[lastKey] = [];
+	}
+	if (uniqueValues) {
+		addIf(d[lastKey], val);
+	} else {
+		d[lastKey].push(val);
+	}
+	// if (lastKey == '0') {
+	// 	console.log('ende: d[lastKey]', jsCopy(d[lastKey]));
+	// 	console.log('dict',jsCopy(d))
+	// }
 	return d[lastKey];
 }
 function lookup(dict, keys) {

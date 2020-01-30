@@ -15,12 +15,15 @@ function _tableCreateNew() {
 	for (const oid of G.tableCreated) {
 		let o = G.table[oid];
 
+		//if (oid == '0') console.log('table create',oid)
 		//default objects are objects in objects tab underneath game area!
 		if (!defaultVisualExists(oid) && S.settings.table.createDefault == true) {
-			//console.log('>>>>>>>>>>>>>>>>>should create default object for',oid)
+			//if (oid == '0') console.log('>>>>>>>>>>>>>>>>>should create default object for',oid,o, UIS['d_t_0'])
 			makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
+			//if (oid == '0') console.log('created default:',UIS['d_t_'+oid]);
 		}
 
+		if (oid == '0') console.log('check if main visual exists',mainVisualExists(oid))
 		if (S.settings.table.ignoreTypes.includes(o.obj_type)
 			|| mainVisualExists(oid)
 			|| !S.settings.boardDetection && !S.settings.deckDetection && !S.settings.userStructures) {
@@ -48,6 +51,7 @@ function _tableUpdate() {
 		let o = G.table[oid];
 
 		if (isStructuralElement(oid)) continue; //eg., boards not updated!
+		if (isDeckObject(o)) continue;
 
 		let changedProps = G.tableUpdated[oid].summary;
 

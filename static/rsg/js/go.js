@@ -14,10 +14,13 @@ function makeIdDefaultPlayer(oid) { return 'd_p_' + oid; }
 function isStructuralElement(oid) { if (nundef(G.table) || !(oid in G.table)) return false; return 'map' in G.table[oid]; }
 function defaultVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'd'); }
 function someVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'd' || x[0] == 'm'); }
-function mainVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'm'); }
+function mainVisualExists(oid) { 
+	
+	return firstCond(oid2ids[oid], x => x[0] == 'm'); 
+}
 function isBoardElement(oid) { let o = getVisual(oid); return o.idParent[2] == 's'; }
 function isBoardObject(o) { return o.map && o.fields; }
-function isDeckObject(o) { return o.obj_type.toLowerCase().includes('deck') && o.count; }
+function isDeckObject(o) { return isdef(o.deck_count); } //o.obj_type.toLowerCase().includes('deck') && o.deck_count; }
 function isField(o) { return o.neighbors; }
 
 //function getOidForId(id){ return id[0]=='d'||id[0]=='m'?substring(id,4) : stringAfter(id,'@');}

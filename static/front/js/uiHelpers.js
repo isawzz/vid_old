@@ -84,7 +84,7 @@ function isMyTurn(){
 }
 
 function zoom(percent) {
-	console.log('zoom level',percent,'%')
+	//console.log('zoom level',percent,'%')
 	//document.body.style.zoom = ''+percent+"%"; //unangenehmer hack messes with Ctrl+
 	document.body.style.transformOrigin = '0% 0%';
 	let factor = percent/100;

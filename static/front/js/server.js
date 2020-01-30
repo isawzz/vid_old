@@ -162,7 +162,7 @@ function _sendRoute(route, callback) {
 	let prefix = last(SERVER_URL) == '/' ? dropLast(SERVER_URL) : SERVER_URL;
 	if (route[0] != '/') route = '/' + route;
 	let url = prefix + route;
-	console.log(counters.msg + ': request sent: ' + url);
+	//console.log(counters.msg + ': request sent: ' + url);
 
 	$.ajax({
 		url: url,

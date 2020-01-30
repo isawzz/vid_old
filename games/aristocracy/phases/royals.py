@@ -86,18 +86,18 @@ class RoyalPhase(GamePhase):
 		raise NotImplementedError
 		
 	def encode(self, C):
-		full = tdict()
-		for player in self.active:
-			out = GameActions('Select what cards to bring to the market')
-			with out('select', desc='Select card'):
-				# for card in player.hand:
-				# 	out.add(card)
-				opts = player.hand
-				if len(opts):
-					out.add(opts)
-				#out.add(tset(['a','b']))
-			full[player] = out
-		return full
+		# full = tdict()
+		# for player in self.active:
+		# 	out = GameActions('Select what cards to bring to the market')
+		# 	with out('select', desc='Select card'):
+		# 		# for card in player.hand:
+		# 		# 	out.add(card)
+		# 		opts = player.hand - self.sel[player]
+		# 		if len(opts):
+		# 			out.add(opts)
+		# 		#out.add(tset(['a','b']))
+		# 	full[player] = out
+		# return full
 
 
 		full = tdict()
@@ -108,10 +108,7 @@ class RoyalPhase(GamePhase):
 			with out('select', 'Select card'):
 				opts = player.hand - self.sel[player]
 				if len(opts):
-					a1=opts
-					a2=out
-					a2.add(a1)
-					out.add(tset(['a','b'])) #opts)
+					out.add(opts)
 			
 			with out('unselect', 'Unselect card'):
 				if len(self.sel[player]):
