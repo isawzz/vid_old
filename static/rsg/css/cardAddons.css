@@ -26,20 +26,25 @@
 	/* z-index: 100; */
 }
 .cardBack {
-  position: absolute;
-  display: inline-block;
-  width: var(--wCard);
-  height: var(--hCard);
-  background-color: #fff;
-  -webkit-border-radius: 4px;
+	position: relative;
+	display: inline-block;
+	width: var(--wCard);
+	height: var(--hCard);
+	left: -1.5px;
+	top: -1.5px;
+	background-color: #fff;
 	border-radius: 4px;
 	border: 1px solid lightgrey;
-  background-image: url("faces/back.png");
+    box-shadow: 0px 1px 1px 1px rgba(0,0,0,0.15); 	
+	background-image: url("faces/back.png");
   background-position: 50% 50%;
+  background-size: 100% 100%;
+	/* box-sizing: border-box; 
+	translate: -1% -1%; 
+  -webkit-border-radius: 4px;
   -webkit-background-size: 100% 100%;
   -moz-background-size: 100% 100%;
-  background-size: 100% 100%;
   background-repeat: no-repeat;
 	cursor: default;
-	box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.15);
+	*/
 }

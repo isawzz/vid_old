@@ -11,7 +11,7 @@ function pollStatusAs(uname){
 }
 
 function sendStatusNewGame() {
-	timit.showTime('sending status init (for joiners)');
+	//timit.showTime('sending status init (for joiners)');
 	_sendRoute('/status/' + USERNAME, d7 => {
 		let data = JSON.parse(d7);
 		//console.log('initial data', data)
@@ -51,9 +51,9 @@ function sendInitNewGame() {
 			cmdChain.push({cmd:cmd,f:_sendRoute});
 		}
 	}
-	timit.showTime('sending init new game (as starter!)');
+	//timit.showTime('sending init new game (as starter!)');
 	_sendRoute('/restart', d0 => {
-		timit.showTime('sending select game');
+		//timit.showTime('sending select game');
 		_sendRoute('/game/select/' + S.settings.game, d2 => {
 			// _sendRoute('/game/info', d3 => {
 			// 	let gi = JSON.parse(d3);
@@ -64,7 +64,7 @@ function sendInitNewGame() {
 					_sendRoute('/begin/'+SEED, d6 => {
 						//console.log(d6);
 						let unameStarts = gc.players[0].username;
-						timit.showTime('sending status');
+						//timit.showTime('sending status');
 						_sendRoute('/status/' + unameStarts, d7 => {
 							//console.log('sent status in sendInitNewGame')
 							let data = JSON.parse(d7);
@@ -85,7 +85,7 @@ function sendInitNewGame() {
 }
 
 function sendAction(boat, callbacks = []) {
-	timit.timeStamp('send');
+	//timit.timeStamp('send');
 	let pl = G.playersAugmented[G.player];
 
 

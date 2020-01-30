@@ -1,3 +1,4 @@
+//#region deck presentation
 function detectDecks(tableObjects, areaName) {
 	//look for table objects that are decks
 	let deckKeys = allCondDict(tableObjects, x => isDeckObject(x));	if (isEmpty(deckKeys)) return null;
@@ -5,8 +6,12 @@ function detectDecks(tableObjects, areaName) {
 	let deckArea = makeDeckArea(areaName,deckKeys.length); //areaName = deckArea.id;
 	//create deck uis
 	let msDecks = deckKeys.map(x=>makeDeckSuccess(x,tableObjects[x],deckArea.id));
-	
 	// line up in deck area
+	lineupDecks(msDecks,deckArea);
+
+	return deckKeys;
+}
+function lineupDecks(msDecks,deckArea){
 	let x = 0;
 	let ysign = 1;
 	let yfactor = 0;
@@ -23,7 +28,6 @@ function detectDecks(tableObjects, areaName) {
 		ysign = -ysign;
 		y = yfactor * yheight * ysign;
 	}
-	return deckKeys;
 }
 function makeDeckSuccess(oid,o,areaName){
 	let id = 'm_t_' + oid; //oid;
@@ -35,10 +39,8 @@ function makeDeckSuccess(oid,o,areaName){
 	ms.o = o;
 	ms.isa.deck = true;
 
-	//let parent = 
-
 	ms.elem = document.createElement('div');
-	ms.elem.id = id;// getUID(); // id+'hallo';
+	ms.elem.id = id;
 	ms.parts.elem = ms.elem;
 	ms.domType = getTypeOf(ms.elem);
 	ms.cat = DOMCATS[ms.domType];
@@ -49,57 +51,34 @@ function makeDeckSuccess(oid,o,areaName){
 	linkObjects(id, oid);
 	UIS[id] = ms;
 
-	//ms.setSize(78,110);
-	//ms.setBg('red');
-	// ms.elem.classList.add('cardTest')
 	ms.elem.classList.add('deckBase');
 	//ms.elem.style.backgroundColor = 'yellow';
 
-	let topmost = makeStapel(ms.elem,Math.min(25,o.deck_count)); //300);
+	// timit.showTime('vor makeStapel!');
+	let num = o.deck_count == 0?0:o.deck_count/2 + 1;
+	let topmost = makeStapel(ms.elem,num); //o.deck_count/4+1); //Math.min(25,o.deck_count)); //300);
 	ms.topmost = topmost;
-	//console.log('zIndex',ms.elem.style.zIndex)
-
-	//ms.addClass('cardBack')
+	ms.parts['topmost']=topmost;
+	// timit.showTime('nach makeStapel!')
 
 	return ms;
 
 }
-function getDummy(i){
-	let dummy=document.createElement('div');
-	dummy.classList.add('cardBack');
-	// dummy.style.backgroundColor = 'green'; //randomColor();
-	// dummy.style.position = 'relative';
-	// dummy.style.width = '100px';
-	// dummy.style.height='100px';
-	let gap = '-2px';//-1;
-	// dummy.style.left=''+(gap*i)+'px';
-	// dummy.style.top=''+(gap*i)+'px';
-	dummy.style.left=gap; //''+(-gap)+'px';
-	dummy.style.top=gap; //'-1px';
-	//dummy.style.zIndex = 100+i*gap;
-	return dummy;
-}
 function makeStapel(elem,n){
-	//let dummy=getDummy(0);
 	let parent=elem;
 	for(let i=1;i<=n;i++){
-		let dummy = getDummy(i);
+		let dummy=document.createElement('div');
 		elem.appendChild(dummy);
+		dummy.classList.add('cardBack');
 		elem = dummy;
-		// console.log(parent);
-		// console.log(dummy);
-		// parent.appendChild(dummy);
-		// parent = dummy;
 	}
 	return elem;
 }
 function makeDeckArea(areaName,numDecks){
 	//make a deck area to represent decks
-	//TODO: table size should be adjusted to deck area needed height!
 	let parentOfDeckArea = UIS[areaName];
 	let deckHeight = 140;
-	let deckNum = 7; //deckKeys.length
-	let deckHeightNeeded = deckNum * deckHeight;
+	let deckHeightNeeded = numDecks * deckHeight;
 	//console.log(deckHeightNeeded, parentOfDeckArea.h)
 	if (deckHeightNeeded > parentOfDeckArea.h) setAreaHeight(areaName, deckHeightNeeded);
 	else deckHeightNeeded = parentOfDeckArea.h;
@@ -114,129 +93,65 @@ function makeDeckArea(areaName,numDecks){
 	ms.setBounds(0, 0, 200, deckHeightNeeded, 'px');
 	return ms;
 }
+//TODO: present a deck found in table
+//TODO: remove cards from a deck
+//TODO: extended presentation of top_cards (overlapping)
 
-
-
-
-
-
-//#region deck presentation
-function centerDeck(ms) {
-	let parent = UIS[ms.idParent];
-	if (parent) {
-		let d = ms.elem;
-		let wParent = parent.offsetWidth;
-		let wElem = ms.deck.cards.length > 0 ? ms.deck.cards[0].elem.offsetWidth : 78; //this.elem.offsetWidth;
-		let hParent = parent.offsetHeight;
-		let hElem = ms.deck.cards.length > 0 ? ms.deck.cards[0].elem.offsetHeight : 110; //this.elem.offsetHeight;
-		//console.log(wParent, wElem, hParent, hElem);
-		d.style.position = 'relative';
-		ms.centerX = (wParent - wElem) / 2;
-		ms.centerY = (hParent - hElem) / 2;
-		ms.w = wElem;
-		ms.h = hElem;
-		d.style.left = '' + ms.centerX + 'px';
-		d.style.top = '' + ms.centerY + 'px';
-	}
-}
-function setDeckPos(ms,x, y) {
-	ms.elem.style.left = '' + (ms.centerX + x) + 'px';
-	ms.elem.style.top = '' + (ms.centerY + y) + 'px';
-}
-
-
-function detectDecks_dep(tableObjects, areaName) {
-	let deckKeys = allCondDict(tableObjects, x => isDeckObject(x));
-	//console.log('table', tableObjects)
-	//console.log('decks', deckKeys, tableObjects[deckKeys])
-
-	if (isEmpty(deckKeys)) return null;
-
-	//console.log('decks', deckKeys.map(x => tableObjects[x]));
-
-	//make a deck area to represent decks
-	//TODO: table size should be adjusted to deck area needed height!
-	let parentOfDeckArea = UIS[areaName];
-	let deckHeight = 140;
-	let deckNum = 7; //deckKeys.length
-	let deckHeightNeeded = deckNum * deckHeight;
-	//console.log(deckHeightNeeded, parentOfDeckArea.h)
-	if (deckHeightNeeded > parentOfDeckArea.h) setAreaHeight(areaName, deckHeightNeeded);
-	else deckHeightNeeded = parentOfDeckArea.h;
-
-	//width 
-	//width of area should be able to hold max num of top_cards of deck (next)
-	//leave for now
-
-	let deckAreaName = 'deckArea';
-	let ms = makeArea(deckAreaName, areaName);
-	ms.setBg('blue');
-	ms.setBounds(0, 0, 200, deckHeightNeeded, 'px');
-	areaName = ms.id;
-
-	let parent = UIS[areaName];
-	let div1 = parent.elem;
-	//div1.style.display='flex'
-
-	let x,y;
-	for (const deckKey of deckKeys){ //[0, 1, 2, 3, 4, 5, 6]) { //deckKeys) {
-		let numCards = randomNumber(10, 50);// o.deck_count;
-		let deck1 = makeDeck({ kind: 'deck52', N: numCards });
-		//console.log('deck',deck1)
-
-		//old code:
-		// let ms1 = new DeckMS(getUID(),deck1);
-		// ms1.attachTo(div1);
-		// ms1.setPos(x, y);
-
-		//new code:
-		//let n=Number(deckKey);
-		//let k = isdef(n)?''+(n+1):deckKey;
-		let k=deckKey;
-		let ms1 = makeDeckMS(k,tableObjects[deckKey], deck1, areaName, x, y); // tableObjects, areaName);
-		console.log(k,typeof k,oid2ids[k],oid2ids['0'])
-		console.log('check',k,mainVisualExists(k))
-		// if (k=='0'){
-		// 	console.log(ms1)
-		// 	console.log(UIS);
-		// 	throw new Exception();
-		// }
-	}
-	return deckKeys;
-}
-
-function showDecks(){
-	console.log('show decks!!!!!')
-	let deckKeys=['0','1'];
-	let x = 0;
-	let ysign = 1;
-	let yfactor = 0;
-	let yheight = 140;
-	let y = yfactor * yheight * ysign;
-	for (const deckKey of deckKeys){ //[0, 1, 2, 3, 4, 5, 6]) { //deckKeys) {
-		let ms = UIS['m_t_'+deckKey];
-
-		console.log(ms.elem)
-		ms.deck.mount(ms.elem);
-
-		console.log(ms,x,y)
-		ms.attach();
-
-		ms.centerInDiv();
-		ms.setPos(x, y);
-
-
-		if (ysign > 0) { yfactor += 1; }
-		ysign = -ysign;
-		y = yfactor * yheight * ysign;
-
-		//console.log(deckKey, div1, deck1, ms1); //, odeck);
-	}
-
-}
 //#endregion
+const defaultGameplayerAreaName = 'gameplayerArea';
+const defaultTabletopAreaName = 'tabletopArea';
+const defaultDeckAreaName = 'deckArea';
+function presentPlayerHand(plid,propName='hand'){
+	let o=G.playersAugmented[plid][propName];
+	console.log('player hand is',o);
+	let msPlayer = getMainArea(defaultGameplayerAreaName);
+	if (!msPlayer){msPlayer = makeGameplayerArea('a_d_game');}
 
-//#region API
+	
+
+}
+function makeTableForCardGame(areaName){
+	let msPlayer = makeGameplayerArea(areaName);
+	let msTabletop = makeDefaultTabletopAreaForCardgame(areaName);
+}
+
+function makeGameplayerArea(areaName){
+	let deckArea = getMainArea(defaultDeckAreaName);
+	let parentArea = UIS[areaName];
+	if (isdef(deckArea)){
+		let x=deckArea.w;
+		let h=parentArea/2;
+		let y=h;
+		let w=parentArea.w-deckArea.w;
+		let id = 'gameplayerArea';
+		let ms = makeArea(id, areaName);
+		ms.setBg('seagreen');
+		ms.setBounds(x,y,w,h, 'px');
+		return ms;
+	
+	}
+
+}
+
+function makeDefaultTabletopAreaForCardgame(areaName){
+	//m_A_deckArea, m_A_gameplayerArea, m_A_tabletopArea
+	let deckArea = getMainArea(defaultDeckAreaName);
+	let parentArea = UIS[areaName];
+	if (isdef(deckArea)){
+		let x=deckArea.w;
+		let y=0;
+		let w=parentArea.w-deckArea.w;
+		let h=parentArea/2;
+		let id = 'tabletopArea';
+		let ms = makeArea(id, areaName);
+		ms.setBg('green');
+		ms.setBounds(x,y,w,h, 'px');
+		return ms;
+	
+	}
+}
+
+//#region API: catan cards!
 function addCardToHand(oid, areaName) {
 	//idHand = isdef(idHand)?idHand:getMainId(areaName);
 	//areaName = idHand[0]=='a'?idHand:getAreaName(idHand);

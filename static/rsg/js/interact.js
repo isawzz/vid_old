@@ -314,6 +314,12 @@ function _addStandardInteraction(id) {
 			if (id[0] == 'm') { //main table objects!!!!!
 				ms.addClickHandler('elem', onClickFilterOrInfobox);
 
+				// if (ms.isa.deck) {
+				// 	//card should also be magnified or minified!
+				// 	//console.log('adding mouse handler to deck!!!')
+				// 	ms.addMouseEnterHandler('topmost', highlightMsAndRelatives);
+				// 	ms.addMouseLeaveHandler('topmost', unhighlightMsAndRelatives);
+				// } else 
 				if (ms.isa.card) {
 					//card should also be magnified or minified!
 					ms.addMouseEnterHandler('title', _highlightAndMagnify);

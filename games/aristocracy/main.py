@@ -39,7 +39,7 @@ class Aristocracy(gsm.GameController):
 		self.register_config('msgs', os.path.join(MY_PATH,'config/msgs.yaml'))
 		
 		# register game object types
-		self.register_obj_type(name='card', obj_cls=Card)
+		self.register_obj_type(name='card', obj_cls=Card, open={'generic_type'})
 		self.register_obj_type(name='discard_pile', obj_cls=DiscardPile) #DiscardPile) ###
 		self.register_obj_type(name='draw_pile', obj_cls=DrawPile,)
 		self.register_obj_type(name='market', obj_cls=Market)

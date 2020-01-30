@@ -364,7 +364,7 @@ function makeAux(s, oid, areaName, directParent) {
 function makeDefaultObject(oid, o, areaName) { return _makeDefault(makeIdDefaultObject(oid), oid, o, areaName, oid + ': ' + o.obj_type); }
 function makeDefaultPlayer(oid, o, areaName) { return _makeDefault(makeIdDefaultPlayer(oid), oid, o, areaName, 'player: ' + oid + '(' + getPlayerColorString(oid) + ', ' + getUser(oid) + ')'); }
 function _makeDefault(id, oid, o, areaName, title) {
-	if (oid == '0') console.log(id, oid, o, areaName, title)
+	//if (oid == '0') console.log(id, oid, o, areaName, title)
 	if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
 	let ms = new RSG();
 	ms.id = id;

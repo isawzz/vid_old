@@ -106,7 +106,7 @@ function areaRows(soDict, loc) {
 	}
 }
 function hexGrid(soDict, loc, condList) {
-	timit.showTime(getFunctionCallerName());
+	//timit.showTime(getFunctionCallerName());
 	let [idBoard, sBoard] = findMatch(soDict, condList);
 	return _hexGrid(loc, idBoard, sBoard, soDict);
 }
@@ -126,7 +126,7 @@ function detectBoard(soDict, loc) {
 
 }
 function quadGrid(soDict, loc, condList) {
-	timit.showTime(getFunctionCallerName());
+	//timit.showTime(getFunctionCallerName());
 	let [idBoard, sBoard] = findMatch(soDict, condList);
 	return _quadGrid(loc, idBoard, sBoard, soDict);
 }

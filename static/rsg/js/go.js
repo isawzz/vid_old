@@ -14,9 +14,9 @@ function makeIdDefaultPlayer(oid) { return 'd_p_' + oid; }
 function isStructuralElement(oid) { if (nundef(G.table) || !(oid in G.table)) return false; return 'map' in G.table[oid]; }
 function defaultVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'd'); }
 function someVisualExists(oid) { return firstCond(oid2ids[oid], x => x[0] == 'd' || x[0] == 'm'); }
-function mainVisualExists(oid) { 
-	
-	return firstCond(oid2ids[oid], x => x[0] == 'm'); 
+function mainVisualExists(oid) {
+
+	return firstCond(oid2ids[oid], x => x[0] == 'm');
 }
 function isBoardElement(oid) { let o = getVisual(oid); return o.idParent[2] == 's'; }
 function isBoardObject(o) { return o.map && o.fields; }
@@ -26,8 +26,10 @@ function isField(o) { return o.neighbors; }
 //function getOidForId(id){ return id[0]=='d'||id[0]=='m'?substring(id,4) : stringAfter(id,'@');}
 //function getOidForDefaultId(id) { return id[0] == 'd' ? id.substring(4) : null; }
 //function getOid
+function getMainArea(areaName){return UIS[getIdArea(areaName)];}
+//function getMainAreaName(areaName) { return startsWith(areaName, 'm_A') ? areaName : 'm_A_' + areaName; }
 function getOidForMainId(id) { return id[0] == 'm' ? id.substring(4) : null; }
-function getAreaName(id) { return startsWith(id,'m_A')? id.substring(4):id;}
+function getAreaName(id) { return startsWith(id, 'm_A') ? id.substring(4) : id; }
 function getIdArea(areaName) {
 	//name could be 'DevCards' or 'M' or 'a_d_game'
 	if (startsWith(areaName, 'a_d_')) {

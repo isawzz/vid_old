@@ -4,6 +4,11 @@ from gsm.common.elements import Card as CardBase
 from gsm.common.elements import Deck
 
 class Card(Named, CardBase):
+	def __init__(self, **props):
+		super().__init__(**props)
+		self.generic_type = 'card'
+		print('made a card')
+
 	def isroyal(self):
 		return '_royal' in self
 	
@@ -24,6 +29,7 @@ class Deck_WA(Deck):
 	def __init__(self, **props):
 		super().__init__(**props)
 		self.deck_count = len(self)
+		self.generic_type = 'deck'
 		print('deck has',self.deck_count,'cards')
 
 	def _peek(self):
@@ -42,7 +48,10 @@ class DrawPile(Deck_WA):
 		num = 1 if n is None else n
 		if len(self) < num:
 			self.refill()
-		return super().draw(n=n, player=player)
+		cardset=super().draw(n=n, player=player)
+		for c in cardset:
+			c.visible = tset([player])
+		return cardset
 	
 	def refill(self):
 		self._log.write('Refilling {} with {}', self, self._discard_pile)

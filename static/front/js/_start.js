@@ -5,7 +5,7 @@ var bodyZoom = null;
 
 function _start() {
 	_initServer();
-	timit.reset();
+	//timit.reset();
 	let faChars, gaChars;
 	loadYML('/static/rsg/assets/gameIconCodes.yml', dga => {
 		//console.log(dga);
@@ -13,7 +13,6 @@ function _start() {
 		loadYML('/static/rsg/assets/faIconCodes.yml', dfa => {
 			//console.log(dfa);
 			faChars = dfa;
-			timit.showTime('loaded icons codes')
 			iconChars = {};
 			for (const k in faChars) {
 				iconChars[k] = faChars[k];
@@ -21,6 +20,7 @@ function _start() {
 			for (const k in gaChars) {
 				iconChars[k] = gaChars[k];
 			}
+			timit.showTime('loaded icons codes')
 			//clientData.name = USERNAME; _startLobby();
 
 			//_startLogin(); login(chooseRandom(names)); openGameConfig();
@@ -57,7 +57,7 @@ function _startNewGame(role) {
 	gameView();
 	//console.log('starting as',role,'multiplayer=',isReallyMultiplayer);
 
-	timit.start_of_cycle(getFunctionCallerName());
+	//timit.start_of_cycle(getFunctionCallerName());
 	//S.vars.switchedGame = true;
 	S.settings.game = GAME;
 
@@ -175,7 +175,7 @@ function _initServer() {
 	//init host and get gameInfo for all games
 	//for now just cheat since I have that info anyway!
 	timit = new TimeIt(getFunctionCallerName());
-	timit.tacit();
+	//timit.tacit();
 
 	S = { path: {}, user: {}, settings: {}, vars: {} };
 	counters = { msg: 0, click: 0, mouseenter: 0, mouseleave: 0, events: 0 };

@@ -23,7 +23,7 @@ function _tableCreateNew() {
 			//if (oid == '0') console.log('created default:',UIS['d_t_'+oid]);
 		}
 
-		if (oid == '0') console.log('check if main visual exists',mainVisualExists(oid))
+		//if (oid == '0') console.log('check if main visual exists', mainVisualExists(oid))
 		if (S.settings.table.ignoreTypes.includes(o.obj_type)
 			|| mainVisualExists(oid)
 			|| !S.settings.boardDetection && !S.settings.deckDetection && !S.settings.userStructures) {
@@ -51,28 +51,30 @@ function _tableUpdate() {
 		let o = G.table[oid];
 
 		if (isStructuralElement(oid)) continue; //eg., boards not updated!
-		if (isDeckObject(o)) continue;
+
 
 		let changedProps = G.tableUpdated[oid].summary;
 
-		//update main visual
+		//update main visual unless deck 
 		let ms = getVisual(oid);
-		if (ms) {
-			//console.log('update:',oid,'is line',ms.isLine)
-			let updatedVisuals;
-			if (S.settings.userBehaviors) {
-				updatedVisuals = runBehaviors(oid, G.table, TABLE_UPDATE);
-			}
-			//if (ms.isLine) console.log('updatedVisuals',updatedVisuals)
-			//console.log(updatedVisuals)
-			if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
-				//console.log('oid',oid,'has NOT been updated!!!!!')
-				if (changedProps.includes('loc')) _presentLocationChange(oid, ms);
-				//console.log('presenting main!',oid)
-				presentMain(oid, ms, G.table);
-				// } else {
-				// 	console.log('oid',oid,'has been updated!!!!!')
-			}
+		if (!isDeckObject(o) && ms) {
+			// if (ms) {
+				//console.log('update:',oid,'is line',ms.isLine)
+				let updatedVisuals;
+				if (S.settings.userBehaviors) {
+					updatedVisuals = runBehaviors(oid, G.table, TABLE_UPDATE);
+				}
+				//if (ms.isLine) console.log('updatedVisuals',updatedVisuals)
+				//console.log(updatedVisuals)
+				if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
+					//console.log('oid',oid,'has NOT been updated!!!!!')
+					if (changedProps.includes('loc')) _presentLocationChange(oid, ms);
+					//console.log('presenting main!',oid)
+					presentMain(oid, ms, G.table);
+					// } else {
+					// 	console.log('oid',oid,'has been updated!!!!!')
+				}
+			// }
 		}
 
 		//update default visual

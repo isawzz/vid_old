@@ -871,7 +871,7 @@ class RSG {
 
 	//#region events
 	_handler(ev) {
-		//if (this.deck) console.log('event!',ev);
+		//if (this.isa.deck) console.log('event!',ev,this.handlers);
 		ev.stopPropagation();
 		let eventName = ev.handleObj.origType;
 
@@ -879,16 +879,20 @@ class RSG {
 
 		if (!this.isEnabled) return;
 		let part = $(ev.currentTarget);
+		
 		let partName;
-		if (part.id == this.elem.id) partName = 'elem';
+		if (this.isa.deck) partName = 'topmost';
+		else if (part.id == this.elem.id) partName = 'elem';
 		else { let props = $(part).attrs(); let name = props.name; if (nundef(name)) name = 'elem'; partName = name; }
+		
 		let handler = this.handlers[eventName][partName];
-		if (isdef(handler)) { counters[eventName] += 1; counters.events += 1; handler(ev, this, partName); }
+		if (isdef(handler)) { handler(ev, this, partName); }// counters[eventName] += 1; counters.events += 1;  }
 	}
 	addHandler(evName, partName = 'elem', handler = null, autoEnable = true) {
 		let part = this._getPart(partName); //his.parts[partName];
-		//if (this.deck) console.log('added',evName,'handler')
+		//if (this.isa.deck) console.log('added',evName,'handler to',part);
 		if (nundef(part)) { part = this.elem; partName = 'elem'; }
+		else if (this.isa.deck) partName = 'topmost';
 
 		if (isdef(handler)) { this.handlers[evName][partName] = handler; }
 
@@ -912,12 +916,18 @@ class RSG {
 
 	//#region high
 	getTopCardElemOfDeck() {
-		return this.deck.cards[0].elem;
+		return this.topmost;
 	}
 	_getPart(partName, elemIfMissing = true) {
 		let part = this.parts[partName];
-		// if (this.isa.deck) return this.getTopCardElemOfDeck(); else return isdef(part) ? part : elemIfMissing ? this.elem : null;
-		return isdef(part) ? part : elemIfMissing ? this.elem : null;
+		if (this.isa.deck) {
+			let tm=this.getTopCardElemOfDeck();
+			//console.log('____________________',tm)
+			return this.getTopCardElemOfDeck(); 
+		}else{
+			return isdef(part) ? part : elemIfMissing ? this.elem : null;
+		} 
+		//return isdef(part) ? part : elemIfMissing ? this.elem : null;
 	}
 	highC(c, pname = 'elem', elIfMiss = true) {
 		//console.log('highC', this.id)

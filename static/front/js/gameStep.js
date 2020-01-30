@@ -18,7 +18,7 @@ const playerColors = {
 
 function gameStep() {
 	DELETED_THIS_ROUND = [];
-	timit.showTime('start presentation!');
+	//timit.showTime('start presentation!');
 
 	//console.log(jsCopy(G.serverData))
 

@@ -10,7 +10,7 @@ function processData(data) {
 		//delete G.signals.receivedEndMessage;
 	}
 	S.gameInProgress = true;
-	timit.showTime('start processing!');
+	//timit.showTime('start processing!');
 
 	//if it is another human or backend AI's turn what should I do upon receiving data?
 	//I should definitely NOT change player and move for that player!!!!
