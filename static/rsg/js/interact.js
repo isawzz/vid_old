@@ -74,7 +74,7 @@ function onClickCatan() {
 	_startNewGame('starter');
 
 }
-function onClickCheat(code) { _sendRoute('/cheat/' + code, null); }
+function onClickCheat(code) { sendRoute('/cheat/' + code, null); }
 
 function onClickFilterTuples(ev, ms, part) {
 	//hat auf irgendein object or player geclickt
@@ -112,7 +112,9 @@ function onClickPlusControlInfobox(ev, ms, part) { if (ev.ctrlKey) { openInfobox
 function onClickPollStatus() {
 	//poll status for USERNAME, and if does not work, poll for waiting for if it belongs to me!
 
-	pollStatusAs(USERNAME);
+	//pollStatusAs(USERNAME);
+	sendStatus(USERNAME,[gameStep]);
+
 }
 function onClickLobby() {
 	lobbyView();

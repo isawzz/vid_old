@@ -33,7 +33,7 @@ function testAndSave2() {
 
 }
 function testAndSave() {
-	_sendRoute('/loadYML/icons', d => {
+	sendRoute('/loadYML/icons', d => {
 		console.log(d);
 		let dictFont = JSON.parse(d);
 		console.log(dictFont);

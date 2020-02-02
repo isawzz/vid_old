@@ -67,7 +67,8 @@ function processMessage(msg) {
 			let pl = omsg.data; // pl is the waited_for player!!!!
 			if (isMyPlayer(pl)) {
 				let uname = getUsernameForPlayer(pl);
-				pollStatusAs(uname);
+				sendStatus(uname,[gameStep]);
+				// pollStatusAs(uname);
 			}
 		} else if (omsg.type == 'end') {
 			console.log('received end!!!');
@@ -76,7 +77,8 @@ function processMessage(msg) {
 			let pl = omsg.data; //this time, pl is the sender!!!!!
 			if (!isMyPlayer(pl)) {
 				let uname = getUsernameForPlayer(pl);
-				pollStatusAs(uname);
+				sendStatus(uname,[gameStep]);
+				// pollStatusAs(uname);
 			}
 		}
 		return;

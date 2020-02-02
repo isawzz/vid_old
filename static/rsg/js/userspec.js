@@ -1,4 +1,5 @@
 function specAndDOM(callbacks = []) {
+	flags.specAndDOM = false;
 	initSETTINGS();
 	initPageHeader();
 	initTABLES();
@@ -155,11 +156,11 @@ function onClickReloadSpec() {
 }
 
 function loadUserSpec(callbacks = []) {
-	_sendRoute('/get_UI_spec/' + GAME, d1 => {
+	sendRoute('/get_UI_spec/' + GAME, d1 => {
 		try {
 			S.user.spec = JSON.parse(d1);
 			//console.log(S.user.spec);
-			_sendRoute('/spec/' + GAME, d2 => {
+			sendRoute('/spec/' + GAME, d2 => {
 				//console.log(d2);
 				S.user.specText = d2;
 				if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));

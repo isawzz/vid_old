@@ -43,6 +43,7 @@ function _startNewGame(role = 'starter') {
 
 	//timit.start_of_cycle(getFunctionCallerName());
 	S.settings.game = GAME;
+	flags.specAndDOM = true;
 
 	checkCleanup_III();
 
@@ -60,15 +61,8 @@ function _startNewGame(role = 'starter') {
 }
 function _startRestartSame() {
 	checkCleanup_I();
-	_sendRoute('/begin/' + SEED, d6 => {
-		let user = USERNAME;
-		timit.showTime('sending status');
-		_sendRoute('/status/' + user, d7 => {
-			let data = JSON.parse(d7);
-			timit.showTime('start processing');
-			processData(data); gameStep();
-		});
-	});
+	sendRestartGame(USERNAME,SEED,[gameStep]);
+
 }
 
 //#region views
@@ -96,6 +90,7 @@ function loginView() {
 function lobbyView() {
 	document.body.style.transform = null; //'scale('+1+')'; //.5)'; //+(percent/100)+")";
 
+	console.log('lobby view!')
 	view = 'lobby';
 	hideLogin();
 	showLobby();

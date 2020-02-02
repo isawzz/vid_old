@@ -14,7 +14,7 @@ var allGames1 = {
 		name: 's1',
 		long_name: 's1',
 		short_name: 's1',
-		num_players: [2,3,4,5],
+		num_players: [2, 3, 4, 5],
 		player_names: ['Player1', 'Player2', 'Player3', 'Player4', 'Player5'],
 	},
 	starter: {
@@ -68,33 +68,17 @@ function closeGameConfig() {
 	hide('bLobbyOk');
 	hide('bLobbyCancel');
 }
-function ensureAllGames(callbacks=[]){
+function ensureAllGames(callbacks = []) {
 	if (allGames == null) {
-		_sendRoute('/game/available', d => {
-			let glist = JSON.parse(d);
-			//console.log(typeof (glist), glist);
-			let chain = [];
-			for (g of glist) chain.push({cmd:'/game/info/' + g, f:_sendRoute, data:null});
-			cmdChainSend(chain, res => {
-				//console.log(res);//res is a list!!!
-				let info=[];
-				for(const s of res){
-					let sJSON = JSON.parse(s);
-					let name=sJSON.short_name;
-					info[name]=sJSON;
-				}
-				//let info = JSON.parse(res);
-				//console.log(typeof (info), info);
-				allGames = info;
-				//console.log(allGames);
-				if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
-			})
-		})
+		sendGetAllGames(d => {
+			allGames = d;
+			console.log('allGames',allGames);
+			if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		});
 	} else if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
-
 }
 function openGameConfig() {
-	ensureAllGames(proceedToConfig)
+	ensureAllGames([proceedToConfig]);
 }
 function proceedToConfig() {
 	populateGamenames();
@@ -114,19 +98,19 @@ function proceedToConfig() {
 	updatePlaymode(S.settings.playmode);
 	updatePlayersForMode();
 }
-function populateGamenames(){
+function populateGamenames() {
 	//console.log('populating!!!');
 	let elem = document.getElementById('fChooseGame');
-	clearInit(elem,{innerHTML:'<legend>choose game</legend>'});
+	clearInit(elem, { innerHTML: '<legend>choose game</legend>' });
 	//console.log(elem);
-	for(const name in allGames){
+	for (const name in allGames) {
 		let radio = document.createElement('input');
 		radio.type = 'radio';
 		radio.name = 'game';
 		radio.classList.add('radio');
-		radio.id = 'c_b_mm_'+name;
+		radio.id = 'c_b_mm_' + name;
 		radio.value = name;
-		radio.addEventListener('click',()=>onClickGamename(radio));
+		radio.addEventListener('click', () => onClickGamename(radio));
 		elem.appendChild(radio);
 		elem.appendChild(document.createTextNode(allGames[name].name.toLowerCase()));
 		elem.appendChild(document.createElement('br'))
@@ -352,7 +336,7 @@ function updatePlaymode(mode) {
 	//makePlayermodeReadOnly('passplay');
 	//console.log('current playmode:', currentPlaymode)
 }
-function getidPlayermode(mode){return 'c_b_mm_'+mode;}
+function getidPlayermode(mode) { return 'c_b_mm_' + mode; }
 function getidNum(i) { return 'c_b_mm_pln' + i; }
 function getidAvailable(i) { return 'c_b_mm_plj' + i; }
 function getidSpanJoin(i) { return 'spplj' + i; }
@@ -387,16 +371,16 @@ function populateSelect(i, listValues, selValue) {
 function updatePlayersForMode() {
 	let mode = currentPlaymode;
 	let val = 'me';
-	
+
 	let n = MAX_PLAYERS_AVAILABLE;
 	for (let i = 1; i <= n; i += 1) {
 		let id = getidType(i);
 		if (!isVisible(id)) continue;
 		if (mode == 'solo') { populateSelect(i, soloTypes, val); val = 'AI regular'; }
 		else if (mode == 'hotseat' || mode == 'passplay') { populateSelect(i, soloTypes, val); }
-		else { 
-			populateSelect(i, allPlayerTypes, val); 
-			val = PLAYER_CONFIG_FOR_MULTIPLAYER.length > i?PLAYER_CONFIG_FOR_MULTIPLAYER[i]:'human'; 
+		else {
+			populateSelect(i, allPlayerTypes, val);
+			val = PLAYER_CONFIG_FOR_MULTIPLAYER.length > i ? PLAYER_CONFIG_FOR_MULTIPLAYER[i] : 'human';
 		}
 		// else if (mode == 'hotseat') { changeToForInput('soloTypes', id, val); }
 		// else { changeToForInput('allPlayerTypes', id, val); val = 'human'; }
@@ -443,12 +427,12 @@ function makePlayerReadOnly(i) {
 }
 function makePlayermodeReadOnly(mode) {
 	let el = getPlayermodeRadio(mode);
-	el=document.getElementById('c_b_mm_'+mode);
+	el = document.getElementById('c_b_mm_' + mode);
 	//console.log(el)
 	//el.readOnly = true;
 	$(el).attr({ 'disabled': true, });
-	document.getElementById('span_'+mode).style.color='silver';
-	
+	document.getElementById('span_' + mode).style.color = 'silver';
+
 }
 function getPlayerRadio(n) {
 	return document.getElementById(getidNum(n));

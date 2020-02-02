@@ -1,5 +1,8 @@
 //convert data to various objects in G and M >pre-UI processing
 function processData(data) {
+	// timit.showTime('start processing');
+
+	
 	if (G.end) {
 		//noch von voriger runde!
 		console.log(USERNAME, 'has G.end!!!!')

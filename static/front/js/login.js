@@ -12,7 +12,7 @@ function onLoginSubmitted(e) {
 function onClickLogout() { logout(); }
 
 function login(username) {
-	_sendRoute('/login/' + username, d => {
+	sendRoute('/login/' + username, d => {
 		//console.log('login response', d)
 		if (d != username) {
 			alert('ERROR: ' + d);
@@ -29,7 +29,7 @@ function login(username) {
 }
 function logout() {
 	closeSocket();
-	_sendRoute('/logout/' + clientData.name, d => {
+	sendRoute('/logout/' + clientData.name, d => {
 		clientData.name = null;
 		loggedIn = false;
 		loginView();

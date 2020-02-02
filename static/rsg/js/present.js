@@ -293,13 +293,7 @@ function presentWaitingFor() {
 	if (S.settings.playmode != 'passplay' && (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player))) {
 		let user = G.playersAugmented[pl].username;
 		//console.log('just switching username to', user)
-		_sendRoute('/status/' + user, d => {
-			//console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
-			//console.log('reply to status request for',user,d);
-			d = JSON.parse(d);
-			processData(d); gameStep();
-			//else //console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
-		});
+		sendStatus(user,[gameStep]);
 	} else if (S.settings.playmode == 'passplay') {
 		//this is where I have to output message: NOT YOU TURN ANYMORE!!!!! please click pass!!!
 		_showPassToNextPlayer(pl);
@@ -391,15 +385,7 @@ function onClickNextPlayerReady() {
 		let user = getUsernameForPlayer(WAITINGFORPLAYER);
 		//console.log('username of new player:', user)
 		WAITINGFORPLAYER = null;
-		_sendRoute('/status/' + user, d => {
-			//console.log('asking for status in presentWaitingFor!!!!!',pl,USERNAME);
-			//console.log('reply to status request for',user,d);
-			hide('freezer');
-			d = JSON.parse(d);
-			processData(d);
-			gameStep();
-			//else //console.log('presentWaitingFor: (hab status gesendet!) NOT MY TURN!!!! WHAT NOW?!?!?');
-		});
+		sendStatus(user, [d=>{hide('freezer');gameStep(d)}]);
 	}
 }
 
