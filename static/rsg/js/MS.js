@@ -872,6 +872,7 @@ class RSG {
 	//#region events
 	_handler(ev) {
 		//if (this.isa.deck) console.log('event!',ev,this.handlers);
+		//console.log('event!',ev,this.id,this.handlers)
 		ev.stopPropagation();
 		let eventName = ev.handleObj.origType;
 
@@ -879,24 +880,31 @@ class RSG {
 
 		if (!this.isEnabled) return;
 		let part = $(ev.currentTarget);
-		
+
 		let partName;
 		if (this.isa.deck) partName = 'topmost';
 		else if (part.id == this.elem.id) partName = 'elem';
 		else { let props = $(part).attrs(); let name = props.name; if (nundef(name)) name = 'elem'; partName = name; }
-		
+
+
 		let handler = this.handlers[eventName][partName];
+		//console.log('eventName',eventName,'partName',partName, 'handler',handler)
 		if (isdef(handler)) { handler(ev, this, partName); }// counters[eventName] += 1; counters.events += 1;  }
 	}
 	addHandler(evName, partName = 'elem', handler = null, autoEnable = true) {
-		let part = this._getPart(partName); //his.parts[partName];
+		//console.log('addHandler for',evName,partName,this.id)
+		let part = this._getPart(partName); //this.parts[partName];
 		//if (this.isa.deck) console.log('added',evName,'handler to',part);
-		if (nundef(part)) { part = this.elem; partName = 'elem'; }
+		if (nundef(part) || part == this.elem) { part = this.elem; partName = 'elem'; }
 		else if (this.isa.deck) partName = 'topmost';
 
-		if (isdef(handler)) { this.handlers[evName][partName] = handler; }
 
-		$(part).off(evName).on(evName, this._handler.bind(this)); //only this handler is on!!!
+		if (isdef(handler)) { 
+			//console.log('adding handler',evName,partName)
+			this.handlers[evName][partName] = handler; 
+		}
+
+		$(part).off(evName).on(evName, this._handler.bind(this)); //only this handler is on for that event!!!
 
 		if (autoEnable) this.enable();
 	}
@@ -921,12 +929,12 @@ class RSG {
 	_getPart(partName, elemIfMissing = true) {
 		let part = this.parts[partName];
 		if (this.isa.deck) {
-			let tm=this.getTopCardElemOfDeck();
+			let tm = this.getTopCardElemOfDeck();
 			//console.log('____________________',tm)
-			return this.getTopCardElemOfDeck(); 
-		}else{
+			return this.getTopCardElemOfDeck();
+		} else {
 			return isdef(part) ? part : elemIfMissing ? this.elem : null;
-		} 
+		}
 		//return isdef(part) ? part : elemIfMissing ? this.elem : null;
 	}
 	highC(c, pname = 'elem', elIfMiss = true) {
@@ -1200,7 +1208,13 @@ class RSG {
 			if (isdef(this.centerX)) {
 				this.elem.style.left = '' + (this.centerX + x) + 'px';
 				this.elem.style.top = '' + (this.centerY + y) + 'px';
-			} else {
+			// } else if (this.isa.card) {
+			// 	console.log('card pos set to',x,y)
+			// 	//this.elem.style.transform = `translate(${x},${y})`;
+			// 	this.elem.style.position = 'absolute';
+			// 	this.elem.style.left = x + 'px';
+			// 	this.elem.style.top = y + 'px';
+			}else {
 				this.elem.style.position = 'absolute';
 				this.elem.style.left = x + 'px';
 				this.elem.style.top = y + 'px';

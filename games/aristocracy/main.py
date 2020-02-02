@@ -111,7 +111,7 @@ class Aristocracy(gsm.GameController):
 		self.state.royal_phases = config.rules.royal_phases
 		
 		for i, player in enumerate(self.players):
-			player.hand = tset(self.state.deck.draw(config.rules.hand_size.starting-1))
+			player.hand = tset(self.state.deck.draw(config.rules.hand_size.starting-1, player))
 			player.buildings = tdict({bld:tlist() for bld in config.rules.counts})
 			player.vps = 0
 			player.hand_limit = config.rules.hand_size.max

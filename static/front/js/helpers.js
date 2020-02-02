@@ -33,6 +33,7 @@ class TimeIt {
 		let tDiff = tNew.getTime() - this.t.getTime();
 		let tDiffStart = tNew.getTime() - this.namedTimestamps.start.getTime();
 		if (this.showOutput) console.log(this.format(tNew), ':', tDiff, 'msecs to', msg, '(' + tDiffStart, 'total)');
+		if (this.showOutput) console.log('___ ', tDiff, 'msecs to', msg, '(' + tDiffStart, 'total)');
 		this.t = tNew;
 	}
 	start_of_cycle(msg) {

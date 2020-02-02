@@ -1,4 +1,6 @@
 const MAX_PLAYERS_AVAILABLE = 8;
+
+//#region shortcut to avoid requesting info for each game (unused)
 //wenn initServer mache, hole mir game info fuer alle games! for now, cheating damit schneller
 var allGames1 = {
 	ttt: {
@@ -38,6 +40,7 @@ var allGames1 = {
 	}
 
 };
+//#endregion
 
 var allGames = null; //allGames1;
 var numPlayersMin = 0;
@@ -47,7 +50,6 @@ var currentGamename;
 var currentPlaymode;
 var currentNumPlayers;
 var joinCandidate = null;
-
 
 //#region game configuration
 function onClickCreateGameLobby() {
@@ -66,14 +68,14 @@ function closeGameConfig() {
 	hide('bLobbyOk');
 	hide('bLobbyCancel');
 }
-function ensureAllGames(callback){
+function ensureAllGames(callbacks=[]){
 	if (allGames == null) {
 		_sendRoute('/game/available', d => {
 			let glist = JSON.parse(d);
 			//console.log(typeof (glist), glist);
 			let chain = [];
-			for (g of glist) chain.push('/game/info/' + g);
-			chainSend(chain, res => {
+			for (g of glist) chain.push({cmd:'/game/info/' + g, f:_sendRoute, data:null});
+			cmdChainSend(chain, res => {
 				//console.log(res);//res is a list!!!
 				let info=[];
 				for(const s of res){
@@ -85,10 +87,10 @@ function ensureAllGames(callback){
 				//console.log(typeof (info), info);
 				allGames = info;
 				//console.log(allGames);
-				callback();
+				if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 			})
 		})
-	} else callback();
+	} else if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 
 }
 function openGameConfig() {
@@ -297,6 +299,12 @@ function onClickAvailablePlayer(i) {
 function onClickJoinGameCancel() {
 	closeJoinConfig();
 }
+function iAmStarter() { return S.gameConfig.players[0].username == USERNAME; }
+
+function onClickResumeGameLobby() {
+	closeGameConfig();
+	gameView();
+}
 function onClickJoinGameOk() {
 	//TODO: think about that?!?!?
 	isPlaying = false;
@@ -320,12 +328,6 @@ function onClickJoinGameOk() {
 	if (checkGameConfigComplete()) {
 		disableJoinButton();
 	}
-}
-function iAmStarter() { return S.gameConfig.players[0].username == USERNAME; }
-
-function onClickResumeGameLobby() {
-	closeGameConfig();
-	gameView();
 }
 // #region helpers
 function valueOfElement(id) {

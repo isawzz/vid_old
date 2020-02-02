@@ -1,64 +1,47 @@
 var commandChain = [];
 var maxZIndex = 110;
-var iconChars;
+var iconChars = null;
 var bodyZoom = null;
 
 function _start() {
-	_initServer();
-	//timit.reset();
-	let faChars, gaChars;
-	loadYML('/static/rsg/assets/gameIconCodes.yml', dga => {
-		//console.log(dga);
-		gaChars = dga;
-		loadYML('/static/rsg/assets/faIconCodes.yml', dfa => {
-			//console.log(dfa);
-			faChars = dfa;
-			iconChars = {};
-			for (const k in faChars) {
-				iconChars[k] = faChars[k];
-			}
-			for (const k in gaChars) {
-				iconChars[k] = gaChars[k];
-			}
-			timit.showTime('loaded icons codes')
-			//clientData.name = USERNAME; _startLobby();
+	_initServer([loadIconChars, ensureAllGames, ()=>{
 
-			//_startLogin(); login(chooseRandom(names)); openGameConfig();
+		//START HERE!!!! have iconChars,allGames,gcs
+		gcsAuto();
+		S.gameConfig = gcs[GAME];
+		_startNewGame('starter');
+		
+		//test13_simpleDD(); //test12 | test07 | test13_simpleDDMultiple
 
-			//commandChain=[()=>onClickCheat('devcard'),onClickRunToNextPhase];
-			
+		//#region earlier tests and starts:
+		//testLines();
+		//testShapes();
+		//testNewMSAPI();
+		//stressTest();
+		//testAndSave();
+		//testAndSave2();
+		//testPicto();
+		//testCards();
 
-			ensureAllGames(() => {
-				gcsAuto();
-				S.gameConfig = gcs[GAME];
-				_startNewGame('starter');
-				//test13_simpleDD(); //test12 | test07 | test13_simpleDDMultiple
-			}
-			); //START HERE!!!!
+		//clientData.name = USERNAME; _startLobby();
 
+		//_startLogin(); login(chooseRandom(names)); openGameConfig();
 
-			//testLines();
+		//commandChain=[()=>onClickCheat('devcard'),onClickRunToNextPhase];
+		//#endregion
 
-			//testShapes();
-			//testNewMSAPI();
-			//stressTest();
-			//testAndSave();
-			//testAndSave2();
-			//testPicto();
-			//testCards();
-		})
-	})
+	}]);
 }
+
 function _startLogin() { loginView(); }
 
 function _startLobby() { lobbyView(); }
 
-function _startNewGame(role) {
+function _startNewGame(role = 'starter') {
 	gameView();
 	//console.log('starting as',role,'multiplayer=',isReallyMultiplayer);
 
 	//timit.start_of_cycle(getFunctionCallerName());
-	//S.vars.switchedGame = true;
 	S.settings.game = GAME;
 
 	checkCleanup_III();
@@ -71,14 +54,9 @@ function _startNewGame(role) {
 	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
 	id2uids = {}; // { uid : list of ms ids related to same oid }
 
+	let sendCommandChain = role == 'starter' ? sendInitNewGame : sendStatusNewGame;
+	loadUserSpec([loadUserCode, sendCommandChain]);
 
-	if (role == 'starter') {
-		loadUserSpec([loadUserCode, sendInitNewGame]);
-		//if (S.settings.userSettings) loadUserSpec([loadUserCode, sendInitNewGame]); else sendInitNewGame();
-	} else {
-		loadUserSpec([loadUserCode, sendStatusNewGame]);
-		//if (S.settings.userSettings) loadUserSpec([loadUserCode, sendStatusNewGame]); else sendStatusNewGame();
-	}
 }
 function _startRestartSame() {
 	checkCleanup_I();
@@ -94,37 +72,37 @@ function _startRestartSame() {
 }
 
 //#region views
-function gameView() { 
-	if (bodyZoom) 	document.body.style.transform = 'scale('+bodyZoom+')'; 
+function gameView() {
+	if (bodyZoom) document.body.style.transform = 'scale(' + bodyZoom + ')';
 
 	setIsReallyMultiplayer();
 
-	if (!isReallyMultiplayer){
+	if (!isReallyMultiplayer) {
 		hide('c_b_PollStatus');
 	}
 
-	document.title = GAME+' '+USERNAME;
-	view = 'game'; isPlaying = true; 
-	hideLobby(); hideLogin(); showGame(); 
-	removeAllGlobalHandlers(); 
+	document.title = GAME + ' ' + USERNAME;
+	view = 'game'; isPlaying = true;
+	hideLobby(); hideLogin(); showGame();
+	removeAllGlobalHandlers();
 	addGameViewHandlers();  //das sind nur die key handlers
 
 }
-function loginView() { 
-	view = 'login'; hideLobby(); showLogin(); hideGame(); clearChat(); clearMessages(); 
-	removeAllGlobalHandlers(); 
-	addLoginViewHandlers(); 
+function loginView() {
+	view = 'login'; hideLobby(); showLogin(); hideGame(); clearChat(); clearMessages();
+	removeAllGlobalHandlers();
+	addLoginViewHandlers();
 }
-function lobbyView() { 
+function lobbyView() {
 	document.body.style.transform = null; //'scale('+1+')'; //.5)'; //+(percent/100)+")";
 
-	view = 'lobby'; 
-	hideLogin(); 
-	showLobby(); 
-	hideGame(); 
-	updateLoginHeader(); 
-	removeAllGlobalHandlers(); 
-	addLobbyViewHandlers(); 
+	view = 'lobby';
+	hideLogin();
+	showLobby();
+	hideGame();
+	updateLoginHeader();
+	removeAllGlobalHandlers();
+	addLobbyViewHandlers();
 	//enable resume button if isPlayer
 	if (isPlaying) enableResumeButton(); else disableResumeButton();
 	//console.log('lobbyView isPlaying=',isPlaying)
@@ -134,7 +112,7 @@ function lobbyView() {
 	enableJoinButton();
 	if (!USE_SOCKETIO) hideEventList(); // openGameConfig();
 }
-
+//#endregion views
 
 //#region helpers
 function getUsernameForPlayer(id) {
@@ -171,21 +149,22 @@ function _initPlayers() {
 		i += 1;
 	}
 }
-function _initServer() {
+function _initServer(callbacks=[]) {
 	//init host and get gameInfo for all games
 	//for now just cheat since I have that info anyway!
 	timit = new TimeIt(getFunctionCallerName());
-	//timit.tacit();
+	timit.tacit();
 
 	S = { path: {}, user: {}, settings: {}, vars: {} };
 	counters = { msg: 0, click: 0, mouseenter: 0, mouseleave: 0, events: 0 };
 
 	setDefaultSettings();
-	//S.vars.switchedGame = true;
 
 	// _initGameGlobals();
 	// S.gameInProgress = false;
 	// initDom();
+
+	if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 }
 function _initGameGlobals() {
 	S.user = {};
@@ -210,6 +189,27 @@ function isFrontAIPlayer(id) {
 	let playerType = pl.playerType;
 	return playerType == 'AI';
 }
+function loadIconChars(callbacks = []) {
+	let faChars, gaChars;
+	loadYML('/static/rsg/assets/gameIconCodes.yml', dga => {
+		//console.log(dga);
+		gaChars = dga;
+		loadYML('/static/rsg/assets/faIconCodes.yml', dfa => {
+			//console.log(dfa);
+			faChars = dfa;
+			iconChars = {};
+			for (const k in faChars) {
+				iconChars[k] = faChars[k];
+			}
+			for (const k in gaChars) {
+				iconChars[k] = gaChars[k];
+			}
+			timit.showTime('loaded icons codes')
+			if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+		});
+	});
+}
+
 function setIsReallyMultiplayer() {
 	let gc = S.gameConfig;
 	// if any of the players is not front ai and is not me, is real multiplayer game and has to be announced!!!
@@ -218,5 +218,5 @@ function setIsReallyMultiplayer() {
 	isReallyMultiplayer = (foreign != null);
 	disableButtonsForMultiplayerGame();
 }
-
+//#endregion
 

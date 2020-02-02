@@ -6,6 +6,7 @@
 	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">	 -->
 	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"> -->
 	<!-- <meta charset="utf-8"> -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600|Ubuntu+Condensed" rel="stylesheet" type="text/css">
 	<link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/facebook/65/game-die_1f3b2.png">
 	<!-- <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600|Ubuntu+Condensed" rel="stylesheet" type="text/css"> -->
 	<!-- <link rel="stylesheet" href="/static/front/css/main.css"> -->
@@ -19,9 +20,9 @@
 <body>
 	<!-- <body  onresize="myFunction()"> -->
 	<script>
-		window.onload = () => _start(); // _start |
+		window.onload = () => _start(); 
 
-		var JS_LOBBY = [
+		var FRONT_JS = [
 			'_config',
 			'_start',
 			'chat',
@@ -40,7 +41,7 @@
 			//ok
 		];
 
-		var JS_FILES = [
+		var RSG_JS = [
 			'areas',
 			'assetlib',
 			'behavior',
@@ -109,8 +110,8 @@
 		}
 		for (const fname of FRONT_STYLES) styleLoader(fname, 'static/front/css', false, OFFLINE);
 		for (const fname of RSG_STYLES) styleLoader(fname, 'static/rsg/css', false, OFFLINE);
-		for (const fname of JS_LOBBY) scriptLoader(fname, 'static/front/js', false, OFFLINE);
-		for (const fname of JS_FILES) scriptLoader(fname, 'static/rsg/js', false, OFFLINE);
+		for (const fname of FRONT_JS) scriptLoader(fname, 'static/front/js', false, OFFLINE);
+		for (const fname of RSG_JS) scriptLoader(fname, 'static/rsg/js', false, OFFLINE);
 
 		//#endregion
 
@@ -283,12 +284,12 @@
 			<button id='c_b_Restart' onclick="onClickRestart()">restart</button>
 			<br />
 			<br />
-			<button onclick="onClickUseNoBoardDetection()">plain</button>
-			<button onclick="onClickUseNoSpec()">boardDetection</button>
-			<button onclick="onClickUseStructures()">spec</button>
+			<button onclick="onClickPlain()">plain</button>
+			<button onclick="onClickDetection()">detection</button>
+			<button onclick="onClickSpec()">spec</button>
 			<!-- <button onclick="onClickUseSettings()">settings</button>
-			<button onclick="onClickUseStructures()">structures</button> -->
-			<button onclick="onClickUseBehaviors()">spec & code</button>
+			<button onclick="onClickSpec()">structures</button> -->
+			<button onclick="onClickSpecAndCode()">spec & code</button>
 			<br />
 			<br />
 			<button onclick="onClickReloadSpec()">reload spec</button>

@@ -20,6 +20,7 @@ function initPageHeader() {
 	pageHeaderSetPlayers();
 }
 function isPlain() { return !S.settings.boardDetection && !S.settings.deckDetection && !S.settings.userStructures }
+function isDetection() { return (S.settings.boardDetection || S.settings.deckDetection) && !S.settings.userStructures }
 function initTABLES() {
 	//prepare areas for default objects
 	let tables = {

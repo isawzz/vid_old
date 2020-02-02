@@ -360,7 +360,14 @@ def userSpecPath(game,ext,v=None):
 	return path
 
 def ymlFile_jString(path):
-	return json.dumps(yaml.load(open(path, 'r')))
+	try:
+		content=open(path, 'r')
+		return json.dumps(yaml.load(content))
+	except Exception as e:
+		msg = 'no such file'+path
+		print(msg)
+		return msg
+
 def ymlText(path):
 	return yaml.load(open(path, 'r'))
 def ymlFile_pyObject(path):

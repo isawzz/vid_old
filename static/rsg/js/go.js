@@ -26,8 +26,9 @@ function isField(o) { return o.neighbors; }
 //function getOidForId(id){ return id[0]=='d'||id[0]=='m'?substring(id,4) : stringAfter(id,'@');}
 //function getOidForDefaultId(id) { return id[0] == 'd' ? id.substring(4) : null; }
 //function getOid
-function getMainArea(areaName){return UIS[getIdArea(areaName)];}
+function getMainArea(areaName) { return UIS[getIdArea(areaName)]; }
 //function getMainAreaName(areaName) { return startsWith(areaName, 'm_A') ? areaName : 'm_A_' + areaName; }
+function getStandardAreaNameForPlayerProp(pid, propName) { return 'area_' + pid + '_' + propName; }
 function getOidForMainId(id) { return id[0] == 'm' ? id.substring(4) : null; }
 function getAreaName(id) { return startsWith(id, 'm_A') ? id.substring(4) : id; }
 function getIdArea(areaName) {

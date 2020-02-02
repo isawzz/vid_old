@@ -287,7 +287,13 @@ function makeCard(oid, o, areaName) {
 	if (isdef(UIS[id])) { console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
 	let ms = new RSG();
 	ms.id = id;
-	let domel = _makeCardDiv(oid, o);
+	console.log('makeCard', oid, o.name);//, areaName);
+
+	//TODO: move to behaviors!!!!
+	let domel;
+	if (GAME == 'catam') domel = _makeCardDivCatan(oid, o);
+	else if (GAME == 'aristocracy') domel = _makeCardDivAristocracy(oid,o);
+	else domel = _makeCardDivDefault(oid,o);
 	domel.id = id;
 	ms.elem = domel;
 	ms.parts.elem = ms.elem;

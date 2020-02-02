@@ -105,7 +105,7 @@ function proceedRedraw() {
 	specAndDOM([gameStep]);
 }
 
-function onClickUseNoBoardDetection() {
+function onClickPlain() {
 	S.settings.userBehaviors = false;
 	S.settings.userStructures = false;
 	S.settings.userSettings = false;
@@ -114,7 +114,7 @@ function onClickUseNoBoardDetection() {
 	S.settings.openTab = 'London';
 	redrawScreen();
 }
-function onClickUseNoSpec() {
+function onClickDetection() {
 	S.settings.userBehaviors = false;
 	S.settings.userStructures = false;
 	S.settings.userSettings = false;
@@ -132,7 +132,7 @@ function onClickUseSettings() {
 	S.settings.openTab = 'Seattle';
 	redrawScreen();
 }
-function onClickUseStructures() {
+function onClickSpec() {
 	S.settings.userBehaviors = false;
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;
@@ -141,7 +141,7 @@ function onClickUseStructures() {
 	S.settings.openTab = 'Paris';
 	redrawScreen();
 }
-function onClickUseBehaviors() {
+function onClickSpecAndCode() {
 	S.settings.userBehaviors = true;
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;
@@ -156,18 +156,24 @@ function onClickReloadSpec() {
 
 function loadUserSpec(callbacks = []) {
 	_sendRoute('/get_UI_spec/' + GAME, d1 => {
-		S.user.spec = JSON.parse(d1);
-		//console.log(S.user.spec);
-		_sendRoute('/spec/' + GAME, d2 => {
-			//console.log(d2);
-			S.user.specText = d2;
+		try {
+			S.user.spec = JSON.parse(d1);
+			//console.log(S.user.spec);
+			_sendRoute('/spec/' + GAME, d2 => {
+				//console.log(d2);
+				S.user.specText = d2;
+				if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
+			});
+		} catch{
+			S.user.spec = null;
+			S.user.specText = 'null';
 			if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
-		});
+		}
 	});
 }
 function loadUserCode(callbacks = []) {
 	//timit.showTime(getFunctionCallerName());
-	let fname = S.user.spec.CODE;
+	let fname = S.user.spec ? S.user.spec.CODE : null;
 	//console.log('...loading code from', fname + '.js')
 	if (nundef(fname)) {
 		S.user.script = 'no code';

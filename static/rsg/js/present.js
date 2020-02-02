@@ -59,21 +59,21 @@ function _tableUpdate() {
 		let ms = getVisual(oid);
 		if (!isDeckObject(o) && ms) {
 			// if (ms) {
-				//console.log('update:',oid,'is line',ms.isLine)
-				let updatedVisuals;
-				if (S.settings.userBehaviors) {
-					updatedVisuals = runBehaviors(oid, G.table, TABLE_UPDATE);
-				}
-				//if (ms.isLine) console.log('updatedVisuals',updatedVisuals)
-				//console.log(updatedVisuals)
-				if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
-					//console.log('oid',oid,'has NOT been updated!!!!!')
-					if (changedProps.includes('loc')) _presentLocationChange(oid, ms);
-					//console.log('presenting main!',oid)
-					presentMain(oid, ms, G.table);
-					// } else {
-					// 	console.log('oid',oid,'has been updated!!!!!')
-				}
+			//console.log('update:',oid,'is line',ms.isLine)
+			let updatedVisuals;
+			if (S.settings.userBehaviors) {
+				updatedVisuals = runBehaviors(oid, G.table, TABLE_UPDATE);
+			}
+			//if (ms.isLine) console.log('updatedVisuals',updatedVisuals)
+			//console.log(updatedVisuals)
+			if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
+				//console.log('oid',oid,'has NOT been updated!!!!!')
+				if (changedProps.includes('loc')) _presentLocationChange(oid, ms);
+				//console.log('presenting main!',oid)
+				presentMain(oid, ms, G.table);
+				// } else {
+				// 	console.log('oid',oid,'has been updated!!!!!')
+			}
 			// }
 		}
 
@@ -83,6 +83,8 @@ function _tableUpdate() {
 		presentDefault(oid, G.table[oid]);
 	}
 }
+
+
 
 function presentPlayers() {
 	//TODO: players remove
@@ -103,10 +105,12 @@ function _playersCreateNew() {
 			updatedVisuals = runBehaviors(pid, G.playersAugmented, PLAYER_CREATE);
 		}
 		//console.log('updatedVisuals',updatedVisuals)
-		if (isPlain() && (nundef(updatedVisuals) || !updatedVisuals.includes(pid))) {
-			let ms = makeMainPlayer(pid, G.playersAugmented[pid], S.settings.player.defaultMainArea);
-			if (ms === null && !defaultVisualExists(pid) && S.settings.table.createDefault != false) {
-				makeDefaultObject(pid, G.playersAugmented[pid], S.settings.table.defaultArea);
+		if (nundef(updatedVisuals) || !updatedVisuals.includes(pid)) {
+			if (isPlain()) {
+				let ms = makeMainPlayer(pid, G.playersAugmented[pid], S.settings.player.defaultMainArea);
+				if (ms === null && !defaultVisualExists(pid) && S.settings.table.createDefault != false) {
+					makeDefaultObject(pid, G.playersAugmented[pid], S.settings.table.defaultArea);
+				}
 			}
 		}
 	}
@@ -125,8 +129,18 @@ function _playersUpdate() {
 		}
 
 		let ms = getVisual(pid);
+		//ms nur def bei plain mode!
+		//console.log('player update:',pid,ms)
 		if (!updatedVisuals[pid] && isdef(ms)) {
 			presentMainPlayer(pid, ms, G.playersAugmented, false);
+		}
+
+		//console.log(isPlain(),updatedVisuals[pid],G.player == pid)
+		if (!isPlain() && !updatedVisuals[pid] && S.settings.hasCards){
+			//present Gameplayer hands/buildings... if this is a card game?!?!?
+			//if this game has decks, it might have cards
+			if (G.player == pid ) updateGameplayerHands(pid,pl);
+			
 		}
 
 		//update default visual
@@ -134,7 +148,10 @@ function _playersUpdate() {
 		let plms = presentDefault(pid, pl, false);
 		_onPlayerChange(pid);
 	}
+
 }
+
+
 
 function presentStatus() {
 	if (isdef(G.serverData.status)) {

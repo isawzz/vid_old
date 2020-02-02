@@ -131,33 +131,6 @@ function _makeGroundShape(ms, x, y, w, h, color, shape, { dx = 0, dy = 0, x1, y1
 
 
 
-//#region routes: unused!
-function availableGames(callback) { let route = '/game/available'; _sendRouteJS(route, callback); }
-function whichGame(callback) { let route = '/game/info'; _sendRouteJS(route, callback); }
-function selectGame(callback) { let route = '/game/select/' + GAME; _sendRouteJS(route, callback); }
-function existingPlayers(callback) { callback({ response: 'hallo' }); }//TODO
-function availablePlayers(callback) { let route = '/game/players'; _sendRouteJS(route, callback); }
-function addPlayer(playerId, callback) {
-	//habe S.gameInfo{num_players:[3,4],name,players:[plid]}, S.availablePlayers[plid], S.plAddedByMe{plid:uname}
-	//console.log(S);
-	let username = USERNAME;
-	if (nundef(S.plAddedByMe)) S.plAddedByMe = {};
-	else {
-		let up = S.plAddedByMe;
-		let unames = Object.values(up);
-		let plids = Object.keys(up);
-		let i = plids.length;
-		username = i == 0 ? USERNAME : USERNAME + i;
-	}
-	S.plAddedByMe[playerId] = username;
-	pageHeaderAddPlayer(username, playerId, inferPlayerColorFromNameOrInit(playerId, S.gameInfo.player_names.indexOf(playerId)));
-
-	//console.log('adding user',username,'as player',playerId)
-	let route = '/add/player/' + username + '/' + playerId; _sendRouteJS(route, callback);
-}
-function tryBegin(callback) { let route = '/begin/' + SEED; _sendRouteJS(route, callback); }
-function restartHost(callback) { let route = '/restart'; _sendRouteJS(route, callback); }
-//#endregion
 
 //#region misc helpers
 function openTabTesting(cityName) {

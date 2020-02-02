@@ -2,6 +2,7 @@
   --wCard: 3.875rem;
 	--hCard: 5.5rem;
 }
+
 .card {
   position: absolute;
   display: inline-block;
