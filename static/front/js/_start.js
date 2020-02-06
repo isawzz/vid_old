@@ -2,15 +2,29 @@ var commandChain = [];
 var maxZIndex = 110;
 var iconChars = null;
 var bodyZoom = null;
+var browserZoom = null;
 
 function _start() {
+
+	window.onresize = ()=>{
+		let newBrowserZoom= Math.round(window.devicePixelRatio * 100);
+		//let newBrowserZoom=window.outerWidth / window.document.documentElement.clientWidth; //doesn't work!!!
+		//console.log('new zoom:',newBrowserZoom, 'browserZoom',browserZoom);
+		if (browserZoom != newBrowserZoom) {browserZoom = newBrowserZoom;return;}
+		//console.log('RESIZE WINDOW!!!!!!!!!!!!');
+		//only if browser has not been zoomed!
+		if (nundef(browserZoom) || browserZoom==newBrowserZoom)	onClickAreaSizes();
+		browserZoom = newBrowserZoom;
+	};
+
 	_initServer([loadIconChars, ensureAllGames, ()=>{
 
 		//START HERE!!!! have iconChars,allGames,gcs
 		gcsAuto();
 		S.gameConfig = gcs[GAME];
 		_startNewGame('starter');
-		
+
+		//onClickAreaSizes();
 		//test13_simpleDD(); //test12 | test07 | test13_simpleDDMultiple
 
 		//#region earlier tests and starts:
@@ -124,6 +138,18 @@ function inferPlayerColorFromNameOrInit(plid, index) {
 	let ckeys = getKeys(playerColors);
 	return playerColors[ckeys[index] % playerColors.length];
 }
+function initRSGData() {
+	S.user = {};
+	G = { table: {}, players: {} }; //server objects
+	UIS = {}; // holds MS objects 
+	IdOwner = {}; //lists of ids by owner
+	id2oids = {}; // { uid : list of server object ids (called oids) }
+	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
+	id2uids = {}; // { uid : list of ms ids related to same oid }
+	DELETED_IDS = [];
+
+}
+
 function _initPlayers() {
 	//TODO: eliminate S.players, das ist jetzt in S.gameConfig
 	S.players = {}; //da sollen die objects {username,isMe,id,color} drin sein!!!
@@ -155,22 +181,7 @@ function _initServer(callbacks=[]) {
 
 	setDefaultSettings();
 
-	// _initGameGlobals();
-	// S.gameInProgress = false;
-	// initDom();
-
 	if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
-}
-function _initGameGlobals() {
-	S.user = {};
-	G = { table: {}, players: {} }; //server objects
-	UIS = {}; // holds MS objects 
-	IdOwner = {}; //lists of ids by owner
-	id2oids = {}; // { uid : list of server object ids (called oids) }
-	oid2ids = {}; // { oid : list of ms ids (called ids or uids) }
-	id2uids = {}; // { uid : list of ms ids related to same oid }
-	DELETED_IDS = [];
-
 }
 function isMyPlayer(id) {
 	let uname = getUsernameForPlayer(id);

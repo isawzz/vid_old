@@ -32,7 +32,7 @@ class TimeIt {
 		let tNew = new Date(); //new Date().getTime() - this.t;
 		let tDiff = tNew.getTime() - this.t.getTime();
 		let tDiffStart = tNew.getTime() - this.namedTimestamps.start.getTime();
-		if (this.showOutput) console.log(this.format(tNew), ':', tDiff, 'msecs to', msg, '(' + tDiffStart, 'total)');
+		//if (this.showOutput) console.log(this.format(tNew), ':', tDiff, 'msecs to', msg, '(' + tDiffStart, 'total)');
 		if (this.showOutput) console.log('___ ', tDiff, 'msecs to', msg, '(' + tDiffStart, 'total)');
 		this.t = tNew;
 	}
@@ -1569,6 +1569,22 @@ function getItemWithMax(d, propName) {
 	return [kmax, d[kmax], max];
 }
 function getKeys(dict) { return Object.keys(dict); }
+function getValueArray(o,elKey='obj',arrKey='_set'){
+	//for {_set:[{_obj:111},{_obj:222}]} returns [111,222]
+	let raw = jsCopy(o);
+	if (isdef(o[arrKey])) {
+		raw = raw[arrKey];
+	}
+	if (isDict(raw)) {
+		raw = dict2list(raw);
+	}
+	if (!isList(raw)) return [];
+	if (raw.length > 0 && raw[0][elKey]) {
+		raw = raw.map(x => x[elKey]);
+	}
+	return raw;
+}
+
 function intersection(arr1, arr2) {
 	//each el in result will be unique
 	let res = [];
@@ -1943,7 +1959,17 @@ function getTypeOf(param) {
 	return type;
 }
 function isdef(x) { return x !== null && x !== undefined; }
-function isDict(d) { return typeof (d) == 'object'; }
+function isDictOrList(d) { return typeof (d) == 'object'; }
+function isDict(d) {  //TODO MUSS isList ausschliessen!!!! koennte isDictOrList function dazugeben!!!
+	let res = (typeof (d) == 'object') && !isList(d);
+	if (isList(d)) {
+		let funcName = getFunctionsNameThatCalledThisFunction();
+		// if (!(['transformToString','getColorHint'].includes(funcName))){
+		// 	console.log('>>>',getFunctionsNameThatCalledThisFunction(), d,res); //typeof (d) == 'object' && !isList(d));
+		// }
+	}
+	return res; //typeof (d) == 'object'; // && !isList(d); 
+}
 function isEvent(param) { return getTypeOf(param) == 'event'; }
 function isLiteral(x) { return isString(x) || $.isNumeric(x); }
 function isList(arr) { return Array.isArray(arr); }

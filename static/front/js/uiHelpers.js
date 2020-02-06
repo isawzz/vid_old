@@ -90,16 +90,20 @@ function zoom(percent) {
 	let factor = percent/100;
 	bodyZoom = factor;
 	document.body.style.transform = 'scale('+factor+')'; //.5)'; //+(percent/100)+")";
+	//console.log('body scaled to',percent+'%')
 }
 function onClickAreaSizes(){
-	var width = window.innerWidth;
-	var height = window.innerHeight;
-	console.log('_____________',width,height);
+	if (nundef(bodyZoom)) bodyZoom=1.0;
+	//var width = window.innerWidth;//*bodyZoom;
+	//var height = window.innerHeight;//*bodyZoom;
+	//console.log('_____________window is',width,height);
+	//console.log('>>>>>>bodyZoom',bodyZoom);
 	let zoomlevel=calcScreenSizeNeeded();
-	console.log(zoomlevel)
+	//console.log('zoomlevel',zoomlevel)
 	zoom(zoomlevel);
 }
 function calcScreenSizeNeeded(){
+	if (nundef(bodyZoom)) bodyZoom=1.0;
 
 	let wAreas = ['a_d_actions','a_d_game','a_d_player','a_d_log'];
 	let wTotal=0;
@@ -107,15 +111,15 @@ function calcScreenSizeNeeded(){
 	
 	for(const a of wAreas){
 		let ms = UIS[a];
-		let wSoll = ms.w;
-		wTotal += wSoll;
+		// let wSoll = ms.w;
+		// wTotal += wSoll;
 		//console.log('ms.w',wSoll);
 		let b=getBounds(ms.elem);
-		let wIst = Math.round(b.width);
+		let wIst = Math.round(b.width/bodyZoom);
 		wTotal2 += wIst;
-		//console.log('w ist',wIst);
+		//console.log('w of',a,'is',wIst);
 	}
-	//console.log('total width min:',wTotal,'ist',wTotal2, 'aber window nur',window.innerWidth);
+	//console.log('total width needed:',wTotal2, 'aber window nur',window.innerWidth);
 
 	let hAreas = ['a_d_header','a_d_status','a_d_game','a_d_buttons'];
 	let hTotal=0;
@@ -131,7 +135,8 @@ function calcScreenSizeNeeded(){
 		hTotal2 += hIst;
 		//console.log('w ist',hIst);
 	}
-	//console.log('total height min:',hTotal,'ist',hTotal2, 'aber window nur',window.innerHeight);
+	//console.log('total height needed:',hTotal2, 'aber window nur',window.innerHeight);
+
 
 	return (window.innerWidth*100)/wTotal2;
 }

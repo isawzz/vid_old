@@ -9,6 +9,8 @@ function checkCleanup_I() {
 		delete G.signals.receivedEndMessage;
 		delete G.previousPlayer;
 		delete G.player;
+		playerCollections = {};
+		tableCollections = {};
 		//console.log('checkCleanup_I done!',G.previousPlayer, G.player);
 	}
 }

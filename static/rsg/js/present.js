@@ -49,6 +49,11 @@ function _tableCreateNew() {
 function _tableUpdate() {
 	for (const oid in G.tableUpdated) {
 		let o = G.table[oid];
+		if (nundef(o)) {
+			console.log('NON-EXISTING OBJECT!!!!!',oid,'has been removed!');
+			continue;
+			//object o has been removed, this is 
+		}
 
 		if (isStructuralElement(oid)) continue; //eg., boards not updated!
 
@@ -57,15 +62,13 @@ function _tableUpdate() {
 
 		//update main visual unless deck 
 		let ms = getVisual(oid);
+		let updatedVisuals;
 		if (!isDeckObject(o) && ms) {
-			// if (ms) {
-			//console.log('update:',oid,'is line',ms.isLine)
-			let updatedVisuals;
+
 			if (S.settings.userBehaviors) {
 				updatedVisuals = runBehaviors(oid, G.table, TABLE_UPDATE);
 			}
-			//if (ms.isLine) console.log('updatedVisuals',updatedVisuals)
-			//console.log(updatedVisuals)
+
 			if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
 				//console.log('oid',oid,'has NOT been updated!!!!!')
 				if (changedProps.includes('loc')) _presentLocationChange(oid, ms);
@@ -74,7 +77,11 @@ function _tableUpdate() {
 				// } else {
 				// 	console.log('oid',oid,'has been updated!!!!!')
 			}
-			// }
+
+		}
+
+		if (S.settings.hasCards && !isPlain() &&  (nundef(updatedVisuals) || !updatedVisuals.includes(oid))){
+			updateTableCardCollections(oid);
 		}
 
 		//update default visual
@@ -135,11 +142,17 @@ function _playersUpdate() {
 			presentMainPlayer(pid, ms, G.playersAugmented, false);
 		}
 
-		//console.log(isPlain(),updatedVisuals[pid],G.player == pid)
 		if (!isPlain() && !updatedVisuals[pid] && S.settings.hasCards){
 			//present Gameplayer hands/buildings... if this is a card game?!?!?
 			//if this game has decks, it might have cards
-			if (G.player == pid ) updateGameplayerHands(pid,pl);
+			
+
+			if (G.player == pid ) {
+				if (G.playerChanged) {
+					switchPlayerArea();
+				}
+				updateGameplayerCardCollections(pid,pl);
+			}
 			
 		}
 
@@ -282,12 +295,13 @@ function presentWaitingFor() {
 	//console.log('changing player!')
 	//hier komm ich nur her wenn es mein turn war
 	//also kann switchen wenn entweder der pl me ist oder eine FrontAI
+	//console.log(G.serverData)
 	let pl = G.serverData.waiting_for[0];
 	if (nundef(G.previousWaitingFor) || G.previousWaitingFor != pl) {
 		//now waiting for a new player!!!
 		//update page header with that player and set G.previousWaitingFor
 		G.previousWaitingFor = pl;
-		console.log('presenting waiting for', pl)
+		//console.log('presenting waiting for', pl)
 		_updatePageHeader(pl);
 	}
 	if (S.settings.playmode != 'passplay' && (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player))) {
@@ -321,6 +335,16 @@ function _presentLocationChange(oid, ms) {
 		}
 	}
 }
+function switchPlayerArea(){
+	if (G.previousPlayer) {
+		let msPrevPlayerArea = getPlayerArea(G.previousPlayer);
+		//console.log('prev player area:',msPrevPlayerArea);
+		if (msPrevPlayerArea) msPrevPlayerArea.hide();
+	}
+	let msPlayerArea = getPlayerArea(G.player);
+	//console.log('player area:',msPlayerArea);
+	if (msPlayerArea) msPlayerArea.show();
+}
 function _onPlayerChange(pid) {
 	if (isPlain()) return;
 	if (!G.playerChanged || pid != G.player) return;
@@ -342,6 +366,8 @@ function _onPlayerChange(pid) {
 		target.parentNode.scrollTop = target.offsetTop;
 		//msDef.elem.scrollIntoView(false);
 	}
+
+
 }
 function _updatePageHeader(pid) {
 	//console.log('Turn:',pid)

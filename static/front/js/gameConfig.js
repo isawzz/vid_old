@@ -72,7 +72,7 @@ function ensureAllGames(callbacks = []) {
 	if (allGames == null) {
 		sendGetAllGames(d => {
 			allGames = d;
-			console.log('allGames',allGames);
+			//console.log('allGames',allGames);
 			if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));
 		});
 	} else if (!isEmpty(callbacks)) callbacks[0](arrFromIndex(callbacks, 1));

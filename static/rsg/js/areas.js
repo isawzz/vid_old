@@ -142,8 +142,8 @@ function initDom() {
 	measureMSTree(ROOT); //each div is measured: x,y,w,h
 	// timit.showTime('...measure tree');
 
-	let zoomlevel = calcScreenSizeNeeded();
-	zoom(zoomlevel);
+	// let zoomlevel = calcScreenSizeNeeded();
+	// zoom(zoomlevel);
 }
 function createMSTree(ms) {
 	let areas = ms.elem.children;

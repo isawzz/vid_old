@@ -87,10 +87,12 @@ function redrawScreen() {
 	checkCleanup_II();
 
 	if (S.settings.userBehaviors) {
+		console.log('geht in user behaviors in redrawScreen')
 		loadScript(S.path.script, proceedRedraw);
 	} else proceedRedraw();
 }
 function proceedRedraw() {
+	flags.specAndDOM = true;
 	let xdata = G.serverData;
 	G = { table: {}, players: {}, signals: {} }; //server objects
 	UIS = {}; // holds MS objects 
@@ -100,10 +102,15 @@ function proceedRedraw() {
 	id2uids = {}; // { uid : list of ms ids related to same oid }
 
 	//console.log(jsCopy(S), jsCopy(G));
-
+	console.log('proceedRedraw nach daten loeschen')
+	
 	initDom();
-	processData(xdata)
-	specAndDOM([gameStep]);
+	gameStep(xdata);
+	// console.log('nach initDom')
+	// processData(xdata)
+	// console.log('nach processData')
+	// specAndDOM([gameStep]);
+	// console.log('specAndDOM')
 }
 
 function onClickPlain() {
@@ -134,6 +141,7 @@ function onClickUseSettings() {
 	redrawScreen();
 }
 function onClickSpec() {
+	//flags.specAndDOM = true;
 	S.settings.userBehaviors = false;
 	S.settings.userStructures = true;
 	S.settings.userSettings = true;

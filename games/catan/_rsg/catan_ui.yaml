@@ -1,4 +1,5 @@
 SETTINGS:
+  #deckDetection: false
   gameAreaSize: [1000, 800]
   table:
     optin: [res, num, building, port]

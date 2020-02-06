@@ -287,11 +287,13 @@ function makeCard(oid, o, areaName) {
 	if (isdef(UIS[id])) { console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
 	let ms = new RSG();
 	ms.id = id;
-	console.log('makeCard', oid, o.name);//, areaName);
+	
+	let cardName = isdef(o.name)?o.name:'King';
+	//console.log('makeCard', oid, cardName);//, areaName);
 
 	//TODO: move to behaviors!!!!
 	let domel;
-	if (GAME == 'catam') domel = _makeCardDivCatan(oid, o);
+	if (GAME == 'catan') domel = _makeCardDivCatan(oid, o);
 	else if (GAME == 'aristocracy') domel = _makeCardDivAristocracy(oid,o);
 	else domel = _makeCardDivDefault(oid,o);
 	domel.id = id;
@@ -629,7 +631,12 @@ function transformToString(k, val, refs) {
 	else if (val && isDict(val) && '_obj' in val) { sval = makeRefLinkDiv4_obj(val, refs); }
 	else if (val && isDict(val) && '_ndarray' in val) { sval = makeRefLinkDiv4MatrixOf_obj(val, refs) }
 	else if (val && isDict(val) && '_player' in val) { sval = makeRefLinkDiv4_player(val, refs); }
-	else if (isDict(val)) { sval = tableHTMLX(val, refs); }
+	else if (isDictOrList(val)) {// || isList(val)) { 
+		// if (isList(val)) {
+		// 	console.log('##############ERROR!!! transformToString list would be lost!!!!',val)
+		// }
+		sval = tableHTMLX(val, refs); 
+	}
 	else sval = simpleRep(val);
 
 	// if (k == 'ports'){

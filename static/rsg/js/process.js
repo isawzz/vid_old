@@ -2,7 +2,7 @@
 function processData(data) {
 	// timit.showTime('start processing');
 
-	
+
 	if (G.end) {
 		//noch von voriger runde!
 		console.log(USERNAME, 'has G.end!!!!')
@@ -31,11 +31,15 @@ function processData(data) {
 	G.phase = G.serverData.phase;
 
 	processTable(data);
+
 	//console.log('created:',G.tableCreated)
 	// timit.showTime('...objects up to date!');
 	//let itsMyTurn = 
 	processPlayers(data);
 	// timit.showTime('...players up to date!');
+
+	//TODO: verschiebe zu process!!!
+	updateCollections();
 
 	// processStatus(); //nothing to do
 
@@ -184,9 +188,11 @@ function processEnd(data) {
 	return G.end;
 }
 function processActions(data) {
+	//console.log('processActions',data,G.serverData.options)
 	if (nundef(G.serverData.options)) { G.tupleGroups = null; return false; }
 
 	G.tupleGroups = getTupleGroups();
+	//console.log('!!!!!!!nach getTupleGroups',G.tupleGroups)
 	return true;
 }
 function processWaitingFor() {
@@ -222,8 +228,15 @@ function getTupleGroups() {
 }
 //#region gebraucht fuer getTupleGroups
 function expand1_99(x) {
-	//console.log('input', tsRec(x))
-	if (isDict(x)) {
+	//console.log('expand1_99 input', tsRec(x))
+	//console.log('expand1_99');
+	if (isList(x)) {
+		console.log('expand1_99: x should be dict BUT is a list', x);
+	}
+	if (isDict(x)) { // TODO:  || isList(x)) {
+		// if (isList(x)) {
+		// 	console.log('process: list',x)
+		// }
 		if ('_set' in x) {
 			//console.log('handleSet wird aufgerufen')
 			return handleSet(x._set);

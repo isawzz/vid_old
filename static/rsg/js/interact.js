@@ -192,7 +192,7 @@ function onClickSelectTuple(ev, ms, part) {
 }
 var startBoats = ['93', '99', '109', '121', '124', '116', '106', '111', '116', '129'];
 function getNextStartBoat() {
-	console.log('phase', G.phase)
+	//console.log('phase', G.phase)
 	let ms = null;
 	let sb = startBoats[0];
 	if (G.phase == 'setup') {
@@ -203,7 +203,7 @@ function getNextStartBoat() {
 				//console.log(b.o.text);
 				for (const t of b.o.text) {
 					if (t.includes(id)) {
-						console.log('choosing', id)
+						//console.log('choosing', id)
 						sb = id;
 						ms = b;
 						removeInPlace(startBoats, sb);

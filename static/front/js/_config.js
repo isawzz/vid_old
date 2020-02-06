@@ -1,5 +1,5 @@
 var USERNAME = 'felix';
-var GAME = 'catan'; // s1 | catan | ttt | empty | game01 | aristocracy
+var GAME = 'aristocracy'; // s1 | catan | ttt | empty | game01 | aristocracy
 var PLAYMODE = 'hotseat'; // multiplayer | hotseat | solo | passplay
 var SEED = 1;
 //var AI_TYPE = 'random';
@@ -17,9 +17,9 @@ const SERVER_URL = IS_MIRROR ? 'http://localhost:5555/' : FLASK ? (NGROK ? NGROK
 var S_tooltips = 'OFF';
 var S_openTab = 'Seattle';
 
-var S_userSettings = false; //true;
-var S_userStructures = false; //true;
-var S_userBehaviors = false; //true;
+var S_userSettings = false; // true | false
+var S_userStructures = false; // true | false
+var S_userBehaviors = false; // true | false
 
 var S_autoplay = false;
 var S_showEvents = false; //unused

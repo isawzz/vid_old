@@ -20,15 +20,20 @@ function mainVisualExists(oid) {
 }
 function isBoardElement(oid) { let o = getVisual(oid); return o.idParent[2] == 's'; }
 function isBoardObject(o) { return o.map && o.fields; }
-function isDeckObject(o) { return isdef(o.deck_count); } //o.obj_type.toLowerCase().includes('deck') && o.deck_count; }
+function isDeckObject(o) { 
+	if (nundef(o)) console.log(getFunctionsNameThatCalledThisFunction(),'undefined object checked for is deck!!!')
+	return isdef(o.deck_count); 
+} //o.obj_type.toLowerCase().includes('deck') && o.deck_count; }
 function isField(o) { return o.neighbors; }
 
 //function getOidForId(id){ return id[0]=='d'||id[0]=='m'?substring(id,4) : stringAfter(id,'@');}
 //function getOidForDefaultId(id) { return id[0] == 'd' ? id.substring(4) : null; }
 //function getOid
+function getSimpleSetElements(o) { return getValueArray(o); }
 function getMainArea(areaName) { return UIS[getIdArea(areaName)]; }
 //function getMainAreaName(areaName) { return startsWith(areaName, 'm_A') ? areaName : 'm_A_' + areaName; }
 function getStandardAreaNameForPlayerProp(pid, propName) { return 'area_' + pid + '_' + propName; }
+function getStandardAreaNameForKey(key) { return 'm_A_' + key; }
 function getOidForMainId(id) { return id[0] == 'm' ? id.substring(4) : null; }
 function getAreaName(id) { return startsWith(id, 'm_A') ? id.substring(4) : id; }
 function getIdArea(areaName) {

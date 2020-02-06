@@ -882,7 +882,7 @@ class RSG {
 		let part = $(ev.currentTarget);
 
 		let partName;
-		if (this.isa.deck) partName = 'topmost';
+		if (this.isa.deck && this.parts.topmost) partName = 'topmost';
 		else if (part.id == this.elem.id) partName = 'elem';
 		else { let props = $(part).attrs(); let name = props.name; if (nundef(name)) name = 'elem'; partName = name; }
 
@@ -1314,6 +1314,19 @@ class RSG {
 	//#endregion
 
 	//#region parts
+	body(key='body',color){
+		if (this.parts[key]) return;
+		let t = document.createElement('div');
+		t.style.padding = '4px 8px';
+		let bg = color;
+		this.elem.appendChild(t);
+		this.parts[key] = t;
+		//add these props to part:
+		$(t).attrs({ name: key });
+		if (isdef(bg)) this.setBg(bg, { updateFg: (color != 'dimgray'), partName: key });
+		return this;
+
+	}
 	title(s, key = 'title', color = 'dimgray') {
 		if (this.parts[key]) {
 			//console.log('HALLLLLLLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO', this.parts[key], this.elem); 
@@ -1321,7 +1334,7 @@ class RSG {
 			return;
 		}
 		let t = document.createElement('div');
-		t.style.borderRadius = '8px';
+		t.style.borderRadius = '6px';
 		t.style.padding = '4px 8px';
 		let bg = color;
 		//t.style.backgroundColor = bg;
@@ -1418,11 +1431,28 @@ class RSG {
 	//#region admin/general
 
 	//attach/detach does NOT remove or add to MS parent, just its domel! (for former, use: switchParent NOT_IMPL)
-	attach() { if (!this.isAttached) { this.isAttached = true; UIS[this.idParent].elem.appendChild(this.elem); } return this; } //need to attach() elems that didnt exist OR are NOT g on div!!! in order fr them to appear on screen!
-	detach() { if (this.isAttached) { this.isAttached = false; UIS[this.idParent].elem.removeChild(this.elem); } return this; }
+	attach(partName) { 
+		if (!this.isAttached) { 
+			this.isAttached = true; 
+			let parentMS = UIS[this.idParent];
+			let parentElem = isdef(partName) && isdef(parentMS.parts[partName])?parentMS.parts[partName]:parentMS.elem;
+			parentElem.appendChild(this.elem); 
+		} 
+		return this; 
+	} //need to attach() elems that didnt exist OR are NOT g on div!!! in order fr them to appear on screen!
+	detach(partName) { 
+		if (this.isAttached) { 
+			this.isAttached = false; 
+			let parentMS = UIS[this.idParent];
+			let parentElem = isdef(partName) && isdef(parentMS.parts[partName])?parentMS.parts[partName]:parentMS.elem;
+			parentElem.removeChild(this.elem); 
+			// UIS[this.idParent].elem.removeChild(this.elem); 
+		} 
+		return this; 
+	}
 	clear(startProps = {}) {
 		//all children are destroyed: only destroys UI and removes from parent.children,
-		//does NOT destroy RSG objects of children or remove them from any lists/dictionaries such as UIS,IdOwner,id2uids....
+		//does destroy RSG objects of children or remove them from any lists/dictionaries such as UIS,IdOwner,id2uids....
 		let ids = this.children.map(x => x);
 		for (const id of ids) {
 			//console.log('delete',id)
@@ -1432,6 +1462,7 @@ class RSG {
 		for (const k in startProps) {
 			this.elem[k] = startProps[k];
 		}
+		this.children = [];
 		//console.log('children after clear', this.children);
 	}
 	destroy() {

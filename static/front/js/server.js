@@ -13,7 +13,7 @@ function sendAction(boat, callbacks) {
 function sendGetAllGames(callback) {
 	_sendRouteJS('/game/available', glist => {
 		let chain = [];
-		console.log(glist);//glist is a list!!!
+		//console.log(glist);//glist is a list!!!
 		for (const g of glist) chain.push({ cmd: '/game/info/' + g, f: _sendRouteJS, data: null });
 		_cmdChainSend(chain, res => {
 			//console.log(res);//res is a list of JSON objects 
@@ -128,7 +128,7 @@ function _postRoute(route, callback, data) {
 function _sendRoute(route, callback) { _sendRouteBase(false, route, callback); }
 function _sendRouteJS(route, callback) { _sendRouteBase(true, route, callback); }
 function _sendRouteBase(returnJS, route, callback) {
-	console.log('*** _sendRouteBase *** ', returnJS, route)
+	//console.log('*** _sendRouteBase *** ', returnJS, route)
 	if (nundef(counters)) counters = { msg: 0 };
 	counters.msg += 1;
 	let prefix = last(SERVER_URL) == '/' ? dropLast(SERVER_URL) : SERVER_URL;
@@ -136,20 +136,23 @@ function _sendRouteBase(returnJS, route, callback) {
 	let url = prefix + route;
 	//console.log(counters.msg + ': request sent: ' + url);
 
+	let js={NODATA:'NODATA'};
 	$.ajax({
 		url: url,
 		type: 'GET',
 		success: response => {
 			try {
-				let js = JSON.parse(response);
+				js = JSON.parse(response);
 				//console.log('raw',response);
 				//console.log('json',js)
 				if (js.error) { console.log(js.error.msg); }
-				if (callback) callback(returnJS ? js : response);
+				//if (callback) callback(returnJS ? js : response);
 			} catch{
 				//alert('NOT JSON: '+response);
-				if (callback) callback(returnJS ? { response: response } : response);
+				js = {response:response};
+				//if (callback) callback(returnJS ? { response: response } : response);
 			}
+			if (callback) callback(returnJS ? js : response);
 
 		},
 		error: err => { error(err); alert(err); },

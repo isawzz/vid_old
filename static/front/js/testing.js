@@ -1,21 +1,53 @@
+//#region test async await
+async function loadAsset() {
+	let response = await fetch('/static/rsg/assets/gameIconCodes.yml');
+	console.log(response);
+}
+async function atest01() {
+	let url = '/static/rsg/assets/gameIconCodes.yml';
+	let response = await fetch(url);
+
+	if (response.ok) { // if HTTP-status is 200-299
+		// get the response body (the method explained below)
+		let t = await response.text();
+		console.log(t);
+		let ty = jsyaml.load(t);
+		console.log(ty);
+		console.log(jsyaml.dump(ty));
+	} else {
+		alert("HTTP-Error: " + response.status);
+	}
+}
+async function atest02(){
+	//
+}
+
+function _startTest01() {
+	//muss irgendeine function schreiben die ein file laded!
+	//lets take loadYML
+	console.log('HALLOOOOO');
+	atest01(); // loadAsset | atest01
+}
+
+
 //#region test Lines
-function testLines(){
-	_initGameGlobals(); showGame(); initDom();
+function testLines() {
+	initRSGData(); showGame(); initDom();
 	let board = makeDrawingArea('board', 'a_d_game', true);
 
 	let ms = makeDrawingElement('el1', 'board');
-	ms.line({thickness:10, cap:'round'}).setBg('red').attach();
+	ms.line({ thickness: 10, cap: 'round' }).setBg('red').attach();
 
 	console.log(ms)
 	console.log(ms.elem)
 
-	let [x1,y1,x2,y2]=ms.getEndPointsOfLineSegmentOfLength(40);
-	let ms2=makeDrawingElement('el2', 'board');
-	ms2.line({thickness:15,x1:x1,y1:y1,x2:x2,y2:y2}).setBg('blue').attach();
+	let [x1, y1, x2, y2] = ms.getEndPointsOfLineSegmentOfLength(40);
+	let ms2 = makeDrawingElement('el2', 'board');
+	ms2.line({ thickness: 15, x1: x1, y1: y1, x2: x2, y2: y2 }).setBg('blue').attach();
 
-	[x1,y1,x2,y2]=ms.getEndPointsOfLineSegmentOfLength(120);
-	let ms3=makeDrawingElement('el3', 'board');
-	ms3.line({thickness:5,x1:x1,y1:y1,x2:x2,y2:y2}).setBg('green').attach();
+	[x1, y1, x2, y2] = ms.getEndPointsOfLineSegmentOfLength(120);
+	let ms3 = makeDrawingElement('el3', 'board');
+	ms3.line({ thickness: 5, x1: x1, y1: y1, x2: x2, y2: y2 }).setBg('green').attach();
 }
 
 //#region test picto
@@ -60,17 +92,17 @@ function addPicto(IdBoard, key, sz, x, y) {
 	ms.attach();
 }
 function testPicto() {
-	_initGameGlobals(); showGame(); initDom();
+	initRSGData(); showGame(); initDom();
 	let board = makeDrawingArea('board', 'a_d_game', true);
 
 	// let ms = makeDrawingElement('el1', 'board');
 
-	let keys = ['achievement','wheat','criminal','police','cop','trophy','victory','plenty','fruit','bounty','house','castle','building', 'settlement', 'city', 'robber','thief', 'street', 'road'];
+	let keys = ['achievement', 'wheat', 'criminal', 'police', 'cop', 'trophy', 'victory', 'plenty', 'fruit', 'bounty', 'house', 'castle', 'building', 'settlement', 'city', 'robber', 'thief', 'street', 'road'];
 	let y = -300;
-	let x=-300;
+	let x = -300;
 	for (const k of keys) {
-		addPicto('board',k,50,x,y);
-		if (y>250) {y=-300;x+=60;} else y+=60;
+		addPicto('board', k, 50, x, y);
+		if (y > 250) { y = -300; x += 60; } else y += 60;
 	}
 	// let key = chooseRandom(Object.keys(faChars));//'clock';
 	// ms._picto('crow', -100, -100, 100, 100, randomColor());
@@ -154,7 +186,7 @@ function change(arr, n) {
 	}
 }
 function stressTest() {
-	_initGameGlobals(); showGame(); initDom();
+	initRSGData(); showGame(); initDom();
 	timit.reset();
 	let board = makeDrawingArea('board', 'a_d_game', true);
 
@@ -165,7 +197,7 @@ function stressTest() {
 
 }
 function testNewMSAPI() {
-	_initGameGlobals(); showGame(); initDom();
+	initRSGData(); showGame(); initDom();
 	let board = makeDrawingArea('board', 'a_d_game', true);
 
 
@@ -178,26 +210,26 @@ function testNewMSAPI() {
 	console.log(ms)
 }
 function testShapes() {
-	_initGameGlobals(); showGame(); initDom();
+	initRSGData(); showGame(); initDom();
 
 	let board = makeDrawingArea('board', 'a_d_game', true);
 	//console.log('board:',board)
 	let ms = makeDrawingElement('el1', 'board');
 	//console.log('shape:',ms)
-	let sz=200;
-	let c='blue';
-	let c1=anyColorToStandardString('green',.1);
+	let sz = 200;
+	let c = 'blue';
+	let c1 = anyColorToStandardString('green', .1);
 	console.log(c1);
 
 
 
 	makeVisual(ms, 0, 0, sz, sz, c1, 'quad');
-	ms.text({ txt: 'hallo', fill: colorDarker(c), fz:30,y:-sz/3 });
+	ms.text({ txt: 'hallo', fill: colorDarker(c), fz: 30, y: -sz / 3 });
 	//ms.rect({w:sz/2,h:sz/2,fill:'red'});
 
 
 
-	ms.ellipse({w:sz/2,h:sz/2,fill:'green',alpha:.5})
+	ms.ellipse({ w: sz / 2, h: sz / 2, fill: 'green', alpha: .5 })
 	ms.attach();
 
 	//ms.setBg('transparent')
@@ -209,8 +241,8 @@ function testShapes() {
 		//console.log(ms.ground,ms.overlay);
 	});
 
-	let ms1 = makeDrawingElement('el2','board');
-	makeVisual(ms1,-sz,0,sz,sz,c1,'triangle');
+	let ms1 = makeDrawingElement('el2', 'board');
+	makeVisual(ms1, -sz, 0, sz, sz, c1, 'triangle');
 	ms1.attach();
 
 }
@@ -257,7 +289,7 @@ var cards1 = {
 };
 var card1 = cards1['c1'];
 function testCards() {
-	_initGameGlobals(); hideLobby(); hideLogin(); showGame(); initDom();
+	initRSGData(); hideLobby(); hideLogin(); showGame(); initDom();
 
 	//testShowCards1();
 	testPlayerHand1();
@@ -270,7 +302,7 @@ function testPlayerHand1() {
 			devcards: { _set: [{ _obj: 'c1' }, { _obj: 'c3' }] }
 		}
 	};
-	_showHand(['c1','c2', 'c3'], 'a_d_game');
+	_showHand(['c1', 'c2', 'c3'], 'a_d_game');
 }
 //#endregion
 
@@ -286,7 +318,7 @@ function testPageHeader() {
 
 //#region testing table
 function _testTable() {
-	_initGameGlobals(); hideLobby(); hideLogin(); showGame(); initDom();
+	initRSGData(); hideLobby(); hideLogin(); showGame(); initDom();
 	let gplayers = {
 		White: {
 			altName: "White",

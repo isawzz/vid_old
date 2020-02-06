@@ -20,7 +20,7 @@
 <body>
 	<!-- <body  onresize="myFunction()"> -->
 	<script>
-		window.onload = () => _start(); 
+		window.onload = () => _start(); // _start | _startTest01
 
 		var FRONT_JS = [
 			'_config',
@@ -46,6 +46,7 @@
 			'behavior',
 			'behaviorLibrary',
 			'cards',
+			'collections',
 			'color', //not much used, collection of palettes
 			'deckABC',
 			// 'deck',
@@ -279,6 +280,7 @@
 		<div id="a_d_buttons" class="area">
 			<button id='c_b_PollStatus' onclick="onClickPollStatus()">poll status</button>
 			<br />
+			<button id='c_b_areaSizes' onclick="onClickAreaSizes()">resize!!!</button>
 			<button onclick="onClickLobby()">lobby</button>
 			<br />
 			<button id='c_b_Restart' onclick="onClickRestart()">restart</button>
@@ -301,7 +303,6 @@
 			<br />
 			<button id='c_b_ttt' onclick="onClickTTT()">ttt</button>
 			<button id='c_b_catan' onclick="onClickCatan()">catan</button>
-			<button id='c_b_areaSizes' style='display:none' onclick="onClickAreaSizes()">sz info</button>
 			<br />
 			<br />
 			<!-- <button id='c_b_CheatDev' onclick="onClickCheat('devcard')">cheat devcard</button>
