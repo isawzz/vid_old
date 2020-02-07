@@ -1,8 +1,9 @@
 function updateTableCardCollections(oid){
 
+	if (nundef(tableCollections[oid])) return;
 	let msArea = getTabletopCardsArea();
 	//console.log(msArea);
-	if (isEmpty(tableCollections=={})){
+	if (isEmpty(tableCollections)){
 		//console.log('no table card collections!');
 		return;
 	}
@@ -18,7 +19,38 @@ function updateTableCardCollections(oid){
 				let idCollection = getCollectionArea(key, msArea);
 				let divHand = UIS[idCollection].elem;
 				divHand.style.position = null;
-				showPlayerHandNew(ha.name, ha.hand, key);
+				getSimpleSetElements(ha.hand)
+				//ha.hand = {_set:ha.hand};
+				showPlayerHandNew(ha.name, ha.arr, key);
+			}
+		}
+	}
+
+}
+function updateTableCardCollections_COPY(oid){
+
+	if (nundef(tableCollections[oid])) return;
+	let msArea = getTabletopCardsArea();
+	//console.log(msArea);
+	if (isEmpty(tableCollections)){
+		//console.log('no table card collections!');
+		return;
+	}
+	for (const propName of G.tableUpdated[oid].summary) {
+		//console.log(propName, 'has changed!');
+		let o = G.table[propName];
+		//console.log('player.'+propName,o)
+		let plColl = getTableCollections(oid,propName);
+		//console.log(plColl)
+		if (isdef(plColl)) {
+			for (const key in plColl) {
+				let ha = plColl[key];
+				let idCollection = getCollectionArea(key, msArea);
+				let divHand = UIS[idCollection].elem;
+				divHand.style.position = null;
+				getSimpleSetElements(ha.hand)
+				//ha.hand = {_set:ha.hand};
+				showPlayerHandNew(ha.name, ha.arr, key);
 			}
 		}
 	}
@@ -277,19 +309,19 @@ function removeCardFromHand(oid, hand, subArea) {
 
 	//console.log('hand after removing', hand.cards.toString());
 }
-function showPlayerHandNew(name, oCards, areaName) {
+function showPlayerHandNew(name, cardArr, areaName) {
 	//console.log(getFunctionCallerName())
 	//showPlayerHandNew(ha.name,ha.hand, getAreaName(idHand));	
 
 	//let oPlayer = G.playersAugmented[plid];
 	//let oCards = hand;
-	if (isSet(oCards)) oCards = oCards._set;
+	if (isSet(cardArr)) cardArr = cardArr._set;
 	//now oCards should be a list!
 
 	//console.log(oCards)
 
-	if (!isListOfLiterals(oCards)) { alert('wrong format of cards property: ' + propName); }
-	let oids = oCards.map(x => x._obj);
+	if (!isListOfLiterals(cardArr)) { alert('wrong format of cards property: ' + propName); }
+	let oids = cardArr.map(x => isdef(x._obj)? x._obj:x);
 	let idHand = getIdArea(areaName);
 	//console.log('showPlayerHand: idArea for',areaName,'is',idHand)
 	if (_handChanged(oids, idHand)) {

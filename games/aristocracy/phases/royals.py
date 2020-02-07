@@ -21,14 +21,14 @@ class RoyalPhase(GamePhase):
 			# create neutral market
 			num = C.config.rules.neutral_market[self.name]
 			if num > 0:
-				cards = C.state.deck.draw(num)
+				C.state.market.neutral = C.state.deck.draw(num)
 				
 			# draw cards
 			num = C.config.rules.draw_cards
 			if num > 0:
 				C.log.write('Everybody draws {} card{}'.format(num, 's' if num > 1 else ''))
 				for p in C.players:
-					cards = C.state.deck.draw(num, player=player)
+					cards = C.state.deck.draw(num, player=p)
 					p.hand.update(cards)
 					#C.log[p].writef('hallo') #'You draw: {}'.format(', '.join(['{}']*num)), *cards)
 					# for i in range(num):
@@ -48,7 +48,12 @@ class RoyalPhase(GamePhase):
 					
 					nxt = get_next_market(self.sel)
 					if nxt is not None:
-						for p, cards in self.sel:
+						# for p in self.sel:
+						# 	cards = self.sel[p]
+						# 	for card in cards:
+						# 		p.hand.remove(card)
+						# 	p.market = cards
+						for p, cards in self.sel.items():
 							for card in cards:
 								p.hand.remove(card)
 							p.market = cards
@@ -86,20 +91,6 @@ class RoyalPhase(GamePhase):
 		raise NotImplementedError
 		
 	def encode(self, C):
-		# full = tdict()
-		# for player in self.active:
-		# 	out = GameActions('Select what cards to bring to the market')
-		# 	with out('select', desc='Select card'):
-		# 		# for card in player.hand:
-		# 		# 	out.add(card)
-		# 		opts = player.hand - self.sel[player]
-		# 		if len(opts):
-		# 			out.add(opts)
-		# 		#out.add(tset(['a','b']))
-		# 	full[player] = out
-		# return full
-
-
 		full = tdict()
 		
 		for player in self.active:
@@ -110,9 +101,9 @@ class RoyalPhase(GamePhase):
 				if len(opts):
 					out.add(opts)
 			
-			with out('unselect', 'Unselect card'):
-				if len(self.sel[player]):
-					out.add(self.sel[player])
+			# with out('unselect', 'Unselect card'):
+			# 	if len(self.sel[player]):
+			# 		out.add(self.sel[player])
 			
 			with out('ready', 'Ready for the market'):
 				out.add('ready')
@@ -138,9 +129,10 @@ class KingPhase(RoyalPhase):
 				raise SwitchPhase('tax')
 	
 	def post(self, C):
-		for player in C.players:
-			if satisfies_vic_req(player, C.config.rules.victory_conditions):
-				raise SwitchPhase('claim')
+		pass
+		# for player in C.players:
+		# 	if satisfies_vic_req(player, C.config.rules.victory_conditions):
+		# 		raise SwitchPhase('claim')
 		
 
 class QueenPhase(RoyalPhase):

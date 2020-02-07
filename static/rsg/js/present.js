@@ -47,6 +47,7 @@ function _tableCreateNew() {
 	}
 }
 function _tableUpdate() {
+	console.log('___________________TABLE UPDATE')
 	for (const oid in G.tableUpdated) {
 		let o = G.table[oid];
 		if (nundef(o)) {
@@ -59,9 +60,11 @@ function _tableUpdate() {
 
 
 		let changedProps = G.tableUpdated[oid].summary;
+		console.log('changed properties for',oid,changedProps);
 
 		//update main visual unless deck 
 		let ms = getVisual(oid);
+		console.log('main visual for',oid,ms)
 		let updatedVisuals;
 		if (!isDeckObject(o) && ms) {
 
@@ -72,7 +75,7 @@ function _tableUpdate() {
 			if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
 				//console.log('oid',oid,'has NOT been updated!!!!!')
 				if (changedProps.includes('loc')) _presentLocationChange(oid, ms);
-				//console.log('presenting main!',oid)
+				console.log('presenting main!',oid)
 				presentMain(oid, ms, G.table);
 				// } else {
 				// 	console.log('oid',oid,'has been updated!!!!!')
@@ -80,15 +83,19 @@ function _tableUpdate() {
 
 		}
 
-		if (S.settings.hasCards && !isPlain() &&  (nundef(updatedVisuals) || !updatedVisuals.includes(oid))){
-			updateTableCardCollections(oid);
-		}
 
 		//update default visual
 		if (!S.settings.table.createDefault || ms && S.settings.table.createDefault == 'miss') continue;
 
 		presentDefault(oid, G.table[oid]);
 	}
+
+	// if (S.settings.hasCards && !isPlain()){
+	// 	for(const oid in G.table){
+	// 		updateTableCardCollections(oid);
+	// 	}
+	// }
+
 }
 
 
@@ -436,6 +443,9 @@ function computePresentedKeys(o, isTableObject) {
 
 }
 function presentMain(oid, ms, pool, isTableObject = true) {
+	if (ms.isa.card){
+		console.log('presentMain for',oid,ms,pool[oid])
+	}
 	//let optin = isTableObject?S.settings.table.optin:S.settings.player.optin; //game == 'catan' ? ['res', 'num', 'building', 'port'] : ['symbol']; //cheat! keywords fuer catan vs ttt
 	//console.log(optin)
 	// if (ms.isLine){

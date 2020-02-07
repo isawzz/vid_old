@@ -62,14 +62,15 @@ function updateCollections() {
 			}
 		}
 	}
-	//console.log('playerCollections', playerCollections);
+	console.log('playerCollections', playerCollections);
 	//console.log('otherPlayerCollections', otherPlayerCollections);
 
 	for (const oid in G.tableUpdated) {
 		for (const propName of G.tableUpdated[oid].summary) {
 			if (propName == 'visible' || propName == 'obj_type') continue;
 			let o = G.table[oid][propName];
-			if (isSimple(o)) continue;
+			if (isSimple(o) || isdef(o.generic_type)) continue;
+			//console.log('checking',oid,propName,o);
 			let cCurrent = _findCollections(oid + '.' + propName, o);
 			if (isEmpty(cCurrent)) continue;
 			//console.log('______', oid + '.' + propName, o);
@@ -113,7 +114,7 @@ function updateCollections() {
 			}
 		}
 	}
-	//console.log('tableCollections', tableCollections);
+	console.log('tableCollections', tableCollections);
 }
 
 //#region helpers
@@ -133,8 +134,18 @@ function _getCollections(oid, propName, pool) {
 function _getCollectionType(o) {
 	//only works for type=_obj or type=string
 	if (nundef(o)) return false;
-	if (nundef(o._set)) return false;
-	let arr = o._set;
+
+	//code orig:
+	// if (nundef(o._set)) return false;
+	// let arr = o._set;
+
+	//code new:
+	if (nundef(o._set) && !isList(o)) return false;
+	let arr;
+	if (isdef(o._set)) arr = o._set; else arr = o;
+
+	//console.log(arr)
+
 	if (!isList(arr) || isEmpty(arr)) return false;
 
 	let type = null;

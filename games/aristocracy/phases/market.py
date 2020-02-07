@@ -14,8 +14,8 @@ class MarketPhase(TurnPhase):
 		
 		if action is None:
 			# self.neutrals = tset(C.deck.draw(C.config.rules.market_cards))
-			self.num = len(self.sel[self.player])
-			del self.sel[self.player]
+			self.num = len(self.market[self.player])
+			# del self.sel[self.player]
 			
 			C.log.writef('{} may take {} action{}', self.player, self.num, 's' if self.num > 1 else '')
 			
@@ -38,7 +38,7 @@ class MarketPhase(TurnPhase):
 			if nxt is None:
 				raise PhaseComplete
 			else:
-				raise SwitchPhase('market', stack=False, player=nxt, market=self.sel)
+				raise SwitchPhase('market', stack=False, player=nxt, market=self.market[nxt])
 		
 		raise NotImplementedError
 	
@@ -62,18 +62,34 @@ class MarketPhase(TurnPhase):
 				
 		else:
 			
-			out = GameActions('You have {} actions left'.format(len(self.market[self.player])))
+			out = GameActions('You have {} actions left'.format(self.num))
 			
 			# trade
-			
-			
+			# 1. can choose card from some other market
+			# 2. can choose card from my own market
+			# get cards from all markets except my own (self.player)
+			with out('trade', 'Select card from other player markets'):
+				for p, cards in self.market.items():
+					if p == self.player and 'trade' not in self:
+						continue
+					elif 'trade' in self and p != self.player:
+						continue
+					opts = cards
+					if len(opts):
+						out.add(opts)
+			print('market phase out',out)
 			# pickup
+			# can pickup card from my own market
 			
 			# play royal
+			# can play any royal from my hand
 			
 			# royal action
+			# can take action of current royal, let's say king
 			
 			# exchange building
+			# 1. can pick up one card from one of my buildings
+			# 2. pick one card from my market OR my hand
 		
 		return tdict({self.player: out})
 

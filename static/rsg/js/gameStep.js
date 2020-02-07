@@ -27,7 +27,7 @@ function gameStep(data) {
 	//console.log('flags',flags)
 
 	processData(data); //from here no access to previous serverData
-	
+
 
 	//console.log('nach processData',data,G,S)
 

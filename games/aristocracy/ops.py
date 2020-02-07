@@ -25,7 +25,7 @@ def get_next_market(selected):
 	
 	for player, cards in selected.items():
 		if len(cards):
-			val = sum([card.val for card in cards]) + player.order / 10
+			val = sum([card.value for card in cards]) + player.order / 10
 			
 			if mn is None or val < mn:
 				mn = val
