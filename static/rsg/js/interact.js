@@ -20,8 +20,14 @@ function startInteraction() {
 		//console.log(nBoats<2?'autoplay:...only 1 option!!!':'different function....');
 		setTimeout(onClickStep, S_AIThinkingTime);
 		return;
+	} else if (!isEmpty(scenarioQ)){
+		let func = scenarioQ.shift();
+		//console.log(func.name,'wird aufgerufen!!!')
+		func();
 	} else {
-		setAutoplayFunctionForMode();
+		scenarioRunning = false;
+		console.log('resettint autoplay function to mode!!!')
+		setAutoplayFunctionForMode(); //unless have more goals in waitinglist
 		unfreezeUI();
 	}
 }
@@ -143,15 +149,15 @@ function onClickRunToNextTurn() {
 function onClickRunToNextPhase() {
 	let phase = G.phase;
 	S_autoplayFunction = (_G) => _G.phase == phase;
-	onClickStep(G);
+	onClickStep(G); //kick off
 }
 function onClickRunToEnd() {
 	S_autoplayFunction = () => true;
 	onClickStep(G);
 }
-function onClickRunToAction(bId, keyword) {
-	let b = document.getElementById(bId);
-	console.log(getFunctionCallerName(), bId, keyword)
+function onClickRunToAction(keyword) {
+	//let b = document.getElementById(bId);
+	//console.log(getFunctionCallerName(), bId, keyword)
 	S_autoplayFunction = (_G) => {
 		//run to action available that contains keyword
 		//should return true unless one of the boats.tuple has an element with val.includes(keyword)

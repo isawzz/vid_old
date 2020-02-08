@@ -21,6 +21,8 @@ SETTINGS:
       road: 'cheat road'
       settlement: 'cheat settlement'
       city: 'cheat city'
+    scenario_buttons:
+      devdeck: 'devcard devdeck' 
 
 STRUCTURES:
   M:

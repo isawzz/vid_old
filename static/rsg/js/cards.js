@@ -2,7 +2,7 @@ function updateTableCardCollections(oid){
 
 	if (nundef(tableCollections[oid])) return;
 	let msArea = getTabletopCardsArea();
-	//console.log(msArea);
+	console.log(msArea);
 	if (isEmpty(tableCollections)){
 		//console.log('no table card collections!');
 		return;
@@ -60,7 +60,7 @@ function updateGameplayerCardCollections(pid, oPlayer) {
 
 	let msArea = getPlayerArea(pid);
 
-	//console.log('updateGameplayerCardCollections','pid',pid,'oPlayer',oPlayer,'player area', msArea);
+	console.log('updateGameplayerCardCollections','pid',pid,'oPlayer',oPlayer,'player area', msArea);
 	for (const propName in oPlayer) {
 		let o = oPlayer[propName];
 		//console.log(pid,'.'+propName,o)
@@ -93,6 +93,7 @@ function getCollectionArea(key, msArea) {
 	//let id = getStandardAreaNameForKey(key);
 	let a = UIS[getIdArea(key)];
 	if (nundef(a)) {
+
 		a = _makeHandArea(key, key, msArea.id);
 		a.adjustSize = true;
 		let divHand = UIS[a.id].elem;

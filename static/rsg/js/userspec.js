@@ -87,7 +87,7 @@ function redrawScreen() {
 	checkCleanup_II();
 
 	if (S.settings.userBehaviors) {
-		console.log('geht in user behaviors in redrawScreen')
+		//console.log('geht in user behaviors in redrawScreen')
 		loadScript(S.path.script, proceedRedraw);
 	} else proceedRedraw();
 }
@@ -102,7 +102,7 @@ function proceedRedraw() {
 	id2uids = {}; // { uid : list of ms ids related to same oid }
 
 	//console.log(jsCopy(S), jsCopy(G));
-	console.log('proceedRedraw nach daten loeschen')
+	//console.log('proceedRedraw nach daten loeschen')
 	
 	initDom();
 	gameStep(xdata);

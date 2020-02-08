@@ -89,6 +89,7 @@ function initSETTINGS() {
 	//add game specific test buttons (run to...) if specified in user spec / SETTINGS
 	_initAutoplayToActionButtons();
 	_initCheatButtons();
+	_initScenarioButtons();
 }
 
 //#region local helpers
@@ -120,7 +121,7 @@ function _initAutoplayToActionButtons() {
 		let key = id.substring(8);
 		b.innerHTML = kws[key];
 		b.id = id;
-		b.onclick = () => onClickRunToAction(b.id, key);
+		b.onclick = () => onClickRunToAction(key);
 		d.appendChild(b);
 	}
 }
@@ -142,6 +143,28 @@ function _initCheatButtons() {
 		b.innerHTML = kws[key];
 		b.id = id;
 		b.onclick = () => onClickCheat(key);
+		d.appendChild(b);
+	}
+}
+function _initScenarioButtons() {
+	let areaName = 'a_d_scenario_buttons';
+	let kws = lookup(S.settings, ['dev', 'scenario_buttons']);
+	if (!kws) { hide(areaName); return; }
+
+	show(areaName);
+	let d = document.getElementById(areaName);
+	let buttons = [...d.children];
+	let kwKeys = getKeys(kws);
+	let requiredButtonIds = kwKeys.map(x => 'c_b_SCE_' + x);
+	let actualButtons = buttons.filter(x => x.id).map(x => x.id);
+	for (const id of arrMinus(actualButtons, requiredButtonIds)) $('#' + id).remove();
+	for (const id of arrMinus(requiredButtonIds, actualButtons)) {
+		let b = document.createElement('button');
+		let key = id.substring(8);
+		let caption = kws[key];
+		b.innerHTML = caption;
+		b.id = id;
+		b.onclick = () => onClickPushScenario(stringBefore(caption,' '),stringAfter(caption,' '));
 		d.appendChild(b);
 	}
 }

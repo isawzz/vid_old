@@ -36,7 +36,7 @@ function processData(data) {
 	// timit.showTime('...objects up to date!');
 	//let itsMyTurn = 
 	processPlayers(data);
-	// timit.showTime('...players up to date!');
+	//timit.showTime('...players up to date!');
 
 	//TODO: verschiebe zu process!!!
 	updateCollections();

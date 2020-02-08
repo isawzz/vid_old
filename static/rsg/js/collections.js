@@ -62,14 +62,17 @@ function updateCollections() {
 			}
 		}
 	}
-	console.log('playerCollections', playerCollections);
+	//console.log('playerCollections', playerCollections);
 	//console.log('otherPlayerCollections', otherPlayerCollections);
 
 	for (const oid in G.tableUpdated) {
+		if (!G.table[oid]) continue; //removed oid
 		for (const propName of G.tableUpdated[oid].summary) {
 			if (propName == 'visible' || propName == 'obj_type') continue;
+			//console.log(oid,propName)
+			
 			let o = G.table[oid][propName];
-			if (isSimple(o) || isdef(o.generic_type)) continue;
+			if (isSimple(o) || (isDict(o) && isdef(o.generic_type))) continue;
 			//console.log('checking',oid,propName,o);
 			let cCurrent = _findCollections(oid + '.' + propName, o);
 			if (isEmpty(cCurrent)) continue;
@@ -114,7 +117,7 @@ function updateCollections() {
 			}
 		}
 	}
-	console.log('tableCollections', tableCollections);
+	//console.log('tableCollections', tableCollections);
 }
 
 //#region helpers

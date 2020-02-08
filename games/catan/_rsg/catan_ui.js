@@ -52,8 +52,12 @@ FUNCS = {
 			return true;
 		}
 	},
-	player_update_devcards: (idPlayer) => {
-		showPlayerHand(idPlayer, 'devcards', 'DevCards');
+	player_update_devcards: (idPlayer, o) => {
+		//showPlayerHand(idPlayer, 'devcards', 'DevCards');
+		showHand(idPlayer,o,x=>x.devcards,FUNCS.catan_card,'DevCards');
+	},
+	catan_card(oCard){
+		console.log('catan_card!!!!',oCard);
 	},
 	player_update_stats: (idPlayer) => {
 		// showPlayerStats(idPlayer,['res','vps','num_res'],'Stats')

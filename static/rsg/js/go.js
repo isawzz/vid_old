@@ -103,13 +103,13 @@ function strategicBoat(goodlist, badlist) {
 		goodBoats = [];
 		for (const b of boats) {
 			//console.log(b.o.text)
-			if (isEmpty(badlist.filter(x => b.o.text.includes(x)))) goodBoats.push(b);
+			if (isEmpty(badlist.filter(x => b.o.text.join(',').includes(x)))) goodBoats.push(b);
 		}
 	}
 	if (isdef(goodlist)) { //take it by priority! first one is highest priority!
 		for (const kw of goodlist) {
 			for (const b of boats) {
-				if (b.o.text.includes(kw)) return b;
+				if (b.o.text.join(',').includes(kw) || b.o.desc.includes(kw)) return b;
 			}
 		}
 	}

@@ -46,6 +46,7 @@
 			'behavior',
 			'behaviorLibrary',
 			'cards',
+			'cardsNew',
 			'collections',
 			'color', //not much used, collection of palettes
 			'deckABC',
@@ -61,6 +62,7 @@
 			'present',
 			'presentation_util',
 			'process',
+			'scenario',
 			'structures',
 			'transfer',
 			'userspec',
@@ -280,6 +282,7 @@
 		<div id="a_d_buttons" class="area">
 			<button id='c_b_PollStatus' onclick="onClickPollStatus()">poll status</button>
 			<br />
+			<button id='c_b_scenario' style='display:none' onclick="onClickScenario()">scenario</button>
 			<button id='c_b_areaSizes' onclick="onClickAreaSizes()">resize!!!</button>
 			<button onclick="onClickLobby()">lobby</button>
 			<br />
@@ -365,6 +368,10 @@
 					</fieldset>
 					<fieldset id='a_d_cheat_buttons'>
 						<legend>cheats</legend>
+
+					</fieldset>
+					<fieldset id='a_d_scenario_buttons'>
+						<legend>scenarios</legend>
 
 					</fieldset>
 					<fieldset>
