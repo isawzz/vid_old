@@ -6,16 +6,6 @@ var browserZoom = null;
 
 function _start() {
 
-	window.onresize = ()=>{
-		let newBrowserZoom= Math.round(window.devicePixelRatio * 100);
-		//let newBrowserZoom=window.outerWidth / window.document.documentElement.clientWidth; //doesn't work!!!
-		//console.log('new zoom:',newBrowserZoom, 'browserZoom',browserZoom);
-		if (browserZoom != newBrowserZoom) {browserZoom = newBrowserZoom;return;}
-		//console.log('RESIZE WINDOW!!!!!!!!!!!!');
-		//only if browser has not been zoomed!
-		if (nundef(browserZoom) || browserZoom==newBrowserZoom)	onClickAreaSizes();
-		browserZoom = newBrowserZoom;
-	};
 
 	_initServer([loadIconChars, ensureAllGames, ()=>{
 

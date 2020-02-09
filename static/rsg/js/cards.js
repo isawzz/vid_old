@@ -332,7 +332,7 @@ function showPlayerHandNew(name, cardArr, areaName) {
 	}
 
 }
-function showPlayerHand(plid, propName, areaName) {
+function showPlayerHand_dep(plid, propName, areaName) {
 	//console.log(getFunctionCallerName())
 
 	let oPlayer = G.playersAugmented[plid];

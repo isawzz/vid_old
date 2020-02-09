@@ -1,4 +1,4 @@
-var ROOT = null; 
+var ROOT = null;
 const AREAS = {
 	a_d_action_header: ['--wActions', '--hStatus'],
 	a_d_status: ['--wGame', '--hStatus'],
@@ -12,7 +12,7 @@ const AREAS = {
 	a_d_testing: ['--wGame', '--hTesting'],
 	a_d_options: ['--wLog', '--hTesting'],
 
-	a_d_player:['--wPlayers','--hGame'],
+	a_d_player: ['--wPlayers', '--hGame'],
 }
 
 function initPageHeader() {
@@ -55,8 +55,8 @@ function initTABLES() {
 	for (const areaName of [S.settings.table.defaultArea, S.settings.player.defaultArea, S.settings.player.defaultMainArea]) {
 		if (areaName === null) continue;
 		let d = document.getElementById(areaName);
-		if (d.id != 'a_d_player') {d.style.overflowY = 'auto';}
-		d.style.overflowX='hidden';
+		if (d.id != 'a_d_player') { d.style.overflowY = 'auto'; }
+		d.style.overflowX = 'hidden';
 		d.classList.add('flexWrap');
 	}
 
@@ -68,17 +68,17 @@ function initTABLES() {
 	}
 }
 function setAreaWidth(areaName, w) {
-	if (!(areaName in AREAS)){alert('not in AREAS!!! '+areaName)}
+	if (!(areaName in AREAS)) { alert('not in AREAS!!! ' + areaName) }
 	let wString;
 	let wNum = null;
-	if (isString(w)){
+	if (isString(w)) {
 		//console.log(w)
 		let n = firstNumber(w);
 		if (isNumber(n)) wNum = n;
 		wString = w;
-	}else {
+	} else {
 		wNum = w;
-		wString = ''+w+'px';
+		wString = '' + w + 'px';
 	}
 	let varName = AREAS[areaName][0];
 	setCSSVariable(varName, wString);
@@ -88,7 +88,7 @@ function setAreaWidth(areaName, w) {
 
 function setAreaHeight(areaName, h) {
 	let varName = AREAS[areaName][1];
-	let hAttr = isNumber(h)? '' + h + 'px':h;
+	let hAttr = isNumber(h) ? '' + h + 'px' : h;
 	setCSSVariable(varName, hAttr);
 	if (UIS[areaName]) UIS[areaName].h = h;
 	//console.log('height of', areaName, h,'attr',hAttr)
@@ -103,7 +103,7 @@ function growIfDefaultMainAreaWidth(ms) {
 		let wNeeded = wElem + 40;
 		let wArea = UIS[areaName].w;
 		//console.log('wNeeded',wNeeded,'wArea',wArea);
-		if (wArea < wNeeded || wArea > wNeeded+100) {
+		if (wArea < wNeeded || wArea > wNeeded + 100) {
 			setAreaWidth(areaName, wNeeded);
 			//console.log('---> w of', areaName, 'from', wArea, 'to', wNeeded);
 		}
@@ -121,7 +121,7 @@ function growIfDefaultPlayerAreaWidthblablabla_UNUSED(ms) {
 		let wNeeded = wElem + 40;
 		let wArea = UIS[areaName].w;
 		//console.log('wNeeded',wNeeded,'wArea',wArea);
-		if (wArea < wNeeded || wArea > wNeeded+100) {
+		if (wArea < wNeeded || wArea > wNeeded + 100) {
 			setAreaWidth(areaName, wNeeded);
 			//console.log('---> w of', areaName, 'from', wArea, 'to', wNeeded);
 		}
@@ -144,6 +144,20 @@ function initDom() {
 
 	// let zoomlevel = calcScreenSizeNeeded();
 	// zoom(zoomlevel);
+	// console.log('window.onresize', window.onresize)
+	if (!window.onresize) {
+		window.onresize = () => {
+			let newBrowserZoom = Math.round(window.devicePixelRatio * 100);
+			//let newBrowserZoom=window.outerWidth / window.document.documentElement.clientWidth; //doesn't work!!!
+			//console.log('new zoom:',newBrowserZoom, 'browserZoom',browserZoom);
+			if (browserZoom != newBrowserZoom) { browserZoom = newBrowserZoom; return; }
+			//console.log('RESIZE WINDOW!!!!!!!!!!!!');
+			//only if browser has not been zoomed!
+			if (nundef(browserZoom) || browserZoom == newBrowserZoom) onClickAreaSizes();
+			browserZoom = newBrowserZoom;
+		};
+	}
+
 }
 function createMSTree(ms) {
 	let areas = ms.elem.children;

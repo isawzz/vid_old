@@ -3,6 +3,7 @@
 var playerCollections = {};
 var tableCollections = {};
 
+function getCollections(pool,oid,propName){return lookup(pool, [oid, propName]);}
 function getPlayerCollections(pid, propName) { return lookup(playerCollections, [pid, propName]); }
 // function getMainPlayerCollections(pid, propName) { return lookup(mainPlayerCollections, [pid, propName]); }
 // function getOtherPlayerCollections(pid, propName) { return lookup(otherPlayerCollections, [pid, propName]); }

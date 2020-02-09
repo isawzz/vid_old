@@ -53,8 +53,8 @@ FUNCS = {
 		}
 	},
 	player_update_devcards: (idPlayer, o) => {
-		//showPlayerHand(idPlayer, 'devcards', 'DevCards');
-		showHand(idPlayer,o,x=>x.devcards,FUNCS.catan_card,'DevCards');
+		//showPlayerHandNew(idPlayer, 'devcards', 'DevCards');
+		showPlayerHand(idPlayer,'devcards',FUNCS.catan_card,'DevCards');
 	},
 	catan_card(oCard){
 		console.log('catan_card!!!!',oCard);
