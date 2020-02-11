@@ -18,6 +18,7 @@ function runBehaviors(oid, pool, behaviors) {
 		if (isdef(todo)) {
 			let visualsToBeUpdated = isdef(todo.vis) ? todo.vis.map(x => getVisual(x)) : [];
 			let updated = FUNCS[todo.f](oid, o, ...visualsToBeUpdated);
+			console.log('updated by',todo.f,oid,updated)
 			if (updated) res.push(oid);
 		}
 	}

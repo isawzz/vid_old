@@ -18,7 +18,8 @@ function mainVisualExists(oid) {
 
 	return firstCond(oid2ids[oid], x => x[0] == 'm');
 }
-function isBoardElement(oid) { let o = getVisual(oid); return o.idParent[2] == 's'; }
+function isBoardElementObject(o){ return o.edges || o.corners; }
+function isBoardElement(oid) { let ms = getVisual(oid); return ms && ms.idParent[2] == 's'; }
 function isBoardObject(o) { return o.map && o.fields; }
 function isDeckObject(o) { 
 	if (nundef(o)) console.log(getFunctionsNameThatCalledThisFunction(),'undefined object checked for is deck!!!')

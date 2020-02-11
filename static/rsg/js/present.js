@@ -5,6 +5,8 @@ function presentTable() {
 	_tableCreateNew();
 	_tableUpdate();
 }
+
+
 function _tableRemove() {
 	for (const oid of G.tableRemoved) {
 		//console.log('deleting all related to', oid)
@@ -15,15 +17,15 @@ function _tableCreateNew() {
 	for (const oid of G.tableCreated) {
 		let o = G.table[oid];
 
-		//if (oid == '0') console.log('table create',oid)
+		//if (oid == '0') //console.log('table create',oid)
 		//default objects are objects in objects tab underneath game area!
 		if (!defaultVisualExists(oid) && S.settings.table.createDefault == true) {
-			//if (oid == '0') console.log('>>>>>>>>>>>>>>>>>should create default object for',oid,o, UIS['d_t_0'])
+			//if (oid == '0') //console.log('>>>>>>>>>>>>>>>>>should create default object for',oid,o, UIS['d_t_0'])
 			makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
-			//if (oid == '0') console.log('created default:',UIS['d_t_'+oid]);
+			//if (oid == '0') //console.log('created default:',UIS['d_t_'+oid]);
 		}
 
-		//if (oid == '0') console.log('check if main visual exists', mainVisualExists(oid))
+		//if (oid == '0') //console.log('check if main visual exists', mainVisualExists(oid))
 		if (S.settings.table.ignoreTypes.includes(o.obj_type)
 			|| mainVisualExists(oid)
 			|| !S.settings.boardDetection && !S.settings.deckDetection && !S.settings.userStructures) {
@@ -32,13 +34,18 @@ function _tableCreateNew() {
 		}
 
 		let updatedVisuals;
+		let ms;
 		if (S.settings.userBehaviors) {
 			updatedVisuals = runBehaviors(oid, G.table, TABLE_CREATE);
 		}
 		//console.log('updatedVisuals',updatedVisuals)
 		if (nundef(updatedVisuals) || !updatedVisuals.includes(oid)) {
 			//console.log('trying to make main visual for',oid,o.obj_type )
-			let ms = makeMainVisual(oid, G.table[oid]);
+			if ('loc' in o && isBoardElement(o.loc._obj)) ms = makeMainBoardElementVisual(oid, G.table[oid]);
+
+
+
+			// if there is no way to create a main Visual for an object create a default object anyway!
 			if (ms === null && !defaultVisualExists(oid) && S.settings.table.createDefault != false) {
 				makeDefaultObject(oid, G.table[oid], S.settings.table.defaultArea);
 			}
@@ -77,7 +84,7 @@ function _tableUpdate() {
 				//console.log('presenting main!',oid)
 				presentMain(oid, ms, G.table);
 				// } else {
-				// 	console.log('oid',oid,'has been updated!!!!!')
+				// 	//console.log('oid',oid,'has been updated!!!!!')
 			}
 
 		}
@@ -89,11 +96,11 @@ function _tableUpdate() {
 		presentDefault(oid, G.table[oid]);
 	}
 
-	// if (S.settings.hasCards && !isPlain()){
-	// 	for(const oid in G.table){
-	// 		updateTableCardCollections(oid);
-	// 	}
-	// }
+	if (S.settings.hasCards && !isPlain()) {
+		for (const oid in G.table) {
+			updateTableCardCollections(oid);
+		}
+	}
 
 }
 
@@ -148,18 +155,18 @@ function _playersUpdate() {
 			presentMainPlayer(pid, ms, G.playersAugmented, false);
 		}
 
-		if (!isPlain() && !updatedVisuals[pid] && S.settings.hasCards){
+		if (!isPlain() && !updatedVisuals[pid] && S.settings.hasCards) {
 			//present Gameplayer hands/buildings... if this is a card game?!?!?
 			//if this game has decks, it might have cards
-			
 
-			if (G.player == pid ) {
+
+			if (G.player == pid) {
 				if (G.playerChanged) {
 					switchPlayerArea();
 				}
-				updateGameplayerCardCollections(pid,pl);
+				updateGameplayerCardCollections(pid, pl);
 			}
-			
+
 		}
 
 		//update default visual
@@ -313,7 +320,7 @@ function presentWaitingFor() {
 	if (S.settings.playmode != 'passplay' && (isMyPlayer(pl) || isFrontAIPlayer(pl) && isMyPlayer(G.player))) {
 		let user = G.playersAugmented[pl].username;
 		//console.log('just switching username to', user)
-		sendStatus(user,[gameStep]);
+		sendStatus(user, [gameStep]);
 	} else if (S.settings.playmode == 'passplay') {
 		//this is where I have to output message: NOT YOU TURN ANYMORE!!!!! please click pass!!!
 		_showPassToNextPlayer(pl);
@@ -341,15 +348,22 @@ function _presentLocationChange(oid, ms) {
 		}
 	}
 }
-function switchPlayerArea(){
+function switchPlayerArea() {
+	//console.log('*** switch ***')
 	if (G.previousPlayer) {
 		let msPrevPlayerArea = getPlayerArea(G.previousPlayer);
-		//console.log('prev player area:',msPrevPlayerArea);
-		if (msPrevPlayerArea) msPrevPlayerArea.hide();
+		if (msPrevPlayerArea) {
+			msPrevPlayerArea.hide();
+			//console.log('hiding prev player area:', msPrevPlayerArea.id);
+		}
 	}
 	let msPlayerArea = getPlayerArea(G.player);
 	//console.log('player area:',msPlayerArea);
-	if (msPlayerArea) msPlayerArea.show();
+	if (msPlayerArea) {
+		msPlayerArea.show();
+		//console.log('SHOW player area:', msPlayerArea.id);
+	}
+
 }
 function _onPlayerChange(pid) {
 	if (isPlain()) return;
@@ -417,7 +431,7 @@ function onClickNextPlayerReady() {
 		let user = getUsernameForPlayer(WAITINGFORPLAYER);
 		//console.log('username of new player:', user)
 		WAITINGFORPLAYER = null;
-		sendStatus(user, [d=>{hide('freezer');gameStep(d)}]);
+		sendStatus(user, [d => { hide('freezer'); gameStep(d) }]);
 	}
 }
 
@@ -442,13 +456,18 @@ function computePresentedKeys(o, isTableObject) {
 
 }
 function presentMain(oid, ms, pool, isTableObject = true) {
-	if (ms.isa.card){
-		console.log('presentMain for',oid,ms,pool[oid])
+	if (ms.isa.card) {
+		//console.log('presentMain for card!!!!', oid, ms.collectionKey);//,ms,pool[oid])
+		let collKey = ms.collectionKey;
+		if (isdef(collKey)) {
+			//this card is part of a collection!
+			//stelle fest ob diese collection gerade visible ist!
+		}
 	}
 	//let optin = isTableObject?S.settings.table.optin:S.settings.player.optin; //game == 'catan' ? ['res', 'num', 'building', 'port'] : ['symbol']; //cheat! keywords fuer catan vs ttt
 	//console.log(optin)
 	// if (ms.isLine){
-	// 	console.log('not presenting edge:',oid)
+	// 	//console.log('not presenting edge:',oid)
 	// 	return;
 	// }
 

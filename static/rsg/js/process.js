@@ -39,7 +39,7 @@ function processData(data) {
 	//timit.showTime('...players up to date!');
 
 	//TODO: verschiebe zu process!!!
-	updateCollections();
+	if (!S_useSimpleCode) updateCollections();
 
 	// processStatus(); //nothing to do
 

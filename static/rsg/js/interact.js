@@ -26,7 +26,7 @@ function startInteraction() {
 		func();
 	} else {
 		scenarioRunning = false;
-		console.log('resettint autoplay function to mode!!!')
+		//console.log('resettint autoplay function to mode!!!')
 		setAutoplayFunctionForMode(); //unless have more goals in waitinglist
 		unfreezeUI();
 	}

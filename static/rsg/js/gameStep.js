@@ -25,6 +25,7 @@ function gameStep(data) {
 	//console.log(jsCopy(G.serverData))
 	//console.log('*** gameStep ***, data',data)
 	//console.log('flags',flags)
+	console.log('___________________________')
 
 	processData(data); //from here no access to previous serverData
 
@@ -37,10 +38,10 @@ function gameStepII() {
 
 	//console.log('*** gameStepII ***, data',G.serverData)
 
-	presentTable();
+	if (S_useSimpleCode) { presentTableSimple(); presentPlayersSimple(); }
+	else {presentTable(); presentPlayers(); }
 
-	presentPlayers();
-
+	timit.showTime('presentation done!!!s')
 	presentStatus();
 
 	presentLog();
@@ -49,7 +50,7 @@ function gameStepII() {
 	//console.log('tupleGroups',G.tupleGroups);
 	if (G.tupleGroups) {
 		presentActions();
-		timit.showTime('...presentation done!');
+		//timit.showTime('...presentation done!');
 		startInteraction();
 
 		//testingMS();

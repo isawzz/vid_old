@@ -82,7 +82,28 @@ function notMyTurn(){
 function isMyTurn(){
 	disableButton('c_b_PollStatus');
 }
+function 	stabilizeBodyZoom(){
+	if (Math.abs(bodyZoom-1)<.2) bodyZoom = 1;
+}
 
+function zoomIn(){
+	document.body.style.transformOrigin = '0% 0%';
+	//console.log('current zoom:',bodyZoom);
+	if (nundef(bodyZoom)) bodyZoom = 1;
+	bodyZoom*=1.5;
+	stabilizeBodyZoom();
+	document.body.style.transform = 'scale('+bodyZoom+')'; //.5)'; //+(percent/100)+")";
+	//console.log('bodyZoom',bodyZoom);
+}
+function zoomOut(){
+	document.body.style.transformOrigin = '0% 0%';
+	//console.log('current zoom:',bodyZoom);
+	if (nundef(bodyZoom)) bodyZoom = 1;
+	bodyZoom/=1.5;
+	stabilizeBodyZoom();
+	document.body.style.transform = 'scale('+bodyZoom+')'; //.5)'; //+(percent/100)+")";
+	//console.log('bodyZoom',bodyZoom);
+}
 function zoom(percent) {
 	//console.log('zoom level',percent,'%')
 	//document.body.style.zoom = ''+percent+"%"; //unangenehmer hack messes with Ctrl+

@@ -157,6 +157,17 @@ function initDom() {
 			browserZoom = newBrowserZoom;
 		};
 	}
+	if (!window.onwheel){
+		window.onwheel = ev => {
+			if (!ev.altKey || ev.ctrlKey) return;
+			//console.log('@@@WHEEL',ev);
+			//ev.preventDefault();
+			if (ev.deltaY > 0){
+				//soll kleiner werden also zoom out!
+				zoomOut();
+			}else if (ev.deltaY<0) zoomIn();
+		};
+	}
 
 }
 function createMSTree(ms) {

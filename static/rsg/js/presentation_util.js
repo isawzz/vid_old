@@ -282,9 +282,12 @@ function makeBoard(idBoard, o, areaName) {
 }
 function makeCard(oid, o, areaName) {
 	let idArea = getIdArea(areaName);
-	//console.log('makeCard', oid, areaName);
+	//console.log('***makeCard', oid, areaName);
 	let id = 'm_t_' + oid;
-	if (isdef(UIS[id])) { console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+	if (isdef(UIS[id])) { 
+		error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); 
+		return; 
+	}
 	let ms = new RSG();
 	ms.id = id;
 	
@@ -372,7 +375,7 @@ function makeAux(s, oid, areaName, directParent) {
 function makeDefaultObject(oid, o, areaName) { return _makeDefault(makeIdDefaultObject(oid), oid, o, areaName, oid + ': ' + o.obj_type); }
 function makeDefaultPlayer(oid, o, areaName) { return _makeDefault(makeIdDefaultPlayer(oid), oid, o, areaName, 'player: ' + oid + '(' + getPlayerColorString(oid) + ', ' + getUser(oid) + ')'); }
 function _makeDefault(id, oid, o, areaName, title) {
-	//if (oid == '0') console.log(id, oid, o, areaName, title)
+	//if (oid == '0') //console.log(id, oid, o, areaName, title)
 	if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
 	let ms = new RSG();
 	ms.id = id;
@@ -438,7 +441,7 @@ function makeDefaultAction(boat, areaName) {
 function getBoardElementStandardType(ms) {
 	return ms.isa.corner ? 'corner' : ms.isa.field ? 'field' : 'edge';
 }
-function makeMainVisual(oid, o) {
+function makeMainBoardElementVisual(oid, o) {
 	//examples are: building(road,settlement), robber
 	//main objects are only made if loc on board element!
 	//console.log(oid, o);
@@ -447,10 +450,8 @@ function makeMainVisual(oid, o) {
 	//TODO: das muss geaendert werden!!!
 	//this function only makes visuals located on a board!
 
-	if (!('loc' in o) || !isBoardElement(o.loc._obj)) return null;
-
 	let id = 'm_t_' + oid;
-	if (isdef(UIS[id])) { console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+	if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
 	let ms = new RSG();
 	ms.id = id;
 	let domel = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -477,7 +478,7 @@ function makeMainVisual(oid, o) {
 	let color = S.settings.useColorHintForObjects ? getColorHint(o) : randomColor();
 	if (nundef(color)) color = 'black';// randomColor();
 	//console.log('isEdge',locElem.isa.edge)
-	//if (locElem.isa.edge) console.log(locElem.w,locElem.h,locElem)
+	//if (locElem.isa.edge) //console.log(locElem.w,locElem.h,locElem)
 	//console.log('........locElem.isa',locElem.isa);
 	let boardElemType = getBoardElementStandardType(locElem);
 	let sizeInfo = S.settings.pieceSizeRelativeToLoc[boardElemType];
@@ -513,9 +514,9 @@ function makePictoPiece(ms, o, sz, color) {
 	let sym = o.obj_type;
 	if (sym in S.settings.symbols) { sym = S.settings.symbols[sym]; }
 	if (!(sym in iconChars)) {
-		console.log("didn't find key", sym);
+		//console.log("didn't find key", sym);
 		symNew = Object.keys(iconChars)[randomNumber(5, 120)]; //abstract symbols
-		console.log('will rep', sym, 'by', symNew)
+		//console.log('will rep', sym, 'by', symNew)
 		S.settings.symbols[sym] = symNew;
 		sym = symNew;
 	}
@@ -525,7 +526,7 @@ function makePictoPiece(ms, o, sz, color) {
 }
 function makeMainPlayer(oid, o, areaName) {
 	let id = 'm_p_' + oid;
-	if (isdef(UIS[id])) { console.log('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
+	if (isdef(UIS[id])) { error('CANNOT create ' + id + ' TWICE!!!!!!!!!'); return; }
 	let ms = new RSG();
 	ms.id = id;
 	let title = 'player: ' + oid + '(' + getPlayerColorString(oid) + ', ' + getUser(oid) + ')';
@@ -633,14 +634,14 @@ function transformToString(k, val, refs) {
 	else if (val && isDict(val) && '_player' in val) { sval = makeRefLinkDiv4_player(val, refs); }
 	else if (isDictOrList(val)) {// || isList(val)) { 
 		// if (isList(val)) {
-		// 	console.log('##############ERROR!!! transformToString list would be lost!!!!',val)
+		// 	//console.log('##############ERROR!!! transformToString list would be lost!!!!',val)
 		// }
 		sval = tableHTMLX(val, refs); 
 	}
 	else sval = simpleRep(val);
 
 	// if (k == 'ports'){
-	// 	console.log('ports:',k,val,sval)
+	// 	//console.log('ports:',k,val,sval)
 	// }
 
 	return sval;

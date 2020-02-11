@@ -1,9 +1,9 @@
 function updateTableCardCollections(oid){
 
-	if (nundef(tableCollections[oid])) return;
+	if (nundef(collections[oid])) return;
 	let msArea = getTabletopCardsArea();
-	console.log(msArea);
-	if (isEmpty(tableCollections)){
+	//console.log(msArea);
+	if (isEmpty(collections)){
 		//console.log('no table card collections!');
 		return;
 	}
@@ -17,9 +17,9 @@ function updateTableCardCollections(oid){
 			for (const key in plColl) {
 				let ha = plColl[key];
 				let idCollection = getCollectionArea(key, msArea);
-				let divHand = UIS[idCollection].elem;
-				divHand.style.position = null;
-				getSimpleSetElements(ha.hand)
+				//let divHand = UIS[idCollection].elem;
+				//divHand.style.position = null;
+				//getSimpleSetElements(ha.hand)
 				//ha.hand = {_set:ha.hand};
 				showPlayerHandNew(ha.name, ha.arr, key);
 			}
@@ -29,10 +29,10 @@ function updateTableCardCollections(oid){
 }
 function updateTableCardCollections_COPY(oid){
 
-	if (nundef(tableCollections[oid])) return;
+	if (nundef(collections[oid])) return;
 	let msArea = getTabletopCardsArea();
 	//console.log(msArea);
-	if (isEmpty(tableCollections)){
+	if (isEmpty(collections)){
 		//console.log('no table card collections!');
 		return;
 	}
@@ -56,54 +56,34 @@ function updateTableCardCollections_COPY(oid){
 	}
 
 }
-function updateGameplayerCardCollections(pid, oPlayer) {
+function showHands(oid,propList,cardFunc,areaName){
 
-	let msArea = getPlayerArea(pid);
+}
 
-	console.log('updateGameplayerCardCollections','pid',pid,'oPlayer',oPlayer,'player area', msArea);
-	for (const propName in oPlayer) {
-		let o = oPlayer[propName];
-		//console.log(pid,'.'+propName,o)
-		let plColl = getPlayerCollections(pid,propName);
-		//console.log(plColl)
-		if (isdef(plColl)) {
-			for (const key in plColl) {
-				let ha = plColl[key];
-				let idCollection = getCollectionArea(key, msArea);
-				showPlayerHandNew(ha.name, ha.hand, key);
-			}
+function _showHand(oids, idArea) {
+	let idHand = idArea;
+	let hand = UIS[idArea];
+	let areaName = getAreaName(idArea);
+	// //console.log('areaName for',idArea,'is',areaName,'(_showHand)');
+	// //console.log('_showHand',oids,hand)
+	for (const oid of oids) {
+		//let id = getMainId(oid);
+		//console.log('getMainId for',oid,':',id)
+		let ms = getVisual(oid);//UIS[id];
+		if (nundef(ms)) {
+			//console.log('making card for:',oid,idHand);
+			ms = makeCard(oid, G.table[oid], idHand);
+			//console.log('created card:',oid,ms.id,areaName);
+
+		}
+		if (!_isInHand(oid, idHand)) {
+			//console.log('not in hand:',oid,idHand)
+			//alert('SHOULD ALREADY HAVE BEEN ADED!!!!!!!!!!!!!'+oid)
+			addCardToHand(oid, idArea);
 		}
 	}
 }
-function getTabletopCardsArea() {
-	let msTable = getMainArea(defaultTabletopCardsAreaName);
-	if (!msTable) { msTable = _makeTabletopCardsArea('a_d_game'); } 
-	return msTable;
-}
-function getPlayerArea(pid) {
-	let areaName = defaultGameplayerAreaName+'_'+pid;
-	let msPlayer = getMainArea(areaName);
-	if (!msPlayer) { msPlayer = _makeGameplayerArea(areaName,'a_d_game'); } 
-	else {
-		//console.log('found area for player', pid);
-	}
-	return msPlayer;
-}
-function getCollectionArea(key, msArea) {
-	//let id = getStandardAreaNameForKey(key);
-	let a = UIS[getIdArea(key)];
-	if (nundef(a)) {
 
-		a = _makeHandArea(key, key, msArea.id);
-		a.adjustSize = true;
-		let divHand = UIS[a.id].elem;
-		divHand.style.position = null;
-
-	}
-	let idHand = a.id;
-	
-	return idHand;
-}
 
 
 
@@ -219,7 +199,7 @@ function makeDeckArea(areaName, numDecks) {
 
 	let deckAreaName = 'deckArea';
 	let ms = makeArea(deckAreaName, areaName);
-	ms.setBg('blue');
+	ms.setBg('seagreen');
 	ms.setBounds(0, 0, 200, deckHeightNeeded, 'px');
 	return ms;
 }

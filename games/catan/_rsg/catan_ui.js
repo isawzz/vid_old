@@ -8,6 +8,11 @@ V = {
 		desert: colorTrans('beige', .6)
 	}
 };
+// TABLE_CREATE = {
+// 	robber:(oid, o, phase) => {
+// 		if (o.obj_type == 'robber') { return { f: 'create_robber', vis: [oid] }; }
+// 	}
+// }
 TABLE_UPDATE = {
 	resources_numbers: (oid, o, phase) => {
 		if (o.obj_type == 'hex') { return { f: 'setup_field', vis: [oid] }; }
@@ -15,7 +20,7 @@ TABLE_UPDATE = {
 	ports: (oid, o, phase) => {
 		if (o.obj_type == 'Corner') { return { f: 'setup_port', vis: [oid] }; }
 	},
-	update_city: (oid,o)=>{
+	update_city: (oid, o)=>{
 		if (o.obj_type == 'city') {return {f: 'update_city', vis: [oid]}}
 	}
 };
@@ -54,7 +59,7 @@ FUNCS = {
 	},
 	player_update_devcards: (idPlayer, o) => {
 		//showPlayerHandNew(idPlayer, 'devcards', 'DevCards');
-		showPlayerHand(idPlayer,'devcards',FUNCS.catan_card,'DevCards');
+		//showPlayerHand(idPlayer,'devcards',FUNCS.catan_card,'DevCards');
 	},
 	catan_card(oCard){
 		console.log('catan_card!!!!',oCard);
@@ -65,7 +70,12 @@ FUNCS = {
 	},
 	update_city: (oid, o, city) => {
 		city.setScale(2);
-	}
+	},
+
+	//*** creation => should go to default main object creation! */
+	create_robber: (oid, o) => {
+		makeMainBoardElementVisual(oid, o);
+	},
 };
 
 
